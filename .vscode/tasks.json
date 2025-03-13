@@ -7,7 +7,7 @@
         {
             "label": "Fortitude Check",
             "type": "shell",
-            "command": "./venv/Scripts/fortitude",
+            "command": "${workspaceFolder}/venv/Scripts/fortitude",
             "args": [
                 "check",
                 "${fileDirname}"
@@ -40,7 +40,7 @@
         {
             "label": "fprettify",
             "type": "shell",
-            "command": "./venv/Scripts/fprettify",
+            "command": "${workspaceFolder}/venv/Scripts/fprettify",
             "args": [
                 "-c",
                 "${workspaceFolder}/.fprettify.rc",

@@ -4,7 +4,7 @@
 
 Requirements:
 
-- For Windows: Visual Studio 2022 and [Download here](https://www.intel.com/content/www/us/en/developer/tools/oneapi/fortran-compiler-download.html)
+- For Windows: Visual Studio 2022, with the "Desktop development with C++" installed and Intel oneAPI Fortran Essentials [Download here](https://www.intel.com/content/www/us/en/developer/tools/oneapi/fortran-compiler-download.html)
 - For Linux: CMake >= 2.30 and Intel oneAPI Fortran Essentials  [Download here](https://www.intel.com/content/www/us/en/developer/tools/oneapi/fortran-compiler-download.html)
 - Make sure the oneAPI bin folder is in your `PATH` environment variable (e.g. `C:\Program Files (x86)\Intel\oneAPI\compiler\latest\bin`)
 - Python 3 [Download here](https://www.python.org/downloads/)
