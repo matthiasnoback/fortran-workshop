@@ -1,4 +1,6 @@
 module m_logging
+   use m_command_line, only: has_cli_argument
+
    implicit none(type, external)
 
    logical :: debug
@@ -44,10 +46,9 @@ contains
 
    subroutine init_logging()
       integer :: open_status
-      ! We could read this from CLI arguments
-      ! --debug, --quiet, and --log-file
-      debug = .true.
-      quiet = .false.
+
+      debug = .not. has_cli_argument('--no-debug')
+      quiet = has_cli_argument('--quiet')
       open (file='debug.log', newunit=log_file, status='unknown', &
             position='append', action='write', iostat=open_status)
       should_log_to_file = open_status == 0

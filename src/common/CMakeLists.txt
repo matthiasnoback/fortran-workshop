@@ -1,6 +1,7 @@
 set(library_name common-lib)
 
 add_library(${library_name} STATIC
+    m_command_line.f90
     m_precision.f90
 )
 
