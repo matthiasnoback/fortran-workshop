@@ -26,7 +26,25 @@ module m_logging
       procedure :: log => do_everytying_logger_log
    end type t_do_everything_logger
 
+   class(t_abstract_logger), allocatable :: shared_logger
+
 contains
+   function get_logger() result(logger_instance)
+      ! Alternatively, we could add the `save` attribute to this variable.
+      ! The downside is, we have no way to choose an alternative logger
+      ! instance, e.g. in a situation where we want to use an "in-memory"
+      ! logger when testing a function that calls the logger() function.
+      class(t_abstract_logger), allocatable :: logger_instance
+
+      if (.not. allocated(shared_logger)) then
+         shared_logger = t_do_everything_logger()
+
+         call init_logging()
+      end if
+
+      logger_instance = shared_logger
+   end function get_logger
+
    subroutine do_everytying_logger_log(self, message)
       class(t_do_everything_logger), intent(in) :: self
       character(len=*), intent(in) :: message
