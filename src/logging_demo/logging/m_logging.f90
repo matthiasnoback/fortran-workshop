@@ -1,11 +1,6 @@
 module m_logging
    implicit none(type, external)
 
-   logical :: debug
-   logical :: quiet
-   logical :: should_log_to_file
-   integer :: log_file
-
    type, abstract :: t_abstract_logger
    contains
       procedure(log_function_interface), deferred :: log
@@ -22,9 +17,19 @@ module m_logging
    end interface
 
    type, extends(t_abstract_logger) :: t_do_everything_logger
+      private
+
+      logical :: debug
+      logical :: quiet
+      logical :: should_log_to_file
+      integer :: log_file
    contains
       procedure :: log => do_everytying_logger_log
    end type t_do_everything_logger
+
+   interface t_do_everything_logger
+      procedure :: do_everything_logger_constructor
+   end interface
 
    class(t_abstract_logger), allocatable :: shared_logger
 
@@ -37,39 +42,46 @@ contains
       class(t_abstract_logger), allocatable :: logger_instance
 
       if (.not. allocated(shared_logger)) then
-         shared_logger = t_do_everything_logger()
+         ! We could read values for debug and quiet from CLI arguments
+         ! --debug, --quiet
 
-         call init_logging()
+         shared_logger = t_do_everything_logger(.true., .false.)
       end if
 
       logger_instance = shared_logger
    end function get_logger
 
+   function do_everything_logger_constructor(debug, quiet) result(logger)
+      logical, intent(in) :: debug
+      logical, intent(in) :: quiet
+      type(t_do_everything_logger) :: logger
+
+      integer :: open_status
+      integer :: log_file
+
+      open (file='debug.log', newunit=log_file, status='unknown', &
+            position='append', action='write', iostat=open_status)
+
+      logger%debug = debug
+      logger%quiet = quiet
+      logger%log_file = log_file
+      logger%should_log_to_file = open_status == 0
+   end function do_everything_logger_constructor
+
    subroutine do_everytying_logger_log(self, message)
       class(t_do_everything_logger), intent(in) :: self
       character(len=*), intent(in) :: message
 
-      if (debug) then
-         if (should_log_to_file) then
-            write (log_file, fmt=*) current_time()//' '//message
+      if (self%debug) then
+         if (self%should_log_to_file) then
+            write (self%log_file, fmt=*) current_time()//' '//message
          end if
 
-         if (.not. quiet) then
+         if (.not. self%quiet) then
             print *, current_time()//' '//message
          end if
       end if
    end subroutine do_everytying_logger_log
-
-   subroutine init_logging()
-      integer :: open_status
-      ! We could read this from CLI arguments
-      ! --debug, --quiet, and --log-file
-      debug = .true.
-      quiet = .false.
-      open (file='debug.log', newunit=log_file, status='unknown', &
-            position='append', action='write', iostat=open_status)
-      should_log_to_file = open_status == 0
-   end subroutine init_logging
 
    function current_time() result(iso_time)
       character(len=8) :: date
