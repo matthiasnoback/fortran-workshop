@@ -14,7 +14,7 @@ Open the folder where you cloned this project to in Visual Studio (in the `Start
 
 Visual Studio should automatically run the CMake configuration step. You can see this happening in the `Output` panel.
 
-When done, you can start either `hello-world` or `hello-world-tester` from the menu bar and run or debug either of them. In the `Solution Explorer` you can switch to the `CMake Targets View` to select, build or debug specific targets.
+When done, you can start either `hello-world` or `fortran-workshop-tester` from the menu bar and run or debug either of them. In the `Solution Explorer` you can switch to the `CMake Targets View` to select, build or debug specific targets.
 
 ## Fortitude lint
 

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 project(fortran-workshop VERSION 0.1
-    LANGUAGES C Fortran
+    LANGUAGES Fortran
     DESCRIPTION "Fortran workshop")
 
 include(cmake/compiler_flags.cmake)
@@ -46,19 +46,19 @@ foreach(t IN LISTS tests)
 endforeach()
 
 add_executable(
-    "hello-world-tester"
+    "fortran-workshop-tester"
     "${test-srcs}"
 )
 target_link_libraries(
-    "hello-world-tester"
+    "fortran-workshop-tester"
     PRIVATE
     "hello_world-lib"
     "vector-lib"
     "test-drive::test-drive"
 )
 
-target_include_directories("hello-world-tester" INTERFACE ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories("fortran-workshop-tester" INTERFACE ${CMAKE_CURRENT_BINARY_DIR})
 
 foreach(t IN LISTS tests)
-    add_test("${t}" "hello-world-tester" "${t}")
+    add_test("${t}" "fortran-workshop-tester" "${t}")
 endforeach()

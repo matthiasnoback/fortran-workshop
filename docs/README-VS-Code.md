@@ -34,7 +34,7 @@ CMake Tools will ask for a "CMake configure preset". Select:
 
 From the CMake panel (you'll find an icon on the left of the screen), you can select any of the project's targets that you want to build, run, or debug. The menu (`...`) shows specific actions like Reconfiguring, Rebuilding, Cleaning, etc.
 
-Try, for example, to run `hello-world-tester`. Right-click on the target and press `Set as Launch/Debug Target`. Then press the debug or play icon in the bar at the bottom of the screen.
+Try, for example, to run `fortran-workshop-tester`. Right-click on the target and press `Set as Launch/Debug Target`. Then press the debug or play icon in the bar at the bottom of the screen.
 
 ### Debugging (optional)
 
