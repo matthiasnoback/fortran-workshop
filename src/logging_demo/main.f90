@@ -1,9 +1,17 @@
 program example
-   use m_logging, only: get_logger
+   use m_logging, only: get_logger, t_abstract_logger
 
    implicit none(type, external)
 
-   call get_logger()%log('A message')
+   class(t_abstract_logger), pointer :: logger
 
-   call get_logger()%log('Another message')
+   logger => get_logger();
+
+   call logger%log('A message')
+
+   call logger%log('Another message')
+
+   ! Only to demonstrate that the final procedures will be invoked
+   deallocate (logger)
+
 end program example
