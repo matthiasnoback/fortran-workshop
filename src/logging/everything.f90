@@ -41,7 +41,7 @@ contains
    end function do_everything_logger_constructor
 
    subroutine do_everything_logger_destructor(self)
-      type(t_do_everything_logger) :: self
+      type(t_do_everything_logger), intent(in) :: self
 
       print *, 'Destructor of t_do_everything_logger called'
    end subroutine do_everything_logger_destructor
@@ -59,4 +59,3 @@ contains
       end if
    end subroutine do_everything_logger_log
 end module logging_everything
-

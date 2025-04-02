@@ -14,7 +14,7 @@ Start VS Code, and open the folder where you've cloned this project to.
 
 Open the `Extensions` panel on the left (or press `Ctrl + Shift + X`). Then install the following extensions:
 
-- Modern Fortran (understands Fortran code and gives code completion based on input from the Fortran Language Server, etc., runs the compiler as a linter)
+- Modern Fortran (understands Fortran code and gives code completion based on input from the Fortran Language Server, etc., runs the compiler as a linter). The publisher isn't trusted, so you have to click on the little cogwheel and press `Install`.
 - Trigger Task on Save (allows auto-formatting with fprettify and running the Fortitude linter on-save)
 - EditorConfig for VS Code (automatically deals with whitespacing)
 

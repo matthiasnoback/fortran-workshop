@@ -4,7 +4,7 @@
 
 Requirements:
 
-- Visual Studio, with the "Desktop development with C++" installed
+- Visual Studio Community edition, with the "Desktop development with C++" installed [Download here](https://visualstudio.microsoft.com/downloads/)
 - Intel oneAPI Fortran Essentials [Download here](https://www.intel.com/content/www/us/en/developer/tools/oneapi/fortran-compiler-download.html)
 - Make sure the oneAPI bin folder is in your `PATH` environment variable (e.g. `C:\Program Files (x86)\Intel\oneAPI\compiler\latest\bin`)
 
