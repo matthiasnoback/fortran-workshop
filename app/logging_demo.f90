@@ -1,5 +1,6 @@
 program logging_demo
-   use logging, only: get_logger, t_abstract_logger
+   use logging_facade, only: get_logger
+   use logging_abstract, only: t_abstract_logger
 
    implicit none(type, external)
 
