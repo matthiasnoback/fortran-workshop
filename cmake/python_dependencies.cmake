@@ -3,20 +3,6 @@ set(VENV_PATH "${CMAKE_SOURCE_DIR}/venv")
 set(REQUIREMENTS_FILE "${CMAKE_SOURCE_DIR}/requirements.txt")
 set(VENV_LIB_DIR "${VENV_PATH}/Lib")
 
-# Function to get file or directory timestamp
-function(get_file_timestamp file output)
-    if(WIN32)
-        execute_process(
-            COMMAND powershell -Command "(Get-Item ${file}).LastWriteTime.ToFileTime()"
-            OUTPUT_VARIABLE timestamp
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-        )
-    else()
-        file(TIMESTAMP ${file} timestamp)
-    endif()
-    set(${output} ${timestamp} PARENT_SCOPE)
-endfunction()
-
 if(NOT EXISTS ${VENV_PATH})
     message(STATUS "Virtual environment not found. Creating virtual environment...")
     execute_process(

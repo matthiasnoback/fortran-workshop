@@ -1,6 +1,6 @@
 
-module m_logging
-   use m_command_line, only: has_cli_argument
+module logging
+   use common_command_line, only: has_cli_argument
 
    implicit none(type, external)
 
@@ -157,4 +157,4 @@ contains
       iso_time = date(1:4)//'-'//date(5:6)//'-'//date(7:8)//'T'// &
                  time(1:2)//':'//time(3:4)//':'//time(5:6)//zone
    end function current_time
-end module m_logging
+end module logging

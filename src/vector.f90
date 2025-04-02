@@ -1,4 +1,4 @@
-module m_vector
+module vector
    use iso_fortran_env, only: real64
 
    implicit none(type, external)
@@ -15,4 +15,4 @@ contains
       res = .true.
    end function dummy_function
 
-end module m_vector
+end module vector

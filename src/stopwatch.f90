@@ -1,6 +1,6 @@
-module m_stopwatch
+module stopwatch
    implicit none(type, external)
 
    private
 contains
-end module m_stopwatch
+end module stopwatch

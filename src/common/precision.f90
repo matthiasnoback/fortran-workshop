@@ -1,4 +1,4 @@
-module m_precision
+module common_precision
    use iso_fortran_env, only: real64
 
    implicit none(type, external)
@@ -7,4 +7,4 @@ module m_precision
    public :: dp
 
    integer, parameter :: dp = real64
-end module m_precision
+end module common_precision

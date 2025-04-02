@@ -1,4 +1,4 @@
-module m_command_line
+module common_command_line
    implicit none(type, external)
 
    private
@@ -41,4 +41,4 @@ contains
       end if
    end function get_cli_argument
 
-end module m_command_line
+end module common_command_line

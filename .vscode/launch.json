@@ -9,7 +9,17 @@
             "args": [],
             "stopAtEntry": false,
             "cwd": "${command:cmake.launchTargetDirectory}",
-            "externalConsole": true,
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Debug currently opened .exe file",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${file}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "console": "integratedTerminal"
         }
     ]
 }

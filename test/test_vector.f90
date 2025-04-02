@@ -1,6 +1,6 @@
-module test_vector_lib
+module test_vector
    use testdrive, only: new_unittest, unittest_type, error_type, check, test_failed
-   use m_vector, only: dummy_function
+   use vector, only: dummy_function
 
    implicit none(type, external)
 
@@ -25,4 +25,4 @@ contains
       call check(error, dummy_function())
    end subroutine test_dummy_function
 
-end module test_vector_lib
+end module test_vector

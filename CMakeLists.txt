@@ -7,15 +7,8 @@ project(fortran-workshop VERSION 0.1
 include(cmake/compiler_flags.cmake)
 include(cmake/python_dependencies.cmake)
 
-add_subdirectory(src/common)
-
-add_subdirectory(src/vector)
-
-add_subdirectory(src/hello_world_app)
-
-add_subdirectory(src/logging_demo)
-
-add_subdirectory(src/performance_demo)
+add_subdirectory(app)
+add_subdirectory(src)
 
 enable_testing()
 include(CTest)
@@ -34,7 +27,7 @@ endif()
 set(
     tests
     "hello_world"
-    "vector_lib"
+    "vector"
 )
 set(
     test-srcs
@@ -52,8 +45,7 @@ add_executable(
 target_link_libraries(
     "fortran-workshop-tester"
     PRIVATE
-    "hello_world-lib"
-    "vector-lib"
+    "fortran-workshop-lib"
     "test-drive::test-drive"
 )
 

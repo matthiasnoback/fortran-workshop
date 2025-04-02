@@ -40,41 +40,7 @@ Try, for example, to run `fortran-workshop-tester`. Right-click on the target an
 
 Unfortunately, debugging doesn't work out-of-the-box with CMake tools. To Debug, make sure to select a Launch target in the CMake panel on the left. Then choose `Run` -> `Start Debugging`.
 
-The debugger doesn't show the correct contents of variables. To fix this (yes, this is incredibly silly, I just read it [somewhere](https://gist.github.com/albertziegenhagel/6431811950864bd0009b6a1fa78e7f2b)), take the following steps.
-
-- Open this folder, inside your oneAPI installation directory: C:\Program Files (x86)\Intel\oneAPI\debugger\latest\share\ide_support\visual_studio\debugger\vs2022
-- Copy the file FEE_VSIX_v17.vsix to your home directory, e.g. C:\Users\noback
-- Rename the file to FEE_VSIX_v17.zip, then right-click and `Extract all...`
-- Open the extracted folder and create a file in this folder called `.vsdbg-config.json`
-- Copy the following text into this file:
-
-```json
-{
-  "$schema": "https://aka.ms/vs/vsdbg-config-schema",
-  "languages": [
-    {
-      "languageId": "{8e546c6f-4819-4dde-83dd-f998d52e6f33}",
-      "vendorId": "{2a333b19-f91e-477b-8032-22de549d925a}",
-      "name": "Fortran",
-      "codeViewCompilerIds": [ { "code": 2 } ]
-    }
-  ]
-}
-```
-
-- Create a `.cppvsdbg\extensions` in your home directory (e.g. `C:\Users\noback\.cppvsdbg\extensions`).
-- Create a file called `FEE.link` in this new directory. The contents should be the full path to the unzipped directory, e.g. `C:\Users\noback\FEE_VSIX_v17`.
-- Next time you do a Debug launch, the Debug console panel should show:
-
-```
-------------------------------------------------------------------------------
-You may only use the C/C++ Extension for Visual Studio Code with Visual Studio
-Code, Visual Studio or Visual Studio for Mac software to help you develop and
-test your applications.
-------------------------------------------------------------------------------
-Loading extensions from 'C:\Users\noback\FEE_VSIX_v17'.
-[...]
-```
+To improve the debugger's understanding of Fortran code and application memory, follow [these instructions](VS-Code-Fortran-Debugging.md).
 
 ## Fortitude linter
 
@@ -88,12 +54,4 @@ To check all files at once, run inside a terminal:
 
 ## Configuring the Modern Fortran extension
 
-The Modern Fortran extension requires the `fortls` language server, which comes installed with this project as a Python executable. Go to `File` - `Preferences` - `Settings` - `Extensions` - `Modern Fortran` - `Language server`. Make sure to select the `User` tab, not the `Workspace` tab. Then for the setting `Fortran > Fortls: Path` provide the full path to `fortls.exe`, e.g.
-
-```
-C:\Users\[location of the repository]\venv\Scripts\fortls.exe
-```
-
-(Unfortunately it doesn't work with a relative path)
-
-`fprettify` will be executed on save, and to ensure that the Modern Fortran doesn't try to reformat the code too, we disable formatting under `File` - `Preferences` - `Settings` - `Extensions` - `Modern Fortran` - `Formatting`.
+The Modern Fortran extension needs some [manual configuration steps](VS-Code-Modern-Fortran.md).

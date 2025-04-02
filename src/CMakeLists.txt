@@ -1,7 +1,12 @@
-set(library_name hello_world-lib)
+set(library_name fortran-workshop-lib)
 
 add_library(${library_name} STATIC
-    m_hello_world.f90
+    common/command_line.f90
+    common/precision.f90
+    hello_world.f90
+    logging.f90
+    stopwatch.f90
+    vector.f90
 )
 
 # Allows main project to find .mod files for used modules

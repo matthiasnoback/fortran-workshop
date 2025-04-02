@@ -16,5 +16,20 @@
     },
     "fortran.formatting.formatter": "Disabled",
     "cmake.useCMakePresets": "always",
-    "fortran.fortls.disableDiagnostics": false
+    "fortran.fortls.disableDiagnostics": false,
+    "terminal.integrated.profiles.windows": {
+        "oneAPI Command Prompt": {
+            "path": "cmd.exe",
+            "args": [
+                "/E:ON",
+                "/K",
+                "C:\\Program Files (x86)\\Intel\\oneAPI\\setvars.bat",
+                "intel64",
+                "vs2022"
+            ],
+            "env": {
+                "FPM_FC": "ifx"
+            }
+        }
+    }
 }

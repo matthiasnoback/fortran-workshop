@@ -26,4 +26,4 @@ To run the Fortitude linter, open a Terminal and run:
 
 You can also define it as an "External Tool" via `Tools` - `External Tools`:
 
-![Fortitude exteral tool](visual-studio-fortitude.png)
+![Fortitude exteral tool](img/visual-studio-fortitude.png)
