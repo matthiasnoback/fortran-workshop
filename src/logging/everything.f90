@@ -1,53 +1,53 @@
 module logging_everything
-   use logging_abstract, only: t_abstract_logger
-   use logging_file, only: t_file_logger
-   use logging_stdout, only: t_stdout_logger
+   use logging_abstract, only: abstract_logger_t
+   use logging_file, only: file_logger_t
+   use logging_stdout, only: stdout_logger_t
 
    implicit none(type, external)
 
    private
-   public :: t_do_everything_logger
+   public :: do_everything_logger_t
 
-   type, extends(t_abstract_logger) :: t_do_everything_logger
+   type, extends(abstract_logger_t) :: do_everything_logger_t
       private
 
       logical :: debug
       logical :: quiet
 
-      class(t_file_logger), allocatable :: file_logger
-      class(t_stdout_logger), allocatable :: stdout_logger
+      class(file_logger_t), allocatable :: file_logger
+      class(stdout_logger_t), allocatable :: stdout_logger
    contains
       procedure :: log => do_everything_logger_log
       final :: do_everything_logger_destructor
-   end type t_do_everything_logger
+   end type do_everything_logger_t
 
-   interface t_do_everything_logger
+   interface do_everything_logger_t
       procedure :: do_everything_logger_constructor
    end interface
 contains
    function do_everything_logger_constructor(debug, quiet) result(logger)
       logical, intent(in) :: debug
       logical, intent(in) :: quiet
-      type(t_do_everything_logger), pointer :: logger
+      type(do_everything_logger_t), pointer :: logger
 
-      print *, 'Constructor of t_do_everything_logger'
+      print *, 'Constructor of do_everything_logger_t'
 
       allocate (logger)
 
       logger%debug = debug
       logger%quiet = quiet
-      logger%file_logger = t_file_logger('debug.log')
-      logger%stdout_logger = t_stdout_logger()
+      logger%file_logger = file_logger_t('debug.log')
+      logger%stdout_logger = stdout_logger_t()
    end function do_everything_logger_constructor
 
    subroutine do_everything_logger_destructor(self)
-      type(t_do_everything_logger), intent(in) :: self
+      type(do_everything_logger_t), intent(in) :: self
 
-      print *, 'Destructor of t_do_everything_logger called'
+      print *, 'Destructor of do_everything_logger_t called'
    end subroutine do_everything_logger_destructor
 
    subroutine do_everything_logger_log(self, message)
-      class(t_do_everything_logger), intent(inout) :: self
+      class(do_everything_logger_t), intent(inout) :: self
       character(len=*), intent(in) :: message
 
       if (self%debug) then

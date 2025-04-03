@@ -1,10 +1,10 @@
 program logging_demo
    use logging_facade, only: get_logger
-   use logging_abstract, only: t_abstract_logger
+   use logging_abstract, only: abstract_logger_t
 
    implicit none(type, external)
 
-   class(t_abstract_logger), pointer :: logger
+   class(abstract_logger_t), pointer :: logger
 
    logger => get_logger(); 
    call logger%log('A message')
