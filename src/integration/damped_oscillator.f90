@@ -1,4 +1,4 @@
-module damped_oscillator
+module integration_damped_oscillator
    use iso_fortran_env, only: wp => real64
 
    implicit none(type, external)
@@ -18,4 +18,4 @@ contains
       y = exp(-a*x)*cos(b*x)
    end function damped_oscillatory_function
 
-end module damped_oscillator
+end module integration_damped_oscillator

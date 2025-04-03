@@ -28,6 +28,7 @@ set(
     tests
     "hello_world"
     "vector"
+    "integration"
 )
 set(
     test-srcs

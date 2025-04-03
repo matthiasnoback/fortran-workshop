@@ -1,4 +1,4 @@
-module integration
+module integration_trapezoid
    use iso_fortran_env, only: wp => real64
 
    implicit none(type, external)
@@ -45,4 +45,5 @@ contains
 
       integral = integral*delta_x
    end function integrate_trapezoid
-end module integration
+
+end module integration_trapezoid

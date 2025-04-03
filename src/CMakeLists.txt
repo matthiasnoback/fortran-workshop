@@ -6,6 +6,8 @@ add_library(${library_name} STATIC
     ./common/precision.f90
     ./common/time.f90
     ./hello_world.f90
+    ./integration/damped_oscillator.f90
+    ./integration/trapezoid.f90
     ./logging/abstract.f90
     ./logging/everything.f90
     ./logging/facade_implementation.f90

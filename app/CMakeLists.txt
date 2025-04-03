@@ -1,8 +1,12 @@
-add_executable(hello_world_demo hello_world_demo.f90)
-target_link_libraries(hello_world_demo PRIVATE fortran-workshop-lib)
+set(PROGRAM_FILES
+    ./hello_world_demo.f90
+    ./integration_demo.f90
+    ./logging_demo.f90
+    ./performance_demo.f90
+)
 
-add_executable(logging_demo logging_demo.f90)
-target_link_libraries(logging_demo PRIVATE fortran-workshop-lib)
-
-add_executable(performance_demo performance_demo.f90)
-target_link_libraries(performance_demo PRIVATE fortran-workshop-lib)
+foreach(PROGRAM_FILE IN LISTS PROGRAM_FILES)
+    get_filename_component(PROGRAM_NAME ${PROGRAM_FILE} NAME_WE)
+    add_executable(${PROGRAM_NAME} ${PROGRAM_FILE})
+    target_link_libraries(${PROGRAM_NAME} PRIVATE fortran-workshop-lib)
+endforeach()
