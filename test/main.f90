@@ -4,6 +4,7 @@ program tester
            & select_suite, run_selected, get_argument
    use test_hello_world, only: collect_hello_world_tests
    use test_vector, only: collect_vector_tests => collect_tests
+   use test_integration, only: collect_integration_tests => collect_tests
 
    implicit none(type, external)
 
@@ -16,7 +17,8 @@ program tester
 
    testsuites = [ &
                 new_testsuite("hello_world", collect_hello_world_tests), &
-                new_testsuite("vector", collect_vector_tests) &
+                new_testsuite("vector", collect_vector_tests), &
+                new_testsuite("vector", collect_integration_tests) &
                 ]
 
    call get_argument(1, suite_name)
