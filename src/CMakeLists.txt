@@ -8,6 +8,7 @@ add_library(${library_name} STATIC
     ./hello_world.f90
     ./logging/abstract.f90
     ./logging/everything.f90
+    ./logging/facade_implementation.f90
     ./logging/facade.f90
     ./logging/file.f90
     ./logging/stdout.f90
