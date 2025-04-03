@@ -1,12 +1,18 @@
 set(library_name fortran-workshop-lib)
 
+# Run `find -name "*.f90"` in Git Bash and copy the list below
 add_library(${library_name} STATIC
-    common/command_line.f90
-    common/precision.f90
-    hello_world.f90
-    logging.f90
-    stopwatch.f90
-    vector.f90
+    ./common/command_line.f90
+    ./common/precision.f90
+    ./common/time.f90
+    ./hello_world.f90
+    ./logging/abstract.f90
+    ./logging/everything.f90
+    ./logging/facade.f90
+    ./logging/file.f90
+    ./logging/stdout.f90
+    ./stopwatch.f90
+    ./vector.f90
 )
 
 # Allows main project to find .mod files for used modules
