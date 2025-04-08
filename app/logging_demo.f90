@@ -6,7 +6,7 @@ program logging_demo
 
    class(abstract_logger_t), pointer :: logger
 
-   logger => get_logger(); 
+   logger => get_logger()
    call logger%log('A message')
 
    call logger%log('Another message')
