@@ -14,7 +14,10 @@ add_library(${library_name} STATIC
     ./logging/facade.f90
     ./logging/file.f90
     ./logging/stdout.f90
-    ./stopwatch.f90
+    ./stopwatch/facade.f90
+    ./stopwatch/timer_linked_list.f90
+    ./stopwatch/timer_list.f90
+    ./stopwatch/timer.f90
     ./vector.f90
 )
 

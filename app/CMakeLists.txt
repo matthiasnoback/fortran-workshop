@@ -3,6 +3,8 @@ set(PROGRAM_FILES
     ./integration_demo.f90
     ./logging_demo.f90
     ./performance_demo.f90
+    ./timer_list_demo.f90
+    ./timer_linked_list_demo.f90
 )
 
 foreach(PROGRAM_FILE IN LISTS PROGRAM_FILES)
