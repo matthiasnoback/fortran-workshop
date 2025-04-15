@@ -5,6 +5,7 @@ submodule(logging_facade) logging_facade_implementation
    use logging_stdout, only: stdout_logger_t
    use logging_everything, only: do_everything_logger_t
    use logging_timestamp, only: timestamp_decorating_logger_t
+   use logging_aggregation, only: logger_reference_t, multi_logger_t
 
    implicit none(type, external)
 
@@ -19,11 +20,25 @@ contains
       logical :: quiet
       type(timestamp_decorating_logger_t) :: timestamp_decorating_logger
 
+      type(logger_reference_t), dimension(:), allocatable :: logger_references
+      type(multi_logger_t), pointer :: multi_logger
+
       if (.not. allocated(the_logger)) then
          debug = .not. has_cli_argument('--no-debug')
          quiet = has_cli_argument('--quiet')
 
-         timestamp_decorating_logger%decorated_logger => do_everything_logger_t(debug, quiet)
+         if (debug) then
+            logger_references = [logger_reference_t(file_logger_t('debug.log'))]
+            if (.not. quiet) then
+               logger_references = [logger_references, logger_reference_t(stdout_logger_t())]
+            end if
+         else
+            allocate(logger_references(0))
+         end if
+
+         allocate(multi_logger)
+         multi_logger%logger_references = logger_references
+         timestamp_decorating_logger%decorated_logger => multi_logger
          the_logger = timestamp_decorating_logger
       end if
 
