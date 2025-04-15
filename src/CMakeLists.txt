@@ -9,11 +9,13 @@ add_library(${library_name} STATIC
     ./integration/damped_oscillator.f90
     ./integration/trapezoid.f90
     ./logging/abstract.f90
+    ./logging/aggregation.f90
     ./logging/everything.f90
     ./logging/facade_implementation.f90
     ./logging/facade.f90
     ./logging/file.f90
     ./logging/stdout.f90
+    ./logging/timestamp.f90
     ./stopwatch/facade.f90
     ./stopwatch/timer_linked_list.f90
     ./stopwatch/timer_list.f90
