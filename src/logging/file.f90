@@ -1,5 +1,4 @@
 module logging_file
-   use common_time, only: current_time
    use logging_abstract, only: abstract_logger_t
 
    implicit none(type, external)
@@ -49,7 +48,7 @@ contains
       class(file_logger_t), intent(inout) :: self
       character(len=*), intent(in) :: message
 
-      write (self%log_file_unit, fmt=*) current_time()//' '//message
+      write (self%log_file_unit, fmt=*) message
    end subroutine file_logger_log
 
 end module logging_file
