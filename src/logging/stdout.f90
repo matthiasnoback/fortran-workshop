@@ -12,7 +12,17 @@ module logging_stdout
       procedure :: log => stdout_logger_log
    end type stdout_logger_t
 
+   interface stdout_logger_t
+      procedure :: stdout_logger_constructor
+   end interface
+
 contains
+
+   function stdout_logger_constructor() result(stdout_logger)
+      type(stdout_logger_t), pointer :: stdout_logger
+
+      allocate (stdout_logger)
+   end function stdout_logger_constructor
 
    subroutine stdout_logger_log(self, message)
       class(stdout_logger_t), intent(inout) :: self
