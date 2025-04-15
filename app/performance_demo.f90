@@ -2,6 +2,7 @@
 
 program column_major
    use iso_fortran_env, only: wp => real64, int64
+   use stopwatch_facade, only: stopwatch_start, stopwatch_stop, stopwatch_print_timers
 
    implicit none(type, external)
 
@@ -10,11 +11,10 @@ program column_major
    integer :: i, j, tot
    integer(int64) :: irate, tic, toc
 
-   call system_clock(count_rate=irate)  ! # of clock ticks per second
    array = 0
 
    ! FASTER: Looping consecutively through columns
-   call system_clock(count=tic)
+   call stopwatch_start('Array loop column-first')
    tot = 0
    do j = 1, size(array, dim=2)
       do i = 1, size(array, dim=1)
@@ -22,11 +22,10 @@ program column_major
          tot = tot + array(i, j)
       end do
    end do
-   call system_clock(count=toc)
-   print "(g12.3)", (toc - tic)/real(irate, wp)
+   call stopwatch_stop('Array loop column-first')
 
    ! SLOWER: Looping consecutively through rows
-   call system_clock(count=tic)
+   call stopwatch_start('Array loop row-first')
    tot = 0
    do i = 1, size(array, dim=1)
       do j = 1, size(array, dim=2)
@@ -34,7 +33,7 @@ program column_major
          tot = tot + array(i, j)
       end do
    end do
-   call system_clock(count=toc)
-   print "(g12.3)", (toc - tic)/real(irate, wp)
+   call stopwatch_stop('Array loop row-first')
 
+   call stopwatch_print_timers()
 end program column_major
