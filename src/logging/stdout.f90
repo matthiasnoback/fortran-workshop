@@ -1,5 +1,4 @@
 module logging_stdout
-   use common_time, only: current_time
    use logging_abstract, only: abstract_logger_t
 
    implicit none(type, external)
@@ -28,7 +27,7 @@ contains
       class(stdout_logger_t), intent(inout) :: self
       character(len=*), intent(in) :: message
 
-      print *, current_time()//' '//message
+      print *, message
    end subroutine stdout_logger_log
 
 end module logging_stdout
