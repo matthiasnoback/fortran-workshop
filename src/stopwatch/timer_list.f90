@@ -26,13 +26,15 @@ contains
    subroutine timer_list_print_all(self)
       class(timer_list_t), intent(inout) :: self
 
-      ! TODO print all timers
+      ! TODO print all timers; note: timer_t has a print() procedure for that
    end subroutine timer_list_print_all
 
    function timer_list_get(self, label) result(timer)
       class(timer_list_t), intent(inout), target :: self
       character(len=*), intent(in) :: label
       type(timer_t), pointer :: timer
+
+      ! NB Implement this for the second assignment
 
       ! TODO loop over self%timers and return the timer that has the given label
 
