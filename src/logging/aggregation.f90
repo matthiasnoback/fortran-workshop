@@ -4,6 +4,7 @@ module logging_aggregation
    implicit none(type, external)
 
    private
+   public :: multi_logger_t
 
    type :: logger_reference_t
       class(abstract_logger_t), pointer :: logger
@@ -22,14 +23,22 @@ contains
       class(multi_logger_t), intent(inout) :: self
       class(abstract_logger_t), pointer, intent(in) :: logger
 
-      ! TODO add the logger to self%logger_references
+      if (.not. allocated(self%logger_references)) then
+         self%logger_references = [logger_reference_t(logger)]
+      else
+         self%logger_references = [self%logger_references, logger_reference_t(logger)]
+      end if
    end subroutine multi_logger_add_logger
 
    subroutine multi_logger_log(self, message)
       class(multi_logger_t), intent(inout) :: self
       character(len=*), intent(in) :: message
 
-      ! TODO loop over self%logger_references and call each logger's log() procedure
+      integer :: i
+
+      do i = 1, size(self%logger_references)
+         call self%logger_references(i)%logger%log(message)
+      end do
    end subroutine multi_logger_log
 
 end module logging_aggregation
