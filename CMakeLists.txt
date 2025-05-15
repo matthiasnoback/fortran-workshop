@@ -29,6 +29,7 @@ set(
     "hello_world"
     "vector"
     "integration"
+    "to_string"
 )
 set(
     test-srcs

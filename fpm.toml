@@ -27,3 +27,8 @@ test-drive.tag = "v0.4.0"
 [preprocess]
 # Preprocessing is needed for building the test-drive dependency
 cpp.suffixes = ["F90"]
+
+[extra.fortitude.check.per-file-ignores]
+# Ignore `C072` (character 'iomsg' has assumed size but does not have `intent(in)) because we can't fix it.
+# I tried using assumed length and make it allocated, as is suggested, but that doesn't compile.
+"src/common/to_string.f90" = ["C072"]
