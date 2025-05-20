@@ -6,15 +6,18 @@ Requirements:
 
 - Visual Studio Community edition, with the "Desktop development with C++" installed [Download here](https://visualstudio.microsoft.com/downloads/)
 - Intel oneAPI Fortran Essentials [Download here](https://www.intel.com/content/www/us/en/developer/tools/oneapi/fortran-compiler-download.html)
-- For Linux: CMake >= 2.30 and Intel oneAPI Fortran Essentials  [Download here](https://www.intel.com/content/www/us/en/developer/tools/oneapi/fortran-compiler-download.html)
-- Make sure the oneAPI bin folder is in your `PATH` environment variable (e.g. `C:\Program Files (x86)\Intel\oneAPI\compiler\latest\bin`)
-- Python 3 [Download here](https://www.python.org/downloads/)
+- For Linux: CMake >= 2.30 [Download here](https://cmake.org/download/).
+- Python 3 [Download here](https://www.python.org/downloads/) You may need to install support for virtual environments as well (e.g. on Ubuntu: `sudo apt install python3.12-venv`).
 - Visual Studio Code IDE [Download here](https://code.visualstudio.com/download).
 
 Start VS Code, and open the folder where you've cloned this project to.
 
 Open the `Extensions` panel on the left (or press `Ctrl + Shift + X`). Then install the following extensions:
 
+- Environment Configurator for Intel Software Developer Tools: This will ensure the right environment variables are set for compiling using oneAPI's ifx compiler. If they aren't, take the following steps:
+    - Press `Ctrl+Shift+P` ( or `View` - `Command Palette...` ) to open the Command Palette.
+    - Type Intel oneAPI to view options of the installed extensions.
+    - Click on Intel oneAPI: Initialize environment variables.
 - Cmake Tools (provides a UI for interacting with CMake targets)
 - Modern Fortran (understands Fortran code and gives code completion based on input from the Fortran Language Server, etc., runs the compiler as a linter). The publisher isn't trusted, so you have to click on the little cogwheel and press `Install`.
 - Trigger Task on Save (allows auto-formatting with fprettify and running the Fortitude linter on-save)
@@ -23,7 +26,6 @@ Open the `Extensions` panel on the left (or press `Ctrl + Shift + X`). Then inst
 
 Optional:
 
-- CMake IntelliSense (formatting, auto-complete in CMake configuration)
 - Python (helps with writing Python code for the output visualization scripts)
 
 CMake Tools will ask for a "CMake configure preset". Select:
