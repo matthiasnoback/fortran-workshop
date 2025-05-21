@@ -3,8 +3,10 @@ set(library_name fortran-workshop-lib)
 # Run `find -name "*.f90"` in Git Bash and copy the list below
 add_library(${library_name} STATIC
     ./common/command_line.f90
+    ./common/error_handling.f90
     ./common/precision.f90
     ./common/time.f90
+    ./common/strings.f90
     ./common/to_string.f90
     ./hello_world.f90
     ./integration/damped_oscillator.f90

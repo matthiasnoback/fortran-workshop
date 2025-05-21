@@ -6,6 +6,8 @@ program tester
    use test_vector, only: collect_vector_tests => collect_tests
    use test_integration, only: collect_integration_tests => collect_tests
    use test_to_string, only: collect_to_string_tests => collect_tests
+   use test_strings, only: collect_strings_tests => collect_tests
+   use test_error_handling, only: collect_error_handling_tests => collect_tests
 
    implicit none(type, external)
 
@@ -17,10 +19,12 @@ program tester
    stat = 0
 
    testsuites = [ &
+                new_testsuite("error_handling", collect_error_handling_tests), &
                 new_testsuite("hello_world", collect_hello_world_tests), &
-                new_testsuite("vector", collect_vector_tests), &
-                new_testsuite("vector", collect_integration_tests), &
-                new_testsuite("to_string", collect_to_string_tests) &
+                new_testsuite("integration", collect_vector_tests), &
+                new_testsuite("strings", collect_strings_tests), &
+                new_testsuite("to_string", collect_to_string_tests), &
+                new_testsuite("vector", collect_integration_tests) &
                 ]
 
    call get_argument(1, suite_name)

@@ -30,6 +30,8 @@ set(
     "vector"
     "integration"
     "to_string"
+    "strings"
+    "error_handling"
 )
 set(
     test-srcs
