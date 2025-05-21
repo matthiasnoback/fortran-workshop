@@ -8,7 +8,6 @@ add_library(${library_name} STATIC
     ./common/time.f90
     ./common/strings.f90
     ./common/to_string.f90
-    ./hello_world.f90
     ./integration/damped_oscillator.f90
     ./integration/trapezoid.f90
     ./logging/abstract.f90
@@ -24,6 +23,8 @@ add_library(${library_name} STATIC
     ./stopwatch/timer_linked_list.f90
     ./stopwatch/timer_list.f90
     ./stopwatch/timer.f90
+    ./filter_map_reduce.f90
+    ./hello_world.f90
     ./vector.f90
 )
 

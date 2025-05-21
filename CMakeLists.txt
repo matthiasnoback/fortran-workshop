@@ -26,12 +26,13 @@ endif()
 # Unit testing
 set(
     tests
-    "hello_world"
-    "vector"
-    "integration"
-    "to_string"
-    "strings"
     "error_handling"
+    "filter_map_reduce"
+    "hello_world"
+    "integration"
+    "strings"
+    "to_string"
+    "vector"
 )
 set(
     test-srcs
