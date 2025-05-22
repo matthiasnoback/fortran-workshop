@@ -42,6 +42,10 @@ module filter_map_reduce
    end interface
 
 contains
+   pure function empty_int_list() result(res)
+      type(int_list_t) :: res
+      allocate (res%values(0))
+   end function empty_int_list
 
    !> Can be used as a filter function to check if an integer is even.
    pure function is_even(value) result(res)

@@ -29,6 +29,8 @@ contains
                                test_int_list_map_divide_by), &
                   new_unittest("test_reduce_to_integer", &
                                test_reduce_to_integer), &
+                  new_unittest("test_average", &
+                               test_average), &
                   new_unittest("test_is_even", &
                                test_is_even), &
                   new_unittest("test_one_third", &
@@ -105,6 +107,20 @@ contains
 
       call check(error, result, 10)
    end subroutine test_reduce_to_integer
+
+   subroutine test_average(error)
+      type(error_type), allocatable, intent(out) :: error
+
+      type(int_list_t), allocatable :: list
+      real :: result
+
+      list = int_list_t([1, 4])
+
+      ! TODO rewrite this to use list%average():
+      result = 2.5
+
+      call check(error, result, 2.5)
+   end subroutine test_average
 
    subroutine test_is_even(error)
       type(error_type), allocatable, intent(out) :: error
