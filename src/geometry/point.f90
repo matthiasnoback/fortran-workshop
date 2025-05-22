@@ -4,10 +4,12 @@ module geometry_point
    private
    public :: point_t
 
+   !> Represents a point in 2D space
    type :: point_t
       real :: x
       real :: y
    contains
+      !> Calculate the distince to another point
       procedure :: distance_to => point_distance_to
    end type point_t
 

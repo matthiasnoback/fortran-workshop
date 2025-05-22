@@ -10,6 +10,7 @@ module geometry_polygon
    !> The first and last points are the same
    type, extends(polyline_t) :: polygon_t
    contains
+      !> Calculate the perimeter of the polygon
       procedure :: perimeter => polygon_perimeter
    end type polygon_t
 

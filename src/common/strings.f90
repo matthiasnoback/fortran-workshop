@@ -6,10 +6,13 @@ module common_strings
    public :: string_t
    public :: string_length
 
+   !> Wrapper for a variable-length character value
    type :: string_t
       character(len=:), allocatable :: value
    end type string_t
 
+   !> List type for `string_t` objects (because in Fortran we can't have an array of
+   !> variable-length character values)
    type :: string_list_t
       type(string_t), dimension(:), allocatable :: strings
    contains

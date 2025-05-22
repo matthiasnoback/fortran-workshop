@@ -25,6 +25,8 @@ contains
                   new_unittest("test_int_array_to_string", test_int_array_to_string), &
                   new_unittest("test_real_to_string", test_real_to_string), &
                   new_unittest("test_real_array_to_string", test_real_array_to_string), &
+                  new_unittest("test_logical_to_string", test_logical_to_string), &
+                  new_unittest("test_logical_array_to_string", test_logical_array_to_string), &
                   new_unittest("test_derived_type_to_string", test_derived_type_to_string), &
                   new_unittest("test_write_dt_to_string", test_write_dt_to_string) &
                   ]
@@ -55,6 +57,19 @@ contains
 
       call check(error, to_string([1.0, 2.0]), '1.000000, 2.000000')
    end subroutine test_real_array_to_string
+
+   subroutine test_logical_to_string(error)
+      type(error_type), allocatable, intent(out) :: error
+
+      call check(error, to_string(.true.), 'T')
+      call check(error, to_string(.false.), 'F')
+   end subroutine test_logical_to_string
+
+   subroutine test_logical_array_to_string(error)
+      type(error_type), allocatable, intent(out) :: error
+
+      call check(error, to_string([.true., .false.]), 'T, F')
+   end subroutine test_logical_array_to_string
 
    subroutine test_derived_type_to_string(error)
       type(error_type), allocatable, intent(out) :: error
