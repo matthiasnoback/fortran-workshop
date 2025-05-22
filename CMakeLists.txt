@@ -28,6 +28,7 @@ set(
     tests
     "error_handling"
     "filter_map_reduce"
+    "geometry"
     "hello_world"
     "integration"
     "strings"

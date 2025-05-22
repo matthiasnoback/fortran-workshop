@@ -4,6 +4,7 @@ program tester
            & select_suite, run_selected, get_argument
    use test_error_handling, only: collect_error_handling_tests => collect_tests
    use test_filter_map_reduce, only: collect_filter_map_reduce_tests => collect_tests
+   use test_geometry, only: collect_geometry_tests => collect_tests
    use test_hello_world, only: collect_hello_world_tests
    use test_integration, only: collect_integration_tests => collect_tests
    use test_strings, only: collect_strings_tests => collect_tests
@@ -22,6 +23,7 @@ program tester
    testsuites = [ &
                 new_testsuite("error_handling", collect_error_handling_tests), &
                 new_testsuite("filter_map_reduce", collect_filter_map_reduce_tests), &
+                new_testsuite("geometry", collect_geometry_tests), &
                 new_testsuite("hello_world", collect_hello_world_tests), &
                 new_testsuite("integration", collect_vector_tests), &
                 new_testsuite("strings", collect_strings_tests), &
