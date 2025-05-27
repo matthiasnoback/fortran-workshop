@@ -1,7 +1,7 @@
 module test_filter_map_reduce
    use testdrive, only: new_unittest, unittest_type, error_type, check, test_failed
    use filter_map_reduce, only: int_list_t, is_even, real_list_t, one_third, &
-                                reduce_to_integer, sum, double
+                                reduce_to_integer, sum, double, divide_by_t
 
    implicit none(type, external)
 
@@ -26,6 +26,8 @@ contains
                                test_int_list_map_double), &
                   new_unittest("test_int_list_map_one_third", &
                                test_int_list_map_one_third), &
+                  new_unittest("test_divide_by_t", &
+                               test_divide_by_t), &
                   new_unittest("test_int_list_map_divide_by", &
                                test_int_list_map_divide_by), &
                   new_unittest("test_reduce_to_integer", &
@@ -80,6 +82,15 @@ contains
 
       call check(error, one_thirds, real_list_t([0.333, 0.6666, 1.000, 1.333]), thr=0.001)
    end subroutine test_int_list_map_one_third
+
+   subroutine test_divide_by_t(error)
+      type(error_type), allocatable, intent(out) :: error
+
+      type(divide_by_t) :: divide_by_3
+      divide_by_3 = divide_by_t(3)
+
+      call check(error, divide_by_3%evaluate(1), 0.333, thr=0.001)
+   end subroutine test_divide_by_t
 
    subroutine test_int_list_map_divide_by(error)
       type(error_type), allocatable, intent(out) :: error

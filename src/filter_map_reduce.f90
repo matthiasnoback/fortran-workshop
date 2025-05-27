@@ -11,6 +11,7 @@ module filter_map_reduce
    public :: one_third
    public :: reduce_to_integer
    public :: sum
+   public :: divide_by_t
 
    !> A list of integers
    type :: int_list_t
@@ -34,6 +35,12 @@ module filter_map_reduce
       procedure(map_int_to_real_evaluate), deferred :: evaluate
    end type int_to_real_map_function_t
 
+   type, extends(int_to_real_map_function_t) :: divide_by_t
+      real :: divisor
+   contains
+      procedure :: evaluate => divide_by_evaluate
+   end type divide_by_t
+
    interface
       !> Interface for `int_to_real_map_function_t%evaluate()` implementations.
       pure function map_int_to_real_evaluate(self, old_value) result(new_value)
@@ -48,6 +55,14 @@ module filter_map_reduce
    end interface
 
 contains
+   pure function divide_by_evaluate(self, old_value) result(new_value)
+      class(divide_by_t), intent(in) :: self
+      integer, intent(in) :: old_value
+      real :: new_value
+
+      new_value = old_value/self%divisor
+   end function divide_by_evaluate
+
    pure function int_list_filter(self, int_filter_func) result(res)
       class(int_list_t), intent(in) :: self
       type(int_list_t) :: res
@@ -105,7 +120,7 @@ contains
 
       integer :: i
 
-      res = real_list_t([(int_to_real_map_func(self%values(i)), i = 1, size(self%values))])
+      res = real_list_t([(int_to_real_map_func(self%values(i)), i=1, size(self%values))])
    end function int_list_map_to_real_list
 
    pure function empty_int_list() result(res)
