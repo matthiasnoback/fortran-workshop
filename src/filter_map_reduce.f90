@@ -15,6 +15,8 @@ module filter_map_reduce
    !> A list of integers
    type :: int_list_t
       integer, dimension(:), allocatable :: values
+   contains
+      procedure :: filter => int_list_filter
    end type int_list_t
 
    !> A list of reals (we'll add filter, map and reduce functions later).
@@ -43,6 +45,26 @@ module filter_map_reduce
    end interface
 
 contains
+   pure function int_list_filter(self, int_filter_func) result(res)
+      class(int_list_t), intent(in) :: self
+      type(int_list_t) :: res
+
+      interface
+         pure function int_filter_func(value) result(keep)
+            implicit none(type, external)
+
+            integer, intent(in) :: value
+            logical :: keep
+         end function int_filter_func
+      end interface
+
+      integer :: i
+
+      res = int_list_t(pack(self%values, &
+                            [(int_filter_func(self%values(i)), i=1, size(self%values))]))
+
+   end function int_list_filter
+
    pure function empty_int_list() result(res)
       type(int_list_t) :: res
       allocate (res%values(0))

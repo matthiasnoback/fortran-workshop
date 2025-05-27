@@ -48,7 +48,7 @@ contains
       list = int_list_t([1, 2, 3, 4])
 
       ! TODO put only the even numbers in `even`; use `list%filter(is_even)`:
-      even = int_list_t([2, 4])
+      even = list%filter(is_even)
 
       call check(error, even, int_list_t([2, 4]))
    end subroutine test_int_list_filter_even
