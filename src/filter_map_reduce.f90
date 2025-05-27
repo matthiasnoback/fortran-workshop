@@ -17,6 +17,7 @@ module filter_map_reduce
       integer, dimension(:), allocatable :: values
    contains
       procedure :: filter => int_list_filter
+      procedure :: map => int_list_map
    end type int_list_t
 
    !> A list of reals (we'll add filter, map and reduce functions later).
@@ -65,6 +66,28 @@ contains
 
    end function int_list_filter
 
+   pure function int_list_map(self, int_to_int_map_func) result(res)
+      class(int_list_t), intent(in) :: self
+      type(int_list_t) :: res
+
+      interface
+         pure function int_to_int_map_func(old_value) result(new_value)
+            implicit none(type, external)
+
+            integer, intent(in) :: old_value
+            integer :: new_value
+         end function int_to_int_map_func
+      end interface
+
+      integer :: i
+
+      allocate (res%values(size(self%values)))
+
+      do i = 1, size(self%values)
+         res%values(i) = int_to_int_map_func(self%values(i))
+      end do
+   end function int_list_map
+
    pure function empty_int_list() result(res)
       type(int_list_t) :: res
       allocate (res%values(0))
@@ -83,7 +106,7 @@ contains
       integer, intent(in) :: old_value
       integer :: new_value
 
-      new_value = 2 * old_value
+      new_value = 2*old_value
    end function double
 
    !> Can be used as a map function to calculate one third of an integer.

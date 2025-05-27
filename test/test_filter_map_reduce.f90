@@ -61,8 +61,8 @@ contains
 
       list = int_list_t([1, 2, 3, 4])
 
-      ! TODO `doubled` should contain the numbers in `list` doubled; use `list%map(double)`:
-      doubled = int_list_t([2, 4, 6, 8])
+      ! TODO `double` should contain the numbers in `list` doubled; use `list%map(double)`:
+      doubled = list%map(double)
 
       call check(error, doubled, int_list_t([2, 4, 6, 8]))
    end subroutine test_int_list_map_double
