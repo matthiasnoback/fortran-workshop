@@ -176,8 +176,12 @@ contains
    end function one_third
 
    !> Reduces a list of integers to a single integer using a reduction function.
-   pure function reduce_to_integer(self, reduction_function, initial_carry) result(reduced)
+   recursive pure function reduce_to_integer( &
+      self, reduction_function, initial_carry &
+      ) result(reduced)
       class(int_list_t), intent(in) :: self
+
+      type(int_list_t) :: tail
 
       interface
          pure function reduction_function(carry, value) result(new_carry)
@@ -190,14 +194,15 @@ contains
 
       integer, intent(in) :: initial_carry
 
-      integer :: i
       integer :: reduced
 
-      reduced = initial_carry
+      if (size(self%values) == 0) then
+         reduced = initial_carry
+         return
+      end if
 
-      do i = 1, size(self%values)
-         reduced = reduction_function(reduced, self%values(i))
-      end do
+      tail = int_list_t(self%values(2:))
+      reduced = tail%reduce(reduction_function, reduction_function(initial_carry, self%values(1)))
    end function reduce_to_integer
 
    !> Can be used as a reduction function, summing a list of integers.
