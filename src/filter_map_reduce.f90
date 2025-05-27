@@ -17,7 +17,9 @@ module filter_map_reduce
       integer, dimension(:), allocatable :: values
    contains
       procedure :: filter => int_list_filter
-      procedure :: map => int_list_map
+      procedure, private :: int_list_map_to_int_list
+      procedure, private :: int_list_map_to_real_list
+      generic :: map => int_list_map_to_int_list, int_list_map_to_real_list
    end type int_list_t
 
    !> A list of reals (we'll add filter, map and reduce functions later).
@@ -66,7 +68,7 @@ contains
 
    end function int_list_filter
 
-   pure function int_list_map(self, int_to_int_map_func) result(res)
+   pure function int_list_map_to_int_list(self, int_to_int_map_func) result(res)
       class(int_list_t), intent(in) :: self
       type(int_list_t) :: res
 
@@ -86,7 +88,25 @@ contains
       do i = 1, size(self%values)
          res%values(i) = int_to_int_map_func(self%values(i))
       end do
-   end function int_list_map
+   end function int_list_map_to_int_list
+
+   pure function int_list_map_to_real_list(self, int_to_real_map_func) result(res)
+      class(int_list_t), intent(in) :: self
+      type(real_list_t) :: res
+
+      interface
+         pure function int_to_real_map_func(old_value) result(new_value)
+            implicit none(type, external)
+
+            integer, intent(in) :: old_value
+            real :: new_value
+         end function int_to_real_map_func
+      end interface
+
+      integer :: i
+
+      res = real_list_t([(int_to_real_map_func(self%values(i)), i = 1, size(self%values))])
+   end function int_list_map_to_real_list
 
    pure function empty_int_list() result(res)
       type(int_list_t) :: res

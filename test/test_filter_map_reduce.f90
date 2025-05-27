@@ -75,8 +75,8 @@ contains
 
       list = int_list_t([1, 2, 3, 4])
 
-      ! TODO calculate 1/3 using `list%map(one_third)`
-      one_thirds = real_list_t([0.333, 0.666, 1.000, 1.333])
+      ! TODO calculate 1/3 using list%map(one_third)
+      one_thirds = list%map(one_third)
 
       call check(error, one_thirds, real_list_t([0.333, 0.6666, 1.000, 1.333]), thr=0.001)
    end subroutine test_int_list_map_one_third
