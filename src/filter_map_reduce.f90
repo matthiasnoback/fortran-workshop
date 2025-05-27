@@ -7,6 +7,7 @@ module filter_map_reduce
    public :: int_list_t
    public :: is_even
    public :: real_list_t
+   public :: double
    public :: one_third
    public :: reduce_to_integer
    public :: sum
@@ -54,6 +55,14 @@ contains
 
       res = mod(value, 2) == 0
    end function is_even
+
+   !> Can be used as a map function to double the provided integer
+   pure function double(old_value) result(new_value)
+      integer, intent(in) :: old_value
+      integer :: new_value
+
+      new_value = 2 * old_value
+   end function double
 
    !> Can be used as a map function to calculate one third of an integer.
    pure function one_third(old_value) result(new_value)

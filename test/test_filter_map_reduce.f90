@@ -1,6 +1,7 @@
 module test_filter_map_reduce
    use testdrive, only: new_unittest, unittest_type, error_type, check, test_failed
-   use filter_map_reduce, only: int_list_t, is_even, real_list_t, one_third, reduce_to_integer, sum
+   use filter_map_reduce, only: int_list_t, is_even, real_list_t, one_third, &
+                                reduce_to_integer, sum, double
 
    implicit none(type, external)
 
@@ -56,14 +57,14 @@ contains
       type(error_type), allocatable, intent(out) :: error
 
       type(int_list_t), allocatable :: list
-      type(int_list_t), allocatable :: double
+      type(int_list_t), allocatable :: doubled
 
       list = int_list_t([1, 2, 3, 4])
 
-      ! TODO `double` should contain the numbers in `list` doubled; use `list%map(double)`:
-      double = int_list_t([2, 4, 6, 8])
+      ! TODO `doubled` should contain the numbers in `list` doubled; use `list%map(double)`:
+      doubled = int_list_t([2, 4, 6, 8])
 
-      call check(error, double, int_list_t([2, 4, 6, 8]))
+      call check(error, doubled, int_list_t([2, 4, 6, 8]))
    end subroutine test_int_list_map_double
 
    subroutine test_int_list_map_one_third(error)
