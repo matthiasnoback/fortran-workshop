@@ -20,7 +20,8 @@ module filter_map_reduce
       procedure :: filter => int_list_filter
       procedure, private :: int_list_map_to_int_list
       procedure, private :: int_list_map_to_real_list
-      generic :: map => int_list_map_to_int_list, int_list_map_to_real_list
+      procedure, private :: int_list_map_to_real_list_using_dt
+      generic :: map => int_list_map_to_int_list, int_list_map_to_real_list, int_list_map_to_real_list_using_dt
    end type int_list_t
 
    !> A list of reals (we'll add filter, map and reduce functions later).
@@ -133,6 +134,15 @@ contains
 
       res = real_list_t([(int_to_real_map_func(self%values(i)), i=1, size(self%values))])
    end function int_list_map_to_real_list
+
+   pure function int_list_map_to_real_list_using_dt(self, int_to_real_map_func) result(res)
+      class(int_list_t), intent(in) :: self
+      type(real_list_t) :: res
+      class(int_to_real_map_function_t), intent(in) :: int_to_real_map_func
+      integer :: i
+
+      res = real_list_t([(int_to_real_map_func%evaluate(self%values(i)), i=1, size(self%values))])
+   end function int_list_map_to_real_list_using_dt
 
    pure function empty_int_list() result(res)
       type(int_list_t) :: res

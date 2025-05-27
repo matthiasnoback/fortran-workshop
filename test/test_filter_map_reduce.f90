@@ -96,14 +96,14 @@ contains
       type(error_type), allocatable, intent(out) :: error
 
       type(int_list_t), allocatable :: list
-      type(real_list_t), allocatable :: one_thirds
+      type(real_list_t), allocatable :: result
 
       list = int_list_t([1, 2, 3, 4])
 
-      ! TODO calculate 1/4 using `list%map(divide_by_t(4))`
-      one_thirds = real_list_t([0.25, 0.5, 0.75, 1.0])
+      ! TODO calculate 1/4 using list%map(divide_by_t(4))
+      result = list%map(divide_by_t(4.0))
 
-      call check(error, one_thirds, real_list_t([0.25, 0.5, 0.75, 1.0]), thr=0.001)
+      call check(error, result, real_list_t([0.25, 0.5, 0.75, 1.0]), thr=0.001)
    end subroutine test_int_list_map_divide_by
 
    subroutine test_reduce_to_integer(error)
