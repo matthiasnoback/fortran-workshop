@@ -114,8 +114,8 @@ contains
 
       list = int_list_t([1, 2, 3, 4])
 
-      ! TODO rewrite this to use `list%reduce(sum, 0)`:
-      result = reduce_to_integer(list%values, sum, 0)
+      ! TODO rewrite this to use list%reduce(sum, 0):
+      result = list%reduce(sum, 0)
 
       call check(error, result, 10)
    end subroutine test_reduce_to_integer

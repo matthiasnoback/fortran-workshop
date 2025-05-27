@@ -22,6 +22,8 @@ module filter_map_reduce
       procedure, private :: int_list_map_to_real_list
       procedure, private :: int_list_map_to_real_list_using_dt
       generic :: map => int_list_map_to_int_list, int_list_map_to_real_list, int_list_map_to_real_list_using_dt
+      procedure, private :: reduce_to_integer
+      generic :: reduce => reduce_to_integer
    end type int_list_t
 
    !> A list of reals (we'll add filter, map and reduce functions later).
@@ -174,8 +176,8 @@ contains
    end function one_third
 
    !> Reduces a list of integers to a single integer using a reduction function.
-   pure function reduce_to_integer(numbers, reduction_function, initial_carry) result(reduced)
-      integer, dimension(:), intent(in) :: numbers
+   pure function reduce_to_integer(self, reduction_function, initial_carry) result(reduced)
+      class(int_list_t), intent(in) :: self
 
       interface
          pure function reduction_function(carry, value) result(new_carry)
@@ -193,8 +195,8 @@ contains
 
       reduced = initial_carry
 
-      do i = 1, size(numbers)
-         reduced = reduction_function(reduced, numbers(i))
+      do i = 1, size(self%values)
+         reduced = reduction_function(reduced, self%values(i))
       end do
    end function reduce_to_integer
 
