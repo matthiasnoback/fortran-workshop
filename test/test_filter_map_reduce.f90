@@ -75,7 +75,7 @@ contains
 
       list = int_list_t([1, 2, 3, 4])
 
-      ! TODO calculate 1/3 using list%map(one_third)
+      ! TODO calculate 1/3 using `list%map(one_third)`
       one_thirds = real_list_t([0.333, 0.666, 1.000, 1.333])
 
       call check(error, one_thirds, real_list_t([0.333, 0.6666, 1.000, 1.333]), thr=0.001)
@@ -89,7 +89,7 @@ contains
 
       list = int_list_t([1, 2, 3, 4])
 
-      ! TODO calculate 1/4 using list%map(divide_by_t(4))
+      ! TODO calculate 1/4 using `list%map(divide_by_t(4))`
       one_thirds = real_list_t([0.25, 0.5, 0.75, 1.0])
 
       call check(error, one_thirds, real_list_t([0.25, 0.5, 0.75, 1.0]), thr=0.001)
@@ -103,7 +103,7 @@ contains
 
       list = int_list_t([1, 2, 3, 4])
 
-      ! TODO rewrite this to use list%reduce(sum):
+      ! TODO rewrite this to use `list%reduce(sum, 0)`:
       result = reduce_to_integer(list%values, sum, 0)
 
       call check(error, result, 10)
@@ -117,7 +117,7 @@ contains
 
       list = int_list_t([1, 4])
 
-      ! TODO rewrite this to use list%average():
+      ! TODO rewrite this to use `list%average()`:
       result = 2.5
 
       call check(error, result, 2.5)
