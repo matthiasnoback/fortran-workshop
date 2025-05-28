@@ -87,7 +87,7 @@ contains
       type(error_type), allocatable, intent(out) :: error
 
       type(divide_by_t) :: divide_by_3
-      divide_by_3 = divide_by_t(3)
+      divide_by_3 = divide_by_t(3.0)
 
       call check(error, divide_by_3%evaluate(1), 0.333, thr=0.001)
    end subroutine test_divide_by_t

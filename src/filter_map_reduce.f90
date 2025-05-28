@@ -36,10 +36,15 @@ module filter_map_reduce
    end type int_to_real_map_function_t
 
    type, extends(int_to_real_map_function_t) :: divide_by_t
+      private
       real :: divisor
    contains
       procedure :: evaluate => divide_by_evaluate
    end type divide_by_t
+
+   interface divide_by_t
+      module procedure divide_by_constructor
+   end interface divide_by_t
 
    interface
       !> Interface for `int_to_real_map_function_t%evaluate()` implementations.
@@ -55,6 +60,12 @@ module filter_map_reduce
    end interface
 
 contains
+   pure function divide_by_constructor(divisor) result(res)
+      real, intent(in) :: divisor
+      type(divide_by_t) :: res
+      res%divisor = divisor
+   end function divide_by_constructor
+
    pure function divide_by_evaluate(self, old_value) result(new_value)
       class(divide_by_t), intent(in) :: self
       integer, intent(in) :: old_value
