@@ -12,6 +12,7 @@ module filter_map_reduce
    public :: reduce_to_integer
    public :: sum
    public :: divide_by_t
+   public :: empty_int_list
 
    !> A list of integers
    type :: int_list_t
@@ -24,6 +25,7 @@ module filter_map_reduce
       generic :: map => int_list_map_to_int_list, int_list_map_to_real_list, int_list_map_to_real_list_using_dt
       procedure, private :: reduce_to_integer
       generic :: reduce => reduce_to_integer
+      procedure :: average => int_list_average
    end type int_list_t
 
    !> A list of reals (we'll add filter, map and reduce functions later).
@@ -63,6 +65,12 @@ module filter_map_reduce
    end interface
 
 contains
+   pure function int_list_average(self) result(average)
+      class(int_list_t), intent(in) :: self
+      real :: average
+      average = real(self%reduce(sum, 0))/size(self%values)
+   end function int_list_average
+
    pure function divide_by_constructor(divisor) result(res)
       real, intent(in) :: divisor
       type(divide_by_t) :: res

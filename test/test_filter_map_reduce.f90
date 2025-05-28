@@ -1,7 +1,7 @@
 module test_filter_map_reduce
    use testdrive, only: new_unittest, unittest_type, error_type, check, test_failed
    use filter_map_reduce, only: int_list_t, is_even, real_list_t, one_third, &
-                                reduce_to_integer, sum, double, divide_by_t
+                                reduce_to_integer, sum, double, divide_by_t, empty_int_list
 
    implicit none(type, external)
 
@@ -129,7 +129,7 @@ contains
       list = int_list_t([1, 4])
 
       ! TODO rewrite this to use `list%average()`:
-      result = 2.5
+      result = list%average()
 
       call check(error, result, 2.5)
    end subroutine test_average
