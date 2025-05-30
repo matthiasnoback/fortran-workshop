@@ -1,4 +1,5 @@
 set(PROGRAM_FILES
+    ./functional_performance.f90
     ./hello_world_demo.f90
     ./integration_demo.f90
     ./logging_demo.f90
