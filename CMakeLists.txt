@@ -26,6 +26,7 @@ endif()
 # Unit testing
 set(
     tests
+    "benchmark"
     "error_handling"
     "filter_map_reduce"
     "geometry"

@@ -10,6 +10,7 @@ program tester
    use test_strings, only: collect_strings_tests => collect_tests
    use test_to_string, only: collect_to_string_tests => collect_tests
    use test_vector, only: collect_vector_tests => collect_tests
+   use test_benchmark, only: collect_benchmark_tests => collect_tests
 
    implicit none(type, external)
 
@@ -28,6 +29,7 @@ program tester
                 new_testsuite("integration", collect_vector_tests), &
                 new_testsuite("strings", collect_strings_tests), &
                 new_testsuite("to_string", collect_to_string_tests), &
+                new_testsuite("benchmark", collect_benchmark_tests), &
                 new_testsuite("vector", collect_integration_tests) &
                 ]
 
