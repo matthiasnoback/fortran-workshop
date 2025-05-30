@@ -11,10 +11,12 @@ module benchmark_facade
 
    public :: start_benchmark
    public :: stop_benchmark
+   public :: benchmark_repeated_procedure_calls
    public :: get_benchmarks
    public :: benchmark_ended_t
    public :: benchmark_result_t
    public :: print_benchmark_results
+   public :: clear_benchmarks
 
    type :: benchmark_started_t
       private
@@ -77,6 +79,26 @@ contains
       end do
    end subroutine stop_benchmark
 
+   subroutine benchmark_repeated_procedure_calls(name, repetitions, procedure)
+      character(len=*), intent(in) :: name
+      integer, intent(in) :: repetitions
+      interface
+         subroutine procedure()
+            implicit none(type, external)
+         end subroutine procedure
+      end interface
+
+      integer :: i
+
+      call start_benchmark(name)
+
+      do i = 1, repetitions
+         call procedure()
+      end do
+
+      call stop_benchmark(name)
+   end subroutine benchmark_repeated_procedure_calls
+
    function get_benchmarks() result(benchmarks)
       type(benchmark_ended_t), dimension(:), pointer :: benchmarks
       if (.not. allocated(ended_benchmarks)) then
@@ -126,4 +148,14 @@ contains
          end associate
       end do
    end subroutine print_benchmark_results
+
+   subroutine clear_benchmarks()
+      if (allocated(started_benchmarks)) then
+         deallocate (started_benchmarks)
+      end if
+
+      if (allocated(ended_benchmarks)) then
+         deallocate (ended_benchmarks)
+      end if
+   end subroutine clear_benchmarks
 end module benchmark_facade

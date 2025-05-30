@@ -5,7 +5,9 @@ module test_benchmark
                                get_benchmarks, &
                                benchmark_ended_t, &
                                benchmark_result_t, &
-                               print_benchmark_results
+                               benchmark_repeated_procedure_calls, &
+                               print_benchmark_results, &
+                               clear_benchmarks
    use benchmark_diagnostics, only: diagnostics_snapshot_t, &
                                     override_snapshot_for_testing, &
                                     override_clock_rate_for_testing
@@ -25,6 +27,8 @@ module test_benchmark
       procedure :: check_benchmark_result
    end interface check
 
+   integer :: dummy_procedure_invoked = 0
+
 contains
 
    subroutine collect_tests(testsuite)
@@ -32,6 +36,7 @@ contains
 
       testsuite = [ &
                   new_unittest("test_start_and_stop", test_start_and_stop), &
+                  new_unittest("test_benchmark_repeated", test_benchmark_repeated), &
                   new_unittest("test_benchmark_result", test_benchmark_result) &
                   ]
 
@@ -39,27 +44,43 @@ contains
 
    subroutine test_start_and_stop(error)
       type(error_type), allocatable, intent(out) :: error
-
       type(benchmark_ended_t), dimension(:), pointer :: benchmarks
-
       type(diagnostics_snapshot_t), target :: snapshot_start, snapshot_end
+
+      call clear_benchmarks()
+
       call override_snapshot_for_testing(snapshot_start)
 
       snapshot_start%cpu_time = 7.0_real64
       snapshot_start%clock_time = 1000000_int64
 
-      call start_benchmark('Very long benchmark name')
+      call start_benchmark('foo')
 
       call override_snapshot_for_testing(snapshot_end)
       snapshot_end%cpu_time = 10.0_real64
       snapshot_end%clock_time = 2000000_int64
 
-      call stop_benchmark('Very long benchmark name')
+      call stop_benchmark('foo')
 
       benchmarks => get_benchmarks()
-      call check(error, benchmarks, [benchmark_ended_t('Very long benchmark name', snapshot_start, snapshot_end)])
+      call check(error, benchmarks, [benchmark_ended_t('foo', snapshot_start, snapshot_end)])
 
    end subroutine test_start_and_stop
+
+   subroutine test_benchmark_repeated(error)
+      type(error_type), allocatable, intent(out) :: error
+
+      call clear_benchmarks()
+
+      call benchmark_repeated_procedure_calls('bar', 1000, dummy_procedure)
+
+      call check(error, size(get_benchmarks()), 1)
+      call check(error, dummy_procedure_invoked, 1000)
+   end subroutine test_benchmark_repeated
+
+   subroutine dummy_procedure()
+      dummy_procedure_invoked = dummy_procedure_invoked + 1
+   end subroutine dummy_procedure
 
    subroutine test_benchmark_result(error)
       type(error_type), allocatable, intent(out) :: error
