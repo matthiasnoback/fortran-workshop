@@ -22,19 +22,23 @@ module benchmark_facade
       private
       character(len=:), allocatable :: name
       type(diagnostics_snapshot_t) :: start
+      integer :: iterations = 1
    end type benchmark_started_t
 
    type :: benchmark_ended_t
       character(len=:), allocatable :: name
       type(diagnostics_snapshot_t) :: start
       type(diagnostics_snapshot_t) :: end
+      integer :: iterations
    contains
       procedure :: result => benchmark_ended_result
    end type benchmark_ended_t
 
    type :: benchmark_result_t
       real(kind=real64) :: cpu_time_diff
+      real(kind=real64) :: cpu_time_diff_per_iteration
       real(kind=real64) :: wall_clock_time_diff
+      real(kind=real64) :: wall_clock_time_diff_per_iteration
    end type benchmark_result_t
 
    type(benchmark_started_t), dimension(:), allocatable :: started_benchmarks
@@ -42,16 +46,23 @@ module benchmark_facade
 
 contains
 
-   subroutine start_benchmark(name)
+   subroutine start_benchmark(name, iterations)
       character(len=*), intent(in) :: name
-
+      integer, optional, intent(in) :: iterations
+      integer :: iterations_value
       type(benchmark_started_t), allocatable :: benchmark_started
+
+      if (present(iterations)) then
+         iterations_value = iterations
+      else
+         iterations_value = 1
+      end if
 
       if (.not. allocated(started_benchmarks)) then
          allocate (started_benchmarks(0))
       end if
 
-      benchmark_started = benchmark_started_t(name, get_snapshot())
+      benchmark_started = benchmark_started_t(name, get_snapshot(), iterations_value)
 
       started_benchmarks = [started_benchmarks, benchmark_started]
    end subroutine start_benchmark
@@ -73,7 +84,8 @@ contains
             ended_benchmarks = [ended_benchmarks, &
                                 benchmark_ended_t(name, &
                                                   started_benchmarks(i)%start, &
-                                                  get_snapshot() &
+                                                  get_snapshot(), &
+                                                  started_benchmarks(i)%iterations &
                                                   )]
          end if
       end do
@@ -90,7 +102,7 @@ contains
 
       integer :: i
 
-      call start_benchmark(name)
+      call start_benchmark(name, repetitions)
 
       do i = 1, repetitions
          call procedure()
@@ -113,8 +125,13 @@ contains
       type(benchmark_result_t) :: benchmark_result
 
       benchmark_result%cpu_time_diff = self%end%cpu_time - self%start%cpu_time
+      benchmark_result%cpu_time_diff_per_iteration = benchmark_result%cpu_time_diff &
+                                                     /self%iterations
+
       benchmark_result%wall_clock_time_diff = (self%end%clock_time - self%start%clock_time) &
                                               /get_clock_rate()
+      benchmark_result%wall_clock_time_diff_per_iteration = benchmark_result%wall_clock_time_diff &
+                                                            /self%iterations
    end function benchmark_ended_result
 
    subroutine print_benchmark_results()
@@ -136,15 +153,23 @@ contains
          end if
       end do
 
-      print '(A'//to_string(longest_benchmark_name)//',A,A10,A,A10)', 'Benchmark', tab, 'CPU time', tab, 'Wall clock time'
+      print '(A'//to_string(longest_benchmark_name)//',A,A10,A,A6,A,A6,A,A6,A,A7)', &
+         'Benchmark', tab, 'Iterations', tab, 'CPU', tab, 'CPU/it', tab, 'Time', tab, 'Time/it'
+
       do i = 1, size(benchmarks)
          associate (benchmark => benchmarks(i), result => benchmarks(i)%result())
-            print '(A'//to_string(longest_benchmark_name)//',A,F10.3,A,F10.3)', &
+            print '(A'//to_string(longest_benchmark_name)//',A,I10,A,F6.5,A,F6.5,A,F6.5,A,F7.5)', &
                benchmark%name, &
+               tab, &
+               benchmark%iterations, &
                tab, &
                result%cpu_time_diff, &
                tab, &
-               result%wall_clock_time_diff
+               result%cpu_time_diff_per_iteration, &
+               tab, &
+               result%wall_clock_time_diff, &
+               tab, &
+               result%wall_clock_time_diff_per_iteration
          end associate
       end do
    end subroutine print_benchmark_results

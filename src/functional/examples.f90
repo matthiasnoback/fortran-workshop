@@ -1,4 +1,6 @@
 module functional_examples
+   use functional_lists, only: int_list_t, is_even
+
    implicit none(type, external)
    public
 
@@ -14,7 +16,7 @@ contains
          return
       end if
 
-      res = integers(1) + recursive_sum(integers(2:), carry)
+      res = recursive_sum(integers(2:), carry + integers(1))
    end function recursive_sum
 
    pure function traditional_sum(integers) result(res)
@@ -26,4 +28,14 @@ contains
          res = res + integers(i)
       end do
    end function traditional_sum
+
+   pure function int_list_filter_even(integers) result(res)
+      integer, dimension(:), intent(in) :: integers
+      type(int_list_t), allocatable :: res
+
+      res = int_list_t(integers)
+
+      res = res%filter(is_even)
+   end function int_list_filter_even
+
 end module functional_examples

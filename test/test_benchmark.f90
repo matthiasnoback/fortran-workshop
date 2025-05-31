@@ -37,7 +37,9 @@ contains
       testsuite = [ &
                   new_unittest("test_start_and_stop", test_start_and_stop), &
                   new_unittest("test_benchmark_repeated", test_benchmark_repeated), &
-                  new_unittest("test_benchmark_result", test_benchmark_result) &
+                  new_unittest("test_benchmark_result", test_benchmark_result), &
+                  new_unittest("test_benchmark_result_multiple_iterations", &
+                               test_benchmark_result_multiple_iterations) &
                   ]
 
    end subroutine collect_tests
@@ -63,7 +65,7 @@ contains
       call stop_benchmark('foo')
 
       benchmarks => get_benchmarks()
-      call check(error, benchmarks, [benchmark_ended_t('foo', snapshot_start, snapshot_end)])
+      call check(error, benchmarks, [benchmark_ended_t('foo', snapshot_start, snapshot_end, 1)])
 
    end subroutine test_start_and_stop
 
@@ -90,12 +92,31 @@ contains
       benchmark_ended = benchmark_ended_t( &
                         'foo', &
                         diagnostics_snapshot_t(7.0_real64, 1_int64), &
-                        diagnostics_snapshot_t(10.0_real64, 2_int64) &
+                        diagnostics_snapshot_t(10.0_real64, 2_int64), &
+                        1 &
                         )
 
       call override_clock_rate_for_testing(2.0_real64)
-      call check(error, benchmark_ended%result(), benchmark_result_t(3.0_real64, 0.5_real64))
+      call check(error, benchmark_ended%result(), &
+                 benchmark_result_t(3.0_real64, 3.0_real64, 0.5_real64, 0.5_real64))
    end subroutine test_benchmark_result
+
+   subroutine test_benchmark_result_multiple_iterations(error)
+      type(error_type), allocatable, intent(out) :: error
+
+      type(benchmark_ended_t), allocatable :: benchmark_ended
+
+      benchmark_ended = benchmark_ended_t( &
+                        'foo', &
+                        diagnostics_snapshot_t(7.0_real64, 1_int64), &
+                        diagnostics_snapshot_t(10.0_real64, 2_int64), &
+                        2 &
+                        )
+
+      call override_clock_rate_for_testing(2.0_real64)
+      call check(error, benchmark_ended%result(), &
+                 benchmark_result_t(3.0_real64, 1.5_real64, 0.5_real64, 0.25_real64))
+   end subroutine test_benchmark_result_multiple_iterations
 
    subroutine check_ended_benchmarks(error, actual, expected)
       type(error_type), allocatable, intent(out) :: error
@@ -168,7 +189,18 @@ contains
          return
       end if
 
+      call check(error, actual%cpu_time_diff_per_iteration, expected%cpu_time_diff_per_iteration)
+      if (allocated(error)) then
+         return
+      end if
+
       call check(error, actual%wall_clock_time_diff, expected%wall_clock_time_diff)
+      if (allocated(error)) then
+         return
+      end if
+
+      call check(error, actual%wall_clock_time_diff_per_iteration, &
+                 expected%wall_clock_time_diff_per_iteration)
       if (allocated(error)) then
          return
       end if
