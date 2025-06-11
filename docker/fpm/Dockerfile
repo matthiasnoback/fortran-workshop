@@ -1,4 +1,4 @@
-FROM intel/fortran-essentials:latest AS oneapi
+FROM intel/oneapi-hpckit AS oneapi
 
 # Download and install FPM
 RUN wget -O /usr/bin/fpm https://github.com/fortran-lang/fpm/releases/download/v0.12.0/fpm-0.12.0-linux-x86_64-gcc-12 && chmod 555 /usr/bin/fpm

@@ -5,6 +5,7 @@ program functional_performance
                                print_benchmark_results, &
                                clear_benchmarks
    use functional_lists, only: int_list_t, is_even, sum
+   use benchmark_memory, only: get_memory_usage_kb
 
    implicit none(type, external)
 
@@ -20,10 +21,11 @@ program functional_performance
 
 contains
    subroutine run_all_benchmarks()
+      print *, get_memory_usage_kb()
       ! Valgrind output: total heap usage: 1,026 allocs, 1,021 frees, 40,056,855 bytes allocated
       call benchmark_repeated_procedure_calls('Sum in do loop', &
                                               iterations, run_traditional_sum)
-
+      print *, get_memory_usage_kb()
       ! Valgrind output: total heap usage: 1,026 allocs, 1,021 frees, 40,056,874 bytes allocated
       ! call benchmark_repeated_procedure_calls('Sum with intrinsic reduce', &
       !                                         iterations, run_intrinsic_reduce_sum)
