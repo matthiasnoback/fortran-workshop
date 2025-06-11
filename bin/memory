@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+# *Usage*
+#
+# Run this script on Linux/WSL to get a summary of memory usage during the lifetime of the given FPM executable (provided as the first argument), e.g
+#
+#   bin/memory functional_performance
+#
+# Optionally provide the compiler profile, i.e. release|debug (default: release)
+#
+#   bin/memory functional_performance debug
+
+set -eu
+
+app_name="${1}"
+profile="${2:-release}"
+
+# Build the executable
+bin/fpm --profile="${profile}" build ${app_name}
+
+# Find the executable path
+executable=$(bin/fpm --profile="${profile}" run ${app_name} --runner)
+
+run="docker compose run --rm fpm"
+
+${run} valgrind --suppressions=valgrind_ifx.supp -- "${executable}"

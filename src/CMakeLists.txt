@@ -10,7 +10,6 @@ add_library(${library_name} STATIC
     ./common/time.f90
     ./common/strings.f90
     ./common/to_string.f90
-    ./functional/examples.f90
     ./functional/lists.f90
     ./geometry/point.f90
     ./geometry/polygon.f90

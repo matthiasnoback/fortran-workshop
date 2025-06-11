@@ -8,11 +8,15 @@ module functional_lists
    type :: int_list_t
       integer, dimension(:), allocatable :: values
    contains
+      procedure :: int_list_filter_mutable
+      procedure :: int_list_filter_out_argument
       procedure :: filter => int_list_filter
       procedure, private :: int_list_map_to_int
       procedure, private :: int_list_map_to_real
       procedure, private :: int_list_curried_map_to_real
       generic :: map => int_list_map_to_int, int_list_map_to_real, int_list_curried_map_to_real
+      procedure, private :: reduce_to_integer
+      generic :: reduce => reduce_to_integer
    end type int_list_t
 
    type :: real_list_t
@@ -48,6 +52,7 @@ module functional_lists
    end interface
 
 contains
+
    pure function divide_by_evaluate(self, old_value) result(new_value)
       class(divide_by_t), intent(in) :: self
       integer, intent(in) :: old_value
@@ -87,6 +92,41 @@ contains
 
       res%values = pack(self%values, [(int_filter_func(self%values(i)), i=1, size(self%values))])
    end function int_list_filter
+
+   subroutine int_list_filter_mutable(self, int_filter_func)
+      class(int_list_t), intent(inout) :: self
+
+      interface
+         pure function int_filter_func(value) result(keep)
+            implicit none(type, external)
+
+            integer, intent(in) :: value
+            logical :: keep
+         end function int_filter_func
+      end interface
+
+      integer :: i
+
+      self%values = pack(self%values, [(int_filter_func(self%values(i)), i=1, size(self%values))])
+   end subroutine int_list_filter_mutable
+
+   subroutine int_list_filter_out_argument(self, int_filter_func, res)
+      class(int_list_t), intent(in) :: self
+      type(int_list_t), intent(out) :: res
+
+      interface
+         pure function int_filter_func(value) result(keep)
+            implicit none(type, external)
+
+            integer, intent(in) :: value
+            logical :: keep
+         end function int_filter_func
+      end interface
+
+      integer :: i
+
+      res%values = pack(self%values, [(int_filter_func(self%values(i)), i=1, size(self%values))])
+   end subroutine int_list_filter_out_argument
 
    pure function int_list_map_to_int(self, int_to_int_map_func) result(res)
       class(int_list_t), intent(in) :: self
@@ -143,6 +183,40 @@ contains
          res%values(i) = int_to_real_map_function%evaluate(self%values(i))
       end do
    end function int_list_curried_map_to_real
+
+   !> Reduces a list of integers to a single integer using a reduction function.
+   pure function reduce_to_integer(self, reduction_function, initial_carry) result(reduced)
+      class(int_list_t), intent(in) :: self
+
+      interface
+         pure function reduction_function(carry, value) result(new_carry)
+            implicit none(type, external)
+            integer, intent(in) :: carry
+            integer, intent(in) :: value
+            integer :: new_carry
+         end function reduction_function
+      end interface
+
+      integer, intent(in) :: initial_carry
+
+      integer :: i
+      integer :: reduced
+
+      reduced = initial_carry
+
+      do i = 1, size(self%values)
+         reduced = reduction_function(reduced, self%values(i))
+      end do
+   end function reduce_to_integer
+
+   !> Can be used as a reduction function, summing a list of integers.
+   pure function sum(carry, value) result(new_carry)
+      integer, intent(in) :: carry
+      integer, intent(in) :: value
+      integer :: new_carry
+
+      new_carry = carry + value
+   end function sum
 
    pure function is_even(value) result(keep)
       integer, intent(in) :: value

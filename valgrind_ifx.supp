@@ -1,0 +1,10 @@
+{
+   "write() only frees internal variables/buffers when the program exits"
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:for__get_vm
+   fun:for__acquire_threadstor_threads
+   fun:for__acquire_lun
+   fun:for_write_int_lis
+}

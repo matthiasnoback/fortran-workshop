@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+# *Usage*
+#
+# Run an fpm command in the Docker container, e.g.
+#
+#    bin/fpm build
+#
+#    bin/fpm run hello_world
+
+docker compose run --rm fpm fpm --compiler=ifx "$@"

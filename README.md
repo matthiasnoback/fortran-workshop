@@ -19,3 +19,38 @@ See the [README for Visual Studio Code with CMake](docs/README-VS-Code-CMake.md)
 A cool, modern option is to use the official Fortran Package Manager (FPM) instead of CMake. This requires some more work at the command-line.
 
 See the [README for Visual Studio Code with FPM](docs/README-VS-Code-FPM.md).
+
+## Memory profiling with Valgrind running in Docker
+
+You'll find a number of useful scripts in the `bin` folder. They are all based on the IFX compiler and FPM. Everything you need for this is provided in a Docker container, which you have to build once.
+
+### Preparation
+
+- If you're on Windows, install WSL with for example the Ubuntu distribution. Also install Docker Desktop and enable WSL integration for your WSL distribution. This allows you to use `docker` inside a WSL distribution.
+- If you're on Windows, install docker
+
+### Building the container
+
+```bash
+docker compose build
+```
+
+### Running an executable in release mode
+
+Use `bin/fast` to compile and run an FPM executable with the `release` profile, which includes many optimizations:
+
+```bash
+bin/fast hello_world
+```
+
+### Checking memory use of an FPM executable
+
+```bash
+bin/memory hello_world
+```
+
+### Finding (potential) memory leaks in an FPM executable
+
+```bash
+bin/leaks hello_world
+```

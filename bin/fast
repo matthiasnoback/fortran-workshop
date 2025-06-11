@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -eu
+
+app_name="${1}"
+
+bin/fpm --profile=release run ${app_name}
