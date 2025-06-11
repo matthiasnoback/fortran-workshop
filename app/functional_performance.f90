@@ -25,12 +25,12 @@ contains
                                               iterations, run_traditional_sum)
 
       ! Valgrind output: total heap usage: 1,026 allocs, 1,021 frees, 40,056,874 bytes allocated
-      ! call benchmark_repeated_procedure_calls('Sum with intrinsic reduce', &
-      !                                         iterations, run_intrinsic_reduce_sum)
+      call benchmark_repeated_procedure_calls('Sum with intrinsic reduce', &
+                                              iterations, run_intrinsic_reduce_sum)
 
       ! Valgrind output: total heap usage: 1,026 allocs, 1,021 frees, 40,056,879 bytes allocated
-      ! call benchmark_repeated_procedure_calls('Sum with int_list_t reduce', &
-      !                                         iterations, run_int_list_reduce_sum)
+      call benchmark_repeated_procedure_calls('Sum with int_list_t reduce', &
+                                              iterations, run_int_list_reduce_sum)
 
       ! Valgrind output: total heap usage: 1,026 allocs, 1,021 frees, 40,056,845 bytes allocated
       ! call benchmark_repeated_procedure_calls('Sum reduce recursive', &

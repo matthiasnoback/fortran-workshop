@@ -4,3 +4,6 @@ services:
     working_dir: /app
     volumes:
       - ./:/app
+    cap_add:
+      # Needed for running `perf`
+      - PERFMON

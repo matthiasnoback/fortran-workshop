@@ -20,7 +20,7 @@ A cool, modern option is to use the official Fortran Package Manager (FPM) inste
 
 See the [README for Visual Studio Code with FPM](docs/README-VS-Code-FPM.md).
 
-## Memory profiling with Valgrind running in Docker
+## Profiling with Valgrind and perf running in Docker
 
 You'll find a number of useful scripts in the `bin` folder. They are all based on the IFX compiler and FPM. Everything you need for this is provided in a Docker container, which you have to build once.
 
@@ -54,3 +54,11 @@ bin/memory hello_world
 ```bash
 bin/leaks hello_world
 ```
+
+## Analyzing function performance with perf
+
+```bash
+bin/perf hello_world
+```
+
+This allows you to browse through function calls and find out how much time was spent by the function itself and its "children".

@@ -26,3 +26,6 @@ cmake-build-*
 massif.out
 massif.out.*
 *.svg
+
+# perf output
+perf.data

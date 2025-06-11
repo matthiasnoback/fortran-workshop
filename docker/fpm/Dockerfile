@@ -5,3 +5,6 @@ RUN wget -O /usr/bin/fpm https://github.com/fortran-lang/fpm/releases/download/v
 
 # Install valgrind
 RUN DEBIAN_FRONTEND=noninteractive apt update && apt install -y valgrind
+# Install perf (part of linux-tools-generic)
+RUN DEBIAN_FRONTEND=noninteractive apt update && apt install -y linux-tools-6.8.0-60-generic
+RUN unlink /usr/bin/perf && ln -s /usr/lib/linux-tools/6.8.0-60-generic/perf /usr/bin/perf

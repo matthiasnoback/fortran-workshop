@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+# *Usage*
+#
+# Run this script on Linux/WSL to inspect the performance of each function in a given FPM executable (provided as the first argument), e.g
+#
+#   bin/perf functional_performance
+#
+# Optionally provide the compiler profile, i.e. release|debug (default: debug)
+#
+#   bin/perf functional_performance release
+
+set -eu
+
+app_name="${1}"
+profile="${2:-debug}"
+
+# Build the executable
+bin/fpm --profile="${profile}" build ${app_name}
+
+# Find the executable path
+executable=$(bin/fpm --profile="${profile}" run ${app_name} --runner)
+
+perf="docker compose run --rm fpm perf"
+rm perf.data || true
+${perf} record -g "${executable}"
+
+# Show assembly code alongside Fortran code lines
+#${perf} annotate -f
+
+# Adding -f because "File perf.data not owned by current user or root (use -f to override"
+${perf} report --call-graph -f
