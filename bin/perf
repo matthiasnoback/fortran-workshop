@@ -15,11 +15,7 @@ set -eu
 app_name="${1}"
 profile="${2:-debug}"
 
-# Build the executable
-bin/fpm --profile="${profile}" build ${app_name}
-
-# Find the executable path
-executable=$(bin/fpm --profile="${profile}" run ${app_name} --runner)
+executable=$(bin/runner "${app_name}" "${profile}")
 
 perf="docker compose run --rm fpm perf"
 rm perf.data || true
