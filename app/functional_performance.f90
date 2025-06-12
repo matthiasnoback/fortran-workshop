@@ -21,16 +21,16 @@ program functional_performance
 contains
    subroutine run_all_benchmarks()
       ! Valgrind output: total heap usage: 1,026 allocs, 1,021 frees, 40,056,855 bytes allocated
-      call benchmark_repeated_procedure_calls('Sum in do loop', &
-                                              iterations, run_traditional_sum)
+      ! call benchmark_repeated_procedure_calls('Sum in do loop', &
+      !                                         iterations, run_traditional_sum)
 
       ! Valgrind output: total heap usage: 1,026 allocs, 1,021 frees, 40,056,874 bytes allocated
-      call benchmark_repeated_procedure_calls('Sum with intrinsic reduce', &
-                                              iterations, run_intrinsic_reduce_sum)
+      ! call benchmark_repeated_procedure_calls('Sum with intrinsic reduce', &
+      !                                         iterations, run_intrinsic_reduce_sum)
 
       ! Valgrind output: total heap usage: 1,026 allocs, 1,021 frees, 40,056,879 bytes allocated
-      call benchmark_repeated_procedure_calls('Sum with int_list_t reduce', &
-                                              iterations, run_int_list_reduce_sum)
+      ! call benchmark_repeated_procedure_calls('Sum with int_list_t reduce', &
+      !                                         iterations, run_int_list_reduce_sum)
 
       ! Valgrind output: total heap usage: 1,026 allocs, 1,021 frees, 40,056,845 bytes allocated
       ! call benchmark_repeated_procedure_calls('Sum reduce recursive', &
@@ -54,13 +54,15 @@ contains
       ! call benchmark_repeated_procedure_calls('Do loop with is_even less memory', &
       !                                         iterations, run_do_loop_is_even_less_memory)
 
-      ! Valgrind output:total heap usage: 3,026 allocs, 3,021 frees, 100,136,914 bytes allocated
-      ! The compiler can't optimize the mask argument of pack...
+      ! Valgrind output: total heap usage: 3,026 allocs, 3,021 frees, 100,136,914 bytes allocated
+      ! The mask is stored on the heap:
+      !    DRD output: thread 1 finished and used 84735 bytes out of 8388608 on its stack. Margin: 8303873 bytes.
       ! call benchmark_repeated_procedure_calls('Int array pack is_even mask array', &
       !                                         iterations, run_integer_array_pack_is_even_mask_array)
 
       ! Valgrind output: total heap usage: 2,026 allocs, 2,021 frees, 60,096,859 bytes allocated
-      ! 40MB for the original integers, 20MB for the result; *but what about the logical mask?*
+      ! 40MB for the original integers, 20MB for the result; the mask is stored on the stack:
+      !    DRD output: thread 1 finished and used 104559 bytes out of 8388608 on its stack. Margin: 8284049 bytes.
       ! call benchmark_repeated_procedure_calls('Int array pack is_even', &
       !                                         iterations, run_integer_array_pack_is_even)
 

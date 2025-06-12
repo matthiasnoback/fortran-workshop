@@ -9,13 +9,10 @@
 # Optionally provide the compiler profile, i.e. release|debug (default: debug)
 #
 #   bin/runner functional_performance release
-#
-# To ensure that the runner exists, we also build the executable.
 
 set -eu
 
 app_name="${1}"
 profile="${2:-debug}"
 
-bin/build "${app_name}" "${profile}"
 bin/fpm --profile="${profile}" run "${app_name}" --runner

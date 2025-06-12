@@ -15,8 +15,14 @@ set -eu
 app_name="${1}"
 profile="${2:-release}"
 
+bin/build "${app_name}" "${profile}"
+
 executable=$(bin/runner "${app_name}" "${profile}")
 
 run="docker compose run --rm fpm"
 
+# Show heap usage with Memcheck
 ${run} valgrind --suppressions=valgrind_ifx.supp -- "${executable}"
+
+# Show stack usage with DRD
+${run} valgrind --tool=drd --show-stack-usage=yes --suppressions=valgrind_ifx.supp -- "${executable}"
