@@ -1,7 +1,8 @@
 module test_filter_map_reduce
    use testdrive, only: new_unittest, unittest_type, error_type, check, test_failed
-   use filter_map_reduce, only: int_list_t, is_even, real_list_t, one_third, &
+   use filter_map_reduce, only: int_list_t, create_int_list, is_even, real_list_t, one_third, &
                                 reduce_to_integer, sum_function, double
+   use, intrinsic :: ieee_arithmetic
 
    implicit none(type, external)
 
@@ -32,6 +33,8 @@ contains
                                test_reduce_to_integer), &
                   new_unittest("test_average", &
                                test_average), &
+                  new_unittest("test_average_empty_list", &
+                               test_average_empty_list), &
                   new_unittest("test_is_even", &
                                test_is_even), &
                   new_unittest("test_one_third", &
@@ -45,12 +48,12 @@ contains
       type(int_list_t), allocatable :: list
       type(int_list_t), allocatable :: even
 
-      list = int_list_t([1, 2, 3, 4])
+      list = create_int_list([1, 2, 3, 4])
 
       ! TODO put only the even numbers in `even`; use `list%filter(is_even)`:
-      even = int_list_t([2, 4])
+      even = create_int_list([2, 4])
 
-      call check(error, even, int_list_t([2, 4]))
+      call check(error, even, create_int_list([2, 4]))
    end subroutine test_int_list_filter_even
 
    subroutine test_int_list_map_double(error)
@@ -59,12 +62,12 @@ contains
       type(int_list_t), allocatable :: list
       type(int_list_t), allocatable :: doubled
 
-      list = int_list_t([1, 2, 3, 4])
+      list = create_int_list([1, 2, 3, 4])
 
       ! TODO `doubled` should contain the numbers in `list` doubled; use `list%map(double)`:
-      doubled = int_list_t([2, 4, 6, 8])
+      doubled = create_int_list([2, 4, 6, 8])
 
-      call check(error, doubled, int_list_t([2, 4, 6, 8]))
+      call check(error, doubled, create_int_list([2, 4, 6, 8]))
    end subroutine test_int_list_map_double
 
    subroutine test_int_list_map_one_third(error)
@@ -73,7 +76,7 @@ contains
       type(int_list_t), allocatable :: list
       type(real_list_t), allocatable :: one_thirds
 
-      list = int_list_t([1, 2, 3, 4])
+      list = create_int_list([1, 2, 3, 4])
 
       ! TODO calculate 1/3 using `list%map(one_third)`
       one_thirds = real_list_t([0.333, 0.666, 1.000, 1.333])
@@ -87,7 +90,7 @@ contains
       type(int_list_t), allocatable :: list
       type(real_list_t), allocatable :: one_thirds
 
-      list = int_list_t([1, 2, 3, 4])
+      list = create_int_list([1, 2, 3, 4])
 
       ! TODO calculate 1/4 using `list%map(divide_by_t(4))`
       one_thirds = real_list_t([0.25, 0.5, 0.75, 1.0])
@@ -101,7 +104,7 @@ contains
       type(int_list_t), allocatable :: list
       integer :: result
 
-      list = int_list_t([1, 2, 3, 4])
+      list = create_int_list([1, 2, 3, 4])
 
       ! TODO rewrite this to use `list%reduce(sum_function, 0)`:
       result = reduce_to_integer(list%values, sum_function, 0)
@@ -115,12 +118,28 @@ contains
       type(int_list_t), allocatable :: list
       real :: result
 
-      list = int_list_t([1, 4])
+      list = create_int_list([1, 4])
 
       result = list%average()
 
       call check(error, result, 2.5)
    end subroutine test_average
+
+   subroutine test_average_empty_list(error)
+      type(error_type), allocatable, intent(out) :: error
+
+      type(int_list_t), allocatable :: list
+      real :: result
+
+      integer, dimension(:), allocatable :: empty_array
+      allocate (empty_array(0))
+
+      list = create_int_list(empty_array)
+
+      result = list%average()
+
+      call check(error, ieee_is_nan(result), .true., 'Expected average() to return NaN for an empty int list')
+   end subroutine test_average_empty_list
 
    subroutine test_is_even(error)
       type(error_type), allocatable, intent(out) :: error

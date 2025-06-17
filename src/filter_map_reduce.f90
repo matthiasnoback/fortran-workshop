@@ -12,6 +12,7 @@ module filter_map_reduce
    public :: reduce_to_integer
    public :: sum_function
    public :: empty_int_list
+   public :: create_int_list
 
    !> A list of integers
    type :: int_list_t
@@ -50,6 +51,14 @@ contains
       type(int_list_t) :: res
       allocate (res%values(0))
    end function empty_int_list
+
+   pure function create_int_list(values) result(res)
+      integer, dimension(:), intent(in) :: values
+      class(int_list_t), allocatable :: res
+
+      allocate (int_list_t :: res)
+      res%values = values
+   end function create_int_list
 
    !> Can be used as a filter function to check if an integer is even.
    pure function is_even(value) result(res)
