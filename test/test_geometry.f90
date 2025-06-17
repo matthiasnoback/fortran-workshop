@@ -1,6 +1,8 @@
 module test_geometry
    use testdrive, only: new_unittest, unittest_type, error_type, check, test_failed
-   use geometry_point, only: point_t
+   use geometry_point, only: point_t, point_or_error_t
+   use common_strings, only: string_t
+   use common_error_handling, only: error_t
    use geometry_polyline, only: polyline_t
    use geometry_polygon, only: polygon_t
 
@@ -9,6 +11,10 @@ module test_geometry
    private
 
    public :: collect_tests
+
+   interface check
+      procedure :: check_point_or_error
+   end interface check
 contains
 
    subroutine collect_tests(testsuite)
@@ -17,6 +23,10 @@ contains
       testsuite = [ &
                   new_unittest("test_point_distance_to_point", &
                                test_point_distance_to_point), &
+                  new_unittest("test_parse_valid_point", &
+                               test_parse_valid_point), &
+                  new_unittest("test_parse_invalid_point", &
+                               test_parse_invalid_point), &
                   new_unittest("test_polyline_length", &
                                test_polyline_length), &
                   new_unittest("test_polygon_perimeter", &
@@ -37,6 +47,34 @@ contains
 
       call check(error, distance, 5.0)
    end subroutine test_point_distance_to_point
+
+   subroutine test_parse_valid_point(error)
+      type(error_type), allocatable, intent(out) :: error
+
+      type(point_or_error_t) :: actual
+      type(point_or_error_t) :: expected
+
+      ! TODO implement parse_point and replace the following line with
+      ! actual = parse_point(string_t('1.0 2.0'))
+      actual%point = point_t(1.0, 2.0)
+
+      expected%point = point_t(1.0, 2.0)
+
+      call check(error, actual, expected)
+   end subroutine test_parse_valid_point
+
+   subroutine test_parse_invalid_point(error)
+      type(error_type), allocatable, intent(out) :: error
+
+      type(point_or_error_t) :: actual
+      type(point_or_error_t) :: expected
+
+      ! TODO implement parse_point and replace the following line with
+      ! actual = parse_point(string_t('1.0 abc'))
+      actual%error = error_t('Failed to parse point string: 1.0 abc')
+
+      call check(error, actual, expected)
+   end subroutine test_parse_invalid_point
 
    subroutine test_polyline_length(error)
       type(error_type), allocatable, intent(out) :: error
@@ -69,4 +107,12 @@ contains
 
       call check(error, polygon%perimeter(), 10.0)
    end subroutine test_polygon_perimeter
+
+   subroutine check_point_or_error(error, actual, expected)
+      type(error_type), allocatable, intent(out) :: error
+      type(point_or_error_t), intent(in) :: actual
+      type(point_or_error_t), intent(in) :: expected
+
+      ! TODO implement a custom check that verifies `actual` is equal to `expected`
+   end subroutine check_point_or_error
 end module test_geometry
