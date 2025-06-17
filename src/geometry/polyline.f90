@@ -1,4 +1,5 @@
 module geometry_polyline
+   use common_error_handling, only: error_t
    use geometry_point, only: point_t
 
    implicit none(type, external)
@@ -13,6 +14,11 @@ module geometry_polyline
       !> Calculate the length of the polyline
       procedure :: length => polyline_length
    end type polyline_t
+
+   type :: polyline_or_error_t
+      type(error_t), allocatable :: error
+      type(polyline_t), allocatable :: polyline
+   end type polyline_or_error_t
 
 contains
 
