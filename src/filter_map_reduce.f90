@@ -10,11 +10,14 @@ module filter_map_reduce
    public :: double
    public :: one_third
    public :: reduce_to_integer
-   public :: sum
+   public :: sum_function
+   public :: empty_int_list
 
    !> A list of integers
    type :: int_list_t
       integer, dimension(:), allocatable :: values
+   contains
+      procedure :: average => int_list_average
    end type int_list_t
 
    !> A list of reals (we'll add filter, map and reduce functions later).
@@ -61,7 +64,7 @@ contains
       integer, intent(in) :: old_value
       integer :: new_value
 
-      new_value = 2 * old_value
+      new_value = 2*old_value
    end function double
 
    !> Can be used as a map function to calculate one third of an integer.
@@ -98,12 +101,19 @@ contains
    end function reduce_to_integer
 
    !> Can be used as a reduction function, summing a list of integers.
-   pure function sum(carry, value) result(new_carry)
+   pure function sum_function(carry, value) result(new_carry)
       integer, intent(in) :: carry
       integer, intent(in) :: value
       integer :: new_carry
 
       new_carry = carry + value
-   end function sum
+   end function sum_function
+
+   pure function int_list_average(self) result(res)
+      class(int_list_t), intent(in) :: self
+      real :: res
+
+      res = real(sum(self%values))/size(self%values)
+   end function int_list_average
 
 end module filter_map_reduce
