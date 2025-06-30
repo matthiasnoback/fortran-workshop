@@ -3,7 +3,6 @@ module test_filter_map_reduce
    use filter_map_reduce, only: int_list_t, create_int_list, is_even, real_list_t, one_third, &
                                 reduce_to_integer, sum_function, double, optional_real_t, &
                                 no_real_t, some_real_t, non_empty_int_list_t
-   use, intrinsic :: ieee_arithmetic
 
    implicit none(type, external)
 

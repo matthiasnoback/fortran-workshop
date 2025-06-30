@@ -1,6 +1,6 @@
 module test_geometry
    use testdrive, only: new_unittest, unittest_type, error_type, check, test_failed
-   use geometry_point, only: point_t, point_or_error_t
+   use geometry_point, only: point_t, parse_point, point_or_error_t
    use common_strings, only: string_t
    use common_error_handling, only: error_t
    use geometry_polyline, only: polyline_t
@@ -54,9 +54,7 @@ contains
       type(point_or_error_t) :: actual
       type(point_or_error_t) :: expected
 
-      ! TODO implement parse_point and replace the following line with
-      ! actual = parse_point(string_t('1.0 2.0'))
-      actual%point = point_t(1.0, 2.0)
+      actual = parse_point(string_t('1.0 2.0'))
 
       expected%point = point_t(1.0, 2.0)
 
@@ -69,9 +67,8 @@ contains
       type(point_or_error_t) :: actual
       type(point_or_error_t) :: expected
 
-      ! TODO implement parse_point and replace the following line with
-      ! actual = parse_point(string_t('1.0 abc'))
-      expected%error = error_t('Failed to parse point string: 1.0 abc')
+      actual = parse_point(string_t('1.0 abc'))
+      expected%error = error_t('Failed to parse point from string: 1.0 abc')
 
       call check(error, actual, expected)
    end subroutine test_parse_invalid_point
@@ -113,6 +110,23 @@ contains
       type(point_or_error_t), intent(in) :: actual
       type(point_or_error_t), intent(in) :: expected
 
-      ! TODO implement a custom check that verifies `actual` is equal to `expected`
+      if (allocated(expected%error)) then
+         if (.not. allocated(actual%error)) then
+            call test_failed(error, 'Expected error '//expected%error%message)
+            return
+         end if
+         call check(error, actual%error%message, expected%error%message)
+      else
+         if (allocated(actual%error)) then
+            call test_failed(error, 'Expected no error, got '//actual%error%message)
+            return
+         end if
+         call check(error, actual%point%x, expected%point%x, 'x values are not equal')
+         if (allocated(error)) then
+            return
+         end if
+
+         call check(error, actual%point%y, expected%point%y, 'y values are not equal')
+      end if
    end subroutine check_point_or_error
 end module test_geometry
