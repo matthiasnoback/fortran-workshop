@@ -1,7 +1,8 @@
 module test_filter_map_reduce
    use testdrive, only: new_unittest, unittest_type, error_type, check, test_failed
    use filter_map_reduce, only: int_list_t, create_int_list, is_even, real_list_t, one_third, &
-                                reduce_to_integer, sum_function, double
+                                reduce_to_integer, sum_function, double, optional_real_t, &
+                                no_real_t, some_real_t
    use, intrinsic :: ieee_arithmetic
 
    implicit none(type, external)
@@ -11,6 +12,7 @@ module test_filter_map_reduce
    interface check
       module procedure check_int_list
       module procedure check_real_list
+      module procedure check_optional_real
    end interface check
 
    public :: collect_tests
@@ -116,20 +118,21 @@ contains
       type(error_type), allocatable, intent(out) :: error
 
       type(int_list_t), allocatable :: list
-      real :: result
+      class(optional_real_t), allocatable :: result
 
       list = create_int_list([1, 4])
 
       result = list%average()
 
-      call check(error, result, 2.5)
+      call check(error, result, some_real_t(2.5))
+
    end subroutine test_average
 
    subroutine test_average_empty_list(error)
       type(error_type), allocatable, intent(out) :: error
 
       type(int_list_t), allocatable :: list
-      real :: result
+      class(optional_real_t), allocatable :: result
 
       integer, dimension(:), allocatable :: empty_array
       allocate (empty_array(0))
@@ -138,7 +141,8 @@ contains
 
       result = list%average()
 
-      call check(error, ieee_is_nan(result), .true., 'Expected average() to return NaN for an empty int list')
+      call check(error, result, no_real_t())
+
    end subroutine test_average_empty_list
 
    subroutine test_is_even(error)
@@ -192,5 +196,25 @@ contains
          if (allocated(error)) return
       end do
    end subroutine check_real_list
+
+   subroutine check_optional_real(error, actual, expected)
+      type(error_type), allocatable, intent(out) :: error
+      class(optional_real_t), intent(in) :: actual
+      class(optional_real_t), intent(in) :: expected
+
+      if (.not. same_type_as(actual, expected)) then
+         call test_failed(error, 'Expected the same type')
+         return
+      end if
+
+      select type (expected)
+      type is (some_real_t)
+         select type (actual)
+         type is (some_real_t)
+            call check(error, actual%value, expected%value)
+         end select
+      end select
+
+   end subroutine check_optional_real
 
 end module test_filter_map_reduce

@@ -13,6 +13,9 @@ module filter_map_reduce
    public :: sum_function
    public :: empty_int_list
    public :: create_int_list
+   public :: optional_real_t
+   public :: some_real_t
+   public :: no_real_t
 
    !> A list of integers
    type :: int_list_t
@@ -45,6 +48,17 @@ module filter_map_reduce
          real :: new_value
       end function map_int_to_real_evaluate
    end interface
+
+   type, abstract :: optional_real_t
+   end type optional_real_t
+
+   type, extends(optional_real_t) :: no_real_t
+      ! Nothing here
+   end type no_real_t
+
+   type, extends(optional_real_t) :: some_real_t
+      real :: value
+   end type some_real_t
 
 contains
    pure function empty_int_list() result(res)
@@ -120,9 +134,14 @@ contains
 
    pure function int_list_average(self) result(res)
       class(int_list_t), intent(in) :: self
-      real :: res
+      class(optional_real_t), allocatable :: res
 
-      res = real(sum(self%values))/size(self%values)
+      if (size(self%values) == 0) then
+         res = no_real_t()
+         return
+      end if
+
+      res = some_real_t(real(sum(self%values))/size(self%values))
    end function int_list_average
 
 end module filter_map_reduce
