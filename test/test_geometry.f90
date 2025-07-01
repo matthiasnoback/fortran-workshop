@@ -71,7 +71,7 @@ contains
 
       ! TODO implement parse_point and replace the following line with
       ! actual = parse_point(string_t('1.0 abc'))
-      actual%error = error_t('Failed to parse point string: 1.0 abc')
+      expected%error = error_t('Failed to parse point string: 1.0 abc')
 
       call check(error, actual, expected)
    end subroutine test_parse_invalid_point
