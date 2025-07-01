@@ -97,13 +97,13 @@ contains
 
       type(polygon_t), allocatable :: polygon
 
-      polygon = polygon_t( &
-                [ &
-                point_t(0.0, 0.0), &
-                point_t(3.0, 4.0), &
-                point_t(0.0, 0.0) &
-                ] &
-                )
+      polygon = polygon_t(polyline_t( &
+                          [ &
+                          point_t(0.0, 0.0), &
+                          point_t(3.0, 4.0), &
+                          point_t(0.0, 0.0) &
+                          ] &
+                          ))
 
       call check(error, polygon%perimeter(), 10.0)
    end subroutine test_polygon_perimeter
