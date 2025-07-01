@@ -3,7 +3,7 @@ module test_geometry
    use geometry_point, only: point_t, parse_point, point_or_error_t
    use common_strings, only: string_t
    use common_error_handling, only: error_t
-   use geometry_polyline, only: polyline_t
+   use geometry_polyline, only: polyline_t, create_polyline, polyline_or_error_t
    use geometry_polygon, only: polygon_t
 
    implicit none(type, external)
@@ -76,17 +76,17 @@ contains
    subroutine test_polyline_length(error)
       type(error_type), allocatable, intent(out) :: error
 
-      type(polyline_t), allocatable :: polyline
+      type(polyline_or_error_t), allocatable :: polyline_or_error
 
-      polyline = polyline_t( &
-                 [ &
-                 point_t(0.0, 0.0), &
-                 point_t(3.0, 4.0), &
-                 point_t(6.0, 8.0) &
-                 ] &
-                 )
+      polyline_or_error = create_polyline( &
+                          [ &
+                          point_t(0.0, 0.0), &
+                          point_t(3.0, 4.0), &
+                          point_t(6.0, 8.0) &
+                          ] &
+                          )
 
-      call check(error, polyline%length(), 10.0)
+      call check(error, polyline_or_error%polyline%length(), 10.0)
    end subroutine test_polyline_length
 
    subroutine test_polygon_perimeter(error)

@@ -7,9 +7,12 @@ module geometry_polyline
 
    private
    public :: polyline_t
+   public :: create_polyline
+   public :: polyline_or_error_t
 
    !> A polyline is a series of connected points
    type :: polyline_t
+      ! private
       type(point_t), dimension(:), allocatable :: points
    contains
       !> Calculate the length of the polyline
@@ -40,9 +43,16 @@ contains
          end if
       end do
 
-      polyline_or_error%polyline = polyline_t([(point_or_errors(index)%point, &
-                                                index=1, size(point_or_errors))])
+      polyline_or_error = create_polyline([(point_or_errors(index)%point, &
+                                            index=1, size(point_or_errors))])
    end function parse_polyline
+
+   pure function create_polyline(points) result(polyline_or_error)
+      type(point_t), dimension(:), intent(in) :: points
+      type(polyline_or_error_t) :: polyline_or_error
+
+      polyline_or_error%polyline = polyline_t(points)
+   end function create_polyline
 
    pure function polyline_length(self) result(res)
       class(polyline_t), intent(in) :: self
