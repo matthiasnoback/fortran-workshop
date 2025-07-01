@@ -7,6 +7,7 @@ program tester
    use test_geometry, only: collect_geometry_tests => collect_tests
    use test_hello_world, only: collect_hello_world_tests
    use test_integration, only: collect_integration_tests => collect_tests
+   use test_random, only: collect_random_tests => collect_tests
    use test_strings, only: collect_strings_tests => collect_tests
    use test_to_string, only: collect_to_string_tests => collect_tests
    use test_vector, only: collect_vector_tests => collect_tests
@@ -28,6 +29,7 @@ program tester
                 new_testsuite("hello_world", collect_hello_world_tests), &
                 new_testsuite("integration", collect_vector_tests), &
                 new_testsuite("strings", collect_strings_tests), &
+                new_testsuite("random", collect_random_tests), &
                 new_testsuite("to_string", collect_to_string_tests), &
                 new_testsuite("benchmark", collect_benchmark_tests), &
                 new_testsuite("vector", collect_integration_tests) &

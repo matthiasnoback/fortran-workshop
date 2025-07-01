@@ -32,6 +32,7 @@ set(
     "geometry"
     "hello_world"
     "integration"
+    "random"
     "strings"
     "to_string"
     "vector"

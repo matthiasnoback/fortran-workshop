@@ -7,6 +7,7 @@ add_library(${library_name} STATIC
     ./common/command_line.f90
     ./common/error_handling.f90
     ./common/precision.f90
+    ./common/random.f90
     ./common/time.f90
     ./common/strings.f90
     ./common/to_string.f90
