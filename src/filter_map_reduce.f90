@@ -16,13 +16,17 @@ module filter_map_reduce
    public :: optional_real_t
    public :: some_real_t
    public :: no_real_t
+   public :: non_empty_int_list_t
 
    !> A list of integers
    type :: int_list_t
       integer, dimension(:), allocatable :: values
-   contains
-      procedure :: average => int_list_average
    end type int_list_t
+
+   type, extends(int_list_t) :: non_empty_int_list_t
+   contains
+      procedure :: average => non_empty_int_list_average
+   end type non_empty_int_list_t
 
    !> A list of reals (we'll add filter, map and reduce functions later).
    type :: real_list_t
@@ -70,8 +74,11 @@ contains
       integer, dimension(:), intent(in) :: values
       class(int_list_t), allocatable :: res
 
-      allocate (int_list_t :: res)
-      res%values = values
+      if (size(values) == 0) then
+         res = empty_int_list()
+      else
+         res = non_empty_int_list_t(values)
+      end if
    end function create_int_list
 
    !> Can be used as a filter function to check if an integer is even.
@@ -132,16 +139,11 @@ contains
       new_carry = carry + value
    end function sum_function
 
-   pure function int_list_average(self) result(res)
-      class(int_list_t), intent(in) :: self
-      class(optional_real_t), allocatable :: res
+   pure function non_empty_int_list_average(self) result(res)
+      class(non_empty_int_list_t), intent(in) :: self
+      real :: res
 
-      if (size(self%values) == 0) then
-         res = no_real_t()
-         return
-      end if
-
-      res = some_real_t(real(sum(self%values))/size(self%values))
-   end function int_list_average
+      res = real(sum(self%values))/size(self%values)
+   end function non_empty_int_list_average
 
 end module filter_map_reduce

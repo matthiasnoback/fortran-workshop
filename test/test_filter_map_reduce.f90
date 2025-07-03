@@ -2,7 +2,7 @@ module test_filter_map_reduce
    use testdrive, only: new_unittest, unittest_type, error_type, check, test_failed
    use filter_map_reduce, only: int_list_t, create_int_list, is_even, real_list_t, one_third, &
                                 reduce_to_integer, sum_function, double, optional_real_t, &
-                                no_real_t, some_real_t
+                                no_real_t, some_real_t, non_empty_int_list_t
    use, intrinsic :: ieee_arithmetic
 
    implicit none(type, external)
@@ -35,8 +35,6 @@ contains
                                test_reduce_to_integer), &
                   new_unittest("test_average", &
                                test_average), &
-                  new_unittest("test_average_empty_list", &
-                               test_average_empty_list), &
                   new_unittest("test_is_even", &
                                test_is_even), &
                   new_unittest("test_one_third", &
@@ -117,33 +115,21 @@ contains
    subroutine test_average(error)
       type(error_type), allocatable, intent(out) :: error
 
-      type(int_list_t), allocatable :: list
-      class(optional_real_t), allocatable :: result
+      class(int_list_t), allocatable :: list
+      real :: result
 
       list = create_int_list([1, 4])
 
-      result = list%average()
+      select type (list)
+      type is (non_empty_int_list_t)
+         result = list%average()
 
-      call check(error, result, some_real_t(2.5))
+         call check(error, result, 2.5)
+      class default
+         call test_failed(error, 'Expected a non_empty_int_list_t')
+      end select
 
    end subroutine test_average
-
-   subroutine test_average_empty_list(error)
-      type(error_type), allocatable, intent(out) :: error
-
-      type(int_list_t), allocatable :: list
-      class(optional_real_t), allocatable :: result
-
-      integer, dimension(:), allocatable :: empty_array
-      allocate (empty_array(0))
-
-      list = create_int_list(empty_array)
-
-      result = list%average()
-
-      call check(error, result, no_real_t())
-
-   end subroutine test_average_empty_list
 
    subroutine test_is_even(error)
       type(error_type), allocatable, intent(out) :: error
