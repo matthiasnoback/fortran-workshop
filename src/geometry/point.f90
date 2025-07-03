@@ -33,7 +33,7 @@ contains
       res = sqrt((self%x - other%x)**2 + (self%y - other%y)**2)
    end function point_distance_to
 
-   function parse_point(point_string) result(res)
+   elemental function parse_point(point_string) result(res)
       type(string_t), intent(in) :: point_string
       type(point_or_error_t) :: res
 

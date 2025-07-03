@@ -1,6 +1,7 @@
 module geometry_polyline
    use common_error_handling, only: error_t
-   use geometry_point, only: point_t
+   use geometry_point, only: point_t, point_or_error_t, parse_point
+   use common_strings, only: string_t
 
    implicit none(type, external)
 
@@ -21,6 +22,27 @@ module geometry_polyline
    end type polyline_or_error_t
 
 contains
+
+   pure function parse_polyline(strings) result(polyline_or_error)
+      type(string_t), dimension(:), intent(in) :: strings
+      type(polyline_or_error_t) :: polyline_or_error
+
+      type(point_or_error_t), dimension(:), allocatable :: point_or_errors
+      integer :: index
+
+      point_or_errors = parse_point(strings)
+
+      do index = 1, size(point_or_errors)
+         if (allocated(point_or_errors(index)%error)) then
+            polyline_or_error%error = error_t('Could not parse polyline', &
+                                              point_or_errors(index)%error)
+            return
+         end if
+      end do
+
+      polyline_or_error%polyline = polyline_t([(point_or_errors(index)%point, &
+                                                index=1, size(point_or_errors))])
+   end function parse_polyline
 
    pure function polyline_length(self) result(res)
       class(polyline_t), intent(in) :: self
