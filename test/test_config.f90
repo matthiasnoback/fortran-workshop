@@ -67,7 +67,8 @@ contains
       actual = configuration%get_config_value('does not exist')
 
       call check(error, allocated(actual%error))
-      call check(error, actual%error%message, 'Could not find a configuration value with key "does not exist"')
+      call check(error, actual%error%message, &
+                 'Could not find a configuration value with key "does not exist"')
    end subroutine test_get_non_existing_config_value
 
    subroutine test_get_config_value_as_real(error)
