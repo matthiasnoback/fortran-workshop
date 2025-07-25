@@ -5,6 +5,9 @@ module common_error_handling
    private
 
    public :: error_t
+   public :: optional_error_t
+   public :: some_error_t
+   public :: no_error_t
 
    type, extends(to_string_t) :: error_t
       character(len=:), allocatable :: message
@@ -12,6 +15,16 @@ module common_error_handling
    contains
       procedure, public :: to_string => error_to_string
    end type error_t
+
+   type, abstract :: optional_error_t
+   end type optional_error_t
+
+   type, extends(optional_error_t) :: some_error_t
+      class(error_t), allocatable :: error
+   end type some_error_t
+
+   type, extends(optional_error_t) :: no_error_t
+   end type no_error_t
 
 contains
 
