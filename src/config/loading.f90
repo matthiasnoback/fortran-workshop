@@ -3,6 +3,7 @@ module config_loading
    use common_error_handling, only: error_t, optional_error_t, no_error_t, some_error_t
    use common_strings, only: string_t, string_list_t, empty_string_list, &
                              string_list_or_error_t
+   use file_operations, only: read_all_lines
 
    implicit none(type, external)
 
@@ -101,25 +102,29 @@ contains
       type(configuration_or_error_t) :: configuration_or_error
 
       type(string_list_or_error_t), allocatable :: lines_or_error
-      type(config_value_or_error_t), allocatable :: config_value_or_error
-      integer :: line_number
-
-      character(len=:), allocatable :: key
-      character(len=:), allocatable :: string_value
-
-      type(configuration_t) :: configuration
 
       lines_or_error = read_all_lines(file_unit)
       if (allocated(lines_or_error%error)) then
          configuration_or_error%error = lines_or_error%error
+         return
       end if
 
-      allocate (configuration%values(size(lines_or_error%string_list%strings)))
+      configuration_or_error = create_configuration_from_lines(lines_or_error%lines)
+   end function load_config_from_file
 
-      ! TODO write function that parses `string_list_t` into config values
-      do line_number = 1, size(lines_or_error%string_list%strings)
+   function create_configuration_from_lines(lines) result(configuration_or_error)
+      type(string_list_t), intent(in) :: lines
+      type(configuration_or_error_t) :: configuration_or_error
+
+      type(configuration_t) :: configuration
+      integer :: line_number
+      type(config_value_or_error_t), allocatable :: config_value_or_error
+
+      allocate (configuration%values(size(lines%strings)))
+
+      do line_number = 1, size(lines%strings)
          config_value_or_error = create_config_value_from_line( &
-                                 lines_or_error%string_list%strings(line_number))
+                                 lines%strings(line_number))
 
          if (allocated(config_value_or_error%error)) then
             configuration_or_error%error = config_value_or_error%error
@@ -130,7 +135,7 @@ contains
       end do
 
       configuration_or_error%configuration = configuration
-   end function load_config_from_file
+   end function create_configuration_from_lines
 
    pure function create_config_value_from_line(line) result(config_value_or_error)
       type(string_t), intent(in) :: line
@@ -151,29 +156,5 @@ contains
       string_value = adjustl(line%value(split_at + 3:))
       config_value_or_error%config_value = config_value_t(key, string_value)
    end function create_config_value_from_line
-
-   function read_all_lines(file_unit) result(string_list_or_error)
-      integer, intent(in) :: file_unit
-      character(len=255) :: line
-      integer :: io_status
-      character(len=255) :: io_message
-      type(string_list_t), allocatable :: lines
-      type(string_list_or_error_t) :: string_list_or_error
-
-      lines = empty_string_list()
-
-      rewind (file_unit)
-
-      do
-         read (file_unit, '(A)', iostat=io_status, iomsg=io_message, end=100) line
-         if (io_status /= 0) then
-            string_list_or_error%error = error_t(io_message)
-            return
-         end if
-         call lines%add(trim(line))
-      end do
-
-100   call move_alloc(lines, string_list_or_error%string_list)
-   end function read_all_lines
 
 end module config_loading

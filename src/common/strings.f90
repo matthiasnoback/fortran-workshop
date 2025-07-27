@@ -26,7 +26,7 @@ module common_strings
    end type string_list_t
 
    type :: string_list_or_error_t
-      type(string_list_t), allocatable :: string_list
+      type(string_list_t), allocatable :: lines
       type(error_t), allocatable :: error
    end type string_list_or_error_t
 
