@@ -27,11 +27,14 @@ endif()
 set(
     tests
     "benchmark"
+    "config"
     "error_handling"
     "filter_map_reduce"
     "geometry"
     "hello_world"
     "integration"
+    "interpolation"
+    "pump"
     "random"
     "strings"
     "to_string"

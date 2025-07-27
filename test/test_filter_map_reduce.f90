@@ -138,7 +138,8 @@ contains
 
       result = list%average()
 
-      call check(error, ieee_is_nan(result), .true., 'Expected average() to return NaN for an empty int list')
+      call check(error, ieee_is_nan(result), .true., &
+                 'Expected average() to return NaN for an empty int list')
    end subroutine test_average_empty_list
 
    subroutine test_is_even(error)

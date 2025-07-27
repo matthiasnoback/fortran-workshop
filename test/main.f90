@@ -14,6 +14,7 @@ program tester
    use test_to_string, only: collect_to_string_tests => collect_tests
    use test_vector, only: collect_vector_tests => collect_tests
    use test_benchmark, only: collect_benchmark_tests => collect_tests
+   use test_pump, only: collect_pump_tests => collect_tests
 
    implicit none(type, external)
 
@@ -25,6 +26,7 @@ program tester
    stat = 0
 
    testsuites = [ &
+                new_testsuite("pump", collect_pump_tests), &
                 new_testsuite("config", collect_config_tests), &
                 new_testsuite("interpolation", collect_interpolation_tests), &
                 new_testsuite("error_handling", collect_error_handling_tests), &

@@ -67,7 +67,6 @@ contains
 
       file_unit_or_error = create_temp_file()
       if (allocated(file_unit_or_error%error)) then
-         file_unit_or_error%error = file_unit_or_error%error
          return
       end if
 
