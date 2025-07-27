@@ -78,6 +78,8 @@ contains
          if (allocated(error)) then
             ! fake success, or the final procedure of error_type will escalate the error as "uncaught"
             error%stat = 0
+
+            ! start next iteration with a clean slate
             deallocate (error)
          end if
       end do
