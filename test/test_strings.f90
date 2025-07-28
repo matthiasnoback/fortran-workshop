@@ -1,7 +1,8 @@
 module test_strings
-   use testdrive, only: new_unittest, unittest_type, error_type, check, test_failed
+   use testdrive, only: new_unittest, unittest_type, error_type, test_failed
    use common_strings, only: string_t, string_list_t, string_length, empty_string_list
    use common_to_string, only: to_string
+   use test_custom_checks, only: check
 
    implicit none(type, external)
 
@@ -10,7 +11,6 @@ module test_strings
    public :: collect_tests
 
    interface check
-      module procedure :: check_integer_array
       module procedure :: check_string_list
    end interface
 contains
@@ -78,20 +78,5 @@ contains
       end do
 
    end subroutine check_string_list
-
-   subroutine check_integer_array(error, actual, expected)
-      type(error_type), allocatable, intent(out) :: error
-      integer, dimension(:), intent(in) :: actual, expected
-
-      if (size(actual) /= size(expected)) then
-         call test_failed(error, "Array sizes do not match")
-         return
-      end if
-
-      if (any(actual /= expected)) then
-         call test_failed(error, "Array contents do not match")
-         return
-      end if
-   end subroutine check_integer_array
 
 end module test_strings

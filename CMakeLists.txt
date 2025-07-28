@@ -28,6 +28,7 @@ set(
     tests
     "benchmark"
     "config"
+    "custom_checks"
     "error_handling"
     "filter_map_reduce"
     "geometry"

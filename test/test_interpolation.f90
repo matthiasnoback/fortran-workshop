@@ -1,5 +1,6 @@
 module test_interpolation
-   use testdrive, only: new_unittest, unittest_type, error_type, check, test_failed
+   use testdrive, only: new_unittest, unittest_type, error_type, test_failed
+   use test_custom_checks, only: check
    use common_interpolation, only: interpolate_linearly
    use common_precision, only: dp
    use common_error_handling, only: error_t

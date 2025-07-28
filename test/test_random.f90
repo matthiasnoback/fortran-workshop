@@ -1,5 +1,6 @@
 module test_random
-   use testdrive, only: new_unittest, unittest_type, error_type, check, test_failed
+   use testdrive, only: new_unittest, unittest_type, error_type, test_failed
+   use test_custom_checks, only: check
    use common_random, only: initialize_rng, select_random_integer
 
    implicit none(type, external)

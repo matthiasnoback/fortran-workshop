@@ -1,5 +1,6 @@
 module test_pump
-   use testdrive, only: new_unittest, unittest_type, error_type, check, test_failed, skip_test
+   use testdrive, only: new_unittest, unittest_type, error_type, test_failed, skip_test
+   use test_custom_checks, only: check
    use hydraulic_structures_pump, only: pump_specification_t, &
                                         pump_specification_or_error_t
    use common_error_handling, only: error_t

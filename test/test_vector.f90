@@ -1,5 +1,6 @@
 module test_vector
-   use testdrive, only: new_unittest, unittest_type, error_type, check, test_failed
+   use testdrive, only: new_unittest, unittest_type, error_type, test_failed
+   use test_custom_checks, only: check
    use vector, only: dummy_function
 
    implicit none(type, external)

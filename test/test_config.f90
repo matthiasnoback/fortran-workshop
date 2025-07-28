@@ -1,5 +1,5 @@
 module test_config
-   use testdrive, only: new_unittest, unittest_type, error_type, check, test_failed, skip_test
+   use testdrive, only: new_unittest, unittest_type, error_type, test_failed, skip_test
    use config_loading, only: config_value_t, real_or_error_t, &
                              configuration_t, config_value_or_error_t, load_config_from_file, &
                              configuration_or_error_t
@@ -7,7 +7,10 @@ module test_config
    use common_error_handling, only: error_t, optional_error_t, some_error_t, no_error_t
    use common_strings, only: string_t, string_list_t
    use file_operations, only: file_unit_or_error_t, write_lines_to_temp_file
+   use test_custom_checks, only: check
+
    implicit none(type, external)
+
    private
 
    public :: collect_tests

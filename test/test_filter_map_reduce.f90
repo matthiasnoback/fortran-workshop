@@ -1,8 +1,9 @@
 module test_filter_map_reduce
-   use testdrive, only: new_unittest, unittest_type, error_type, check, test_failed
+   use testdrive, only: new_unittest, unittest_type, error_type, test_failed
    use filter_map_reduce, only: int_list_t, create_int_list, is_even, real_list_t, one_third, &
                                 reduce_to_integer, sum_function, double
    use, intrinsic :: ieee_arithmetic
+   use test_custom_checks, only: check
 
    implicit none(type, external)
 

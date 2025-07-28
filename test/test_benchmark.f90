@@ -1,5 +1,5 @@
 module test_benchmark
-   use testdrive, only: new_unittest, unittest_type, error_type, check, test_failed
+   use testdrive, only: new_unittest, unittest_type, error_type, test_failed
    use benchmark_facade, only: start_benchmark, &
                                stop_benchmark, &
                                get_benchmarks, &
@@ -11,6 +11,7 @@ module test_benchmark
    use benchmark_diagnostics, only: diagnostics_snapshot_t, &
                                     override_snapshot_for_testing, &
                                     override_clock_rate_for_testing
+   use test_custom_checks, only: check
 
    use iso_fortran_env, only: real64, int64
 

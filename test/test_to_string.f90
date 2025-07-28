@@ -1,5 +1,6 @@
 module test_to_string
-   use testdrive, only: new_unittest, unittest_type, error_type, check, test_failed
+   use testdrive, only: new_unittest, unittest_type, error_type, test_failed
+   use test_custom_checks, only: check
    use common_to_string, only: to_string, to_string_t
 
    implicit none(type, external)

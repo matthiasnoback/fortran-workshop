@@ -1,5 +1,6 @@
 module test_integration
-   use testdrive, only: new_unittest, unittest_type, error_type, check, test_failed
+   use testdrive, only: new_unittest, unittest_type, error_type, test_failed
+   use test_custom_checks, only: check
    use iso_fortran_env, only: wp => real64
    use integration_trapezoid, only: integrate_trapezoid
    use integration_damped_oscillator, only: damped_oscillatory_function, a, b

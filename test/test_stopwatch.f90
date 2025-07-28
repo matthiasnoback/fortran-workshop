@@ -1,8 +1,9 @@
 module test_stopwatch
-   use testdrive, only: new_unittest, unittest_type, error_type, check, test_failed, skip_test
+   use testdrive, only: new_unittest, unittest_type, error_type, test_failed, skip_test
    use stopwatch_tdd_facade, only: stopwatch_start, &
                                    stopwatch_stop, &
                                    stopwatch_print
+   use test_custom_checks, only: check
 
    implicit none(type, external)
 

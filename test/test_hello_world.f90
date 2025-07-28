@@ -1,5 +1,6 @@
 module test_hello_world
-   use testdrive, only: new_unittest, unittest_type, error_type, check, test_failed
+   use testdrive, only: new_unittest, unittest_type, error_type, test_failed
+   use test_custom_checks, only: check
    use hello_world, only: hello_world_message
 
    implicit none(type, external)

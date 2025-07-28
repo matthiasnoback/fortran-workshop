@@ -1,5 +1,6 @@
 module test_geometry
-   use testdrive, only: new_unittest, unittest_type, error_type, check, test_failed
+   use testdrive, only: new_unittest, unittest_type, error_type, test_failed
+   use test_custom_checks, only: check
    use geometry_point, only: point_t, point_or_error_t
    use common_strings, only: string_t
    use common_error_handling, only: error_t
