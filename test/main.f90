@@ -3,6 +3,7 @@ program tester
    use testdrive, only: run_testsuite, new_testsuite, testsuite_type, &
            & select_suite, run_selected, get_argument
    use test_config, only: collect_config_tests => collect_tests
+   use test_stopwatch, only: collect_stopwatch_tests => collect_tests
    use test_interpolation, only: collect_interpolation_tests => collect_tests
    use test_error_handling, only: collect_error_handling_tests => collect_tests
    use test_filter_map_reduce, only: collect_filter_map_reduce_tests => collect_tests
@@ -26,6 +27,7 @@ program tester
    stat = 0
 
    testsuites = [ &
+                new_testsuite("stopwatch", collect_stopwatch_tests), &
                 new_testsuite("pump", collect_pump_tests), &
                 new_testsuite("config", collect_config_tests), &
                 new_testsuite("interpolation", collect_interpolation_tests), &

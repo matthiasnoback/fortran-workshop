@@ -34,6 +34,7 @@ add_library(${library_name} STATIC
     ./stopwatch/timer_linked_list.f90
     ./stopwatch/timer_list.f90
     ./stopwatch/timer.f90
+    ./stopwatch_tdd/facade.f90
     ./filter_map_reduce.f90
     ./hello_world.f90
     ./vector.f90

@@ -36,6 +36,7 @@ set(
     "interpolation"
     "pump"
     "random"
+    "stopwatch"
     "strings"
     "to_string"
     "vector"
