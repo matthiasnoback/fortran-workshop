@@ -27,6 +27,7 @@ endif()
 set(
     tests
     "benchmark"
+    "clock"
     "config"
     "custom_checks"
     "error_handling"

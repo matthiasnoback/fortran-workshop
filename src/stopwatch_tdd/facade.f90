@@ -35,9 +35,9 @@ contains
       call system_clock(count_rate=clock_rate)  ! # of clock ticks per second
 
       wall_clock_time_difference = (time_stop - time_start)/clock_rate
-      print '(a30,f15.8,a)', 'wall clock time difference: ', wall_clock_time_difference
+      print '(a30,f15.6)', 'wall clock time difference: ', wall_clock_time_difference
 
       cpu_time_difference = cpu_time_stop - cpu_time_start
-      print '(a30,f15.8)', 'cpu time difference: ', cpu_time_difference
+      print '(a30,f15.6)', 'cpu time difference: ', cpu_time_difference
    end subroutine stopwatch_print
 end module stopwatch_tdd_facade

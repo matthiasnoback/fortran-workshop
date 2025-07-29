@@ -4,6 +4,7 @@ set(library_name fortran-workshop-lib)
 add_library(${library_name} STATIC
     ./benchmark/diagnostics.f90
     ./benchmark/facade.f90
+    ./common/clock.f90
     ./common/command_line.f90
     ./common/error_handling.f90
     ./common/interpolation.f90
