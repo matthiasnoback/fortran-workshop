@@ -27,7 +27,7 @@ contains
       integer :: io_status
       character(len=255) :: io_message
 
-      open (newunit=file_unit, status='scratch', action='write', iostat=io_status, iomsg=io_message)
+      open (newunit=file_unit, status='scratch', action='readwrite', iostat=io_status, iomsg=io_message)
       if (io_status /= 0) then
          file_unit_or_error%error = error_t('Could not create temp file. iostat= '// &
                                             to_string(io_status)//' iomsg= '//io_message)

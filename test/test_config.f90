@@ -134,7 +134,7 @@ contains
 
       configuration_or_error = load_config_from_file(file_unit_or_error%file_unit)
 
-      call check(error, allocated(configuration_or_error%error), .false.)
+      call check(error, allocated(configuration_or_error%error), .false., 'Expected no error')
       if (allocated(error)) then
          return
       end if
