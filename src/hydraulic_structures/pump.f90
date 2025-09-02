@@ -21,10 +21,12 @@ contains
 
    pure function calculate_pump_discharge(capacity, &
                                           starting_water_level, &
+                                          stopping_water_level, &
                                           water_level_suction_side &
                                           ) result(discharge)
       real(kind=dp), intent(in) :: capacity
       real(kind=dp), intent(in) :: starting_water_level
+      real(kind=dp), intent(in) :: stopping_water_level
       real(kind=dp), intent(in) :: water_level_suction_side
 
       real(kind=dp) :: discharge
