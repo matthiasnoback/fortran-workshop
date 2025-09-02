@@ -29,9 +29,11 @@ module hydraulic_structures_pump
 contains
 
    pure function next_pump_state(pump_specification, &
+                                 previous_state, &
                                  water_level_suction_side &
                                  ) result(next_state)
       type(pump_specification_t), intent(in) :: pump_specification
+      type(pump_state_t), intent(in) :: previous_state
       real(kind=dp), intent(in) :: water_level_suction_side
 
       type(pump_state_t) :: next_state
