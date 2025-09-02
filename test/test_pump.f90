@@ -2,9 +2,11 @@ module test_pump
    use testdrive, only: new_unittest, unittest_type, error_type, test_failed, skip_test
    use test_custom_checks, only: check
    use hydraulic_structures_pump, only: pump_specification_t, &
-                                        pump_specification_or_error_t
+                                        pump_specification_or_error_t, &
+                                        calculate_pump_discharge
    use common_error_handling, only: error_t
    use common_to_string, only: to_string
+   use common_precision, only: dp
 
    implicit none(type, external)
 
@@ -23,10 +25,18 @@ contains
       type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
       testsuite = [ &
+                  new_unittest("test_discharge_of_a_pump_that_is_turned_off", &
+                               test_discharge_of_a_pump_that_is_turned_off), &
                   new_unittest("test_check_pump_specification_or_error", &
                                test_check_pump_specification_or_error) &
                   ]
    end subroutine collect_tests
+
+   subroutine test_discharge_of_a_pump_that_is_turned_off(error)
+      type(error_type), allocatable, intent(out) :: error
+
+      call check(error, calculate_pump_discharge(), 0.0_dp)
+   end subroutine test_discharge_of_a_pump_that_is_turned_off
 
    subroutine test_check_pump_specification_or_error(error)
       type(error_type), allocatable, intent(out) :: error
