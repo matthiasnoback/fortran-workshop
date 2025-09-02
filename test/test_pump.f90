@@ -44,7 +44,7 @@ contains
       type(error_type), allocatable, intent(out) :: error
 
       call check(error, next_pump_state( &
-                 pump_specification_t(0.0_dp, 0.0_dp, 0.0_dp), 0.0_dp), &
+                 pump_specification_t(0.0_dp, 2.0_dp, 1.0_dp), 0.0_dp), &
                  pump_state_t(0.0_dp, .false.))
    end subroutine test_discharge_of_a_pump_that_is_turned_off
 
@@ -53,7 +53,7 @@ contains
 
       call check(error, next_pump_state( &
                  pump_specification_t(1.5_dp, 0.0_dp, 0.0_dp), 0.0_dp), &
-                 pump_state_t(0.0_dp, .true.))
+                 pump_state_t(1.5_dp, .true.))
    end subroutine test_discharge_of_a_pump_that_is_always_on
 
    subroutine test_water_level_is_at_minimum_level(error)

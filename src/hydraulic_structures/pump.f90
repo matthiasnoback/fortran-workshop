@@ -38,8 +38,10 @@ contains
 
       if (water_level_suction_side >= pump_specification%starting_water_level) then
          next_state%discharge = pump_specification%capacity
+         next_state%is_running = .true.
       else
          next_state%discharge = 0.0_dp
+         next_state%is_running = .false.
       end if
    end function next_pump_state
 
