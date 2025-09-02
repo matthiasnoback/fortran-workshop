@@ -27,6 +27,8 @@ contains
       testsuite = [ &
                   new_unittest("test_discharge_of_a_pump_that_is_turned_off", &
                                test_discharge_of_a_pump_that_is_turned_off), &
+                  new_unittest("test_discharge_of_a_pump_that_is_always_on", &
+                               test_discharge_of_a_pump_that_is_always_on), &
                   new_unittest("test_check_pump_specification_or_error", &
                                test_check_pump_specification_or_error) &
                   ]
@@ -35,8 +37,14 @@ contains
    subroutine test_discharge_of_a_pump_that_is_turned_off(error)
       type(error_type), allocatable, intent(out) :: error
 
-      call check(error, calculate_pump_discharge(), 0.0_dp)
+      call check(error, calculate_pump_discharge(0.0_dp), 0.0_dp)
    end subroutine test_discharge_of_a_pump_that_is_turned_off
+
+   subroutine test_discharge_of_a_pump_that_is_always_on(error)
+      type(error_type), allocatable, intent(out) :: error
+
+      call check(error, calculate_pump_discharge(1.5_dp), 1.5_dp)
+   end subroutine test_discharge_of_a_pump_that_is_always_on
 
    subroutine test_check_pump_specification_or_error(error)
       type(error_type), allocatable, intent(out) :: error
