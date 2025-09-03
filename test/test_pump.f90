@@ -17,6 +17,7 @@ module test_pump
    interface check
       procedure :: check_pump_specification
       procedure :: check_pump_specification_or_error
+      procedure :: check_pump_state
    end interface check
 
 contains
@@ -162,4 +163,20 @@ contains
          return
       end if
    end subroutine check_pump_specification_or_error
+
+   subroutine check_pump_state(error, actual, expected)
+      type(error_type), allocatable, intent(out) :: error
+      type(pump_state_t), intent(in) :: actual
+      type(pump_state_t), intent(in) :: expected
+
+      call check(error, actual%discharge, expected%discharge)
+      if (allocated(error)) then
+         return
+      end if
+
+      call check(error, actual%is_running, expected%is_running)
+      if (allocated(error)) then
+         return ! optional, if it's the last call to `check`
+      end if
+   end subroutine check_pump_state
 end module test_pump
