@@ -44,30 +44,30 @@ contains
       type(error_type), allocatable, intent(out) :: error
 
       call check(error, &
-                 next_pump_state(pump_specification_t(10.0_dp, 2.0_dp, 1.0_dp), pump_state_t(.true., 10.0_dp), 2.5_dp), &
-                 pump_state_t(.true., 10.0_dp))
+                 next_pump_state(pump_specification_t(10.0_dp, 2.0_dp, 1.0_dp), running_at_capacity(10.0_dp), 2.5_dp), &
+                 running_at_capacity(10.0_dp))
    end subroutine test_level_above_start
 
    subroutine test_level_below_stop(error)
       type(error_type), allocatable, intent(out) :: error
       call check(error, &
-                 next_pump_state(pump_specification_t(10.0_dp, 2.0_dp, 1.0_dp), pump_state_t(.true., 10.0_dp), 0.5_dp), &
-                 pump_state_t(.false., 0.0_dp))
+                 next_pump_state(pump_specification_t(10.0_dp, 2.0_dp, 1.0_dp), running_at_capacity(10.0_dp), 0.5_dp), &
+                 switched_off())
    end subroutine test_level_below_stop
 
    subroutine test_level_between_start_and_stop_and_pump_running(error)
       type(error_type), allocatable, intent(out) :: error
 
       call check(error, &
-                 next_pump_state(pump_specification_t(10.0_dp, 2.0_dp, 1.0_dp), pump_state_t(.true., 10.0_dp), 1.5_dp), &
-                 pump_state_t(.true., 10.0_dp))
+                 next_pump_state(pump_specification_t(10.0_dp, 2.0_dp, 1.0_dp), running_at_capacity(10.0_dp), 1.5_dp), &
+                 running_at_capacity(10.0_dp))
    end subroutine test_level_between_start_and_stop_and_pump_running
 
    subroutine test_level_between_start_and_stop_and_pump_not_running(error)
       type(error_type), allocatable, intent(out) :: error
       call check(error, &
-                 next_pump_state(pump_specification_t(10.0_dp, 2.0_dp, 1.0_dp), pump_state_t(.false., 0.0_dp), 1.5_dp), &
-                 pump_state_t(.true., 10.0_dp))
+                 next_pump_state(pump_specification_t(10.0_dp, 2.0_dp, 1.0_dp), switched_off(), 1.5_dp), &
+                 running_at_capacity(10.0_dp))
    end subroutine test_level_between_start_and_stop_and_pump_not_running
 
    subroutine test_check_pump_specification_or_error(error)
@@ -182,4 +182,17 @@ contains
          return ! optional, if it's the last call to `check`
       end if
    end subroutine check_pump_state
+
+   pure function switched_off() result(state)
+      type(pump_state_t), allocatable :: state
+
+      state = pump_state_t(.false., 0.0_dp)
+   end function switched_off
+
+   pure function running_at_capacity(capacity) result(state)
+      real(kind=dp), intent(in) :: capacity
+      type(pump_state_t), allocatable :: state
+
+      state = pump_state_t(.true., capacity)
+   end function running_at_capacity
 end module test_pump
