@@ -19,12 +19,18 @@ module hydraulic_structures_pump
 
 contains
 
-   pure function calculate_pump_discharge(capacity) result(discharge)
+   pure function calculate_pump_discharge(capacity, start_level, actual_level) result(discharge)
       real(kind=dp), intent(in) :: capacity
+      real(kind=dp), intent(in) :: start_level
+      real(kind=dp), intent(in) :: actual_level
 
       real(kind=dp) :: discharge
 
-      discharge = capacity
+      if (actual_level < start_level) then
+         discharge = 0.0_dp
+      else
+         discharge = capacity
+      end if
    end function calculate_pump_discharge
 
 end module hydraulic_structures_pump
