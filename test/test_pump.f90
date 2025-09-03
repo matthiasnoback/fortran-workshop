@@ -44,7 +44,7 @@ contains
       type(error_type), allocatable, intent(out) :: error
 
       call check(error, &
-                 next_pump_state(pump_specification_t(0.0_dp, 10.0_dp), 0.0_dp), &
+                 next_pump_state(pump_specification_t(0.0_dp, 10.0_dp), pump_state_t(.false., 0.0_dp), 0.0_dp), &
                  pump_state_t(.false., 0.0_dp))
    end subroutine test_discharge_of_a_pump_that_is_turned_off
 
@@ -52,21 +52,21 @@ contains
       type(error_type), allocatable, intent(out) :: error
 
       call check(error, &
-                 next_pump_state(pump_specification_t(10.0_dp, 0.0_dp), 0.0_dp), &
+                 next_pump_state(pump_specification_t(10.0_dp, 0.0_dp), pump_state_t(.true., 10.0_dp), 0.0_dp), &
                  pump_state_t(.true., 10.0_dp))
    end subroutine test_discharge_of_a_pump_that_is_turned_on
 
    subroutine test_water_level_is_at_minimum_level(error)
       type(error_type), allocatable, intent(out) :: error
       call check(error, &
-                 next_pump_state(pump_specification_t(10.0_dp, 2.0_dp), 2.0_dp), &
+                 next_pump_state(pump_specification_t(10.0_dp, 2.0_dp), pump_state_t(.false., 0.0_dp), 2.0_dp), &
                  pump_state_t(.true., 10.0_dp))
    end subroutine test_water_level_is_at_minimum_level
 
    subroutine test_water_level_is_below_minimum_level(error)
       type(error_type), allocatable, intent(out) :: error
       call check(error, &
-                 next_pump_state(pump_specification_t(10.0_dp, 2.0_dp), 1.0_dp), &
+                 next_pump_state(pump_specification_t(10.0_dp, 2.0_dp), pump_state_t(.true., 10.0_dp), 1.0_dp), &
                  pump_state_t(.false., 0.0_dp))
    end subroutine test_water_level_is_below_minimum_level
 
