@@ -13,6 +13,7 @@ module hydraulic_structures_pump
    type pump_specification_t
       real(kind=dp) :: capacity
       real(kind=dp) :: start_level
+      real(kind=dp) :: stop_level
    end type pump_specification_t
 
    type :: pump_specification_or_error_t
