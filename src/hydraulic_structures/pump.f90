@@ -10,6 +10,8 @@ module hydraulic_structures_pump
    public :: calculate_pump_discharge
 
    type pump_specification_t
+      real(kind=dp) :: capacity
+      real(kind=dp) :: start_level
    end type pump_specification_t
 
    type :: pump_specification_or_error_t
@@ -19,17 +21,16 @@ module hydraulic_structures_pump
 
 contains
 
-   pure function calculate_pump_discharge(capacity, start_level, actual_level) result(discharge)
-      real(kind=dp), intent(in) :: capacity
-      real(kind=dp), intent(in) :: start_level
+   pure function calculate_pump_discharge(pump_specification, actual_level) result(discharge)
+      type(pump_specification_t), intent(in) :: pump_specification
       real(kind=dp), intent(in) :: actual_level
 
       real(kind=dp) :: discharge
 
-      if (actual_level < start_level) then
+      if (actual_level < pump_specification%start_level) then
          discharge = 0.0_dp
       else
-         discharge = capacity
+         discharge = pump_specification%capacity
       end if
    end function calculate_pump_discharge
 
