@@ -27,48 +27,48 @@ contains
       type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
       testsuite = [ &
-                  new_unittest("test_discharge_of_a_pump_that_is_turned_off", &
-                               test_discharge_of_a_pump_that_is_turned_off), &
-                  new_unittest("test_discharge_of_a_pump_that_is_turned_on", &
-                               test_discharge_of_a_pump_that_is_turned_on), &
-                  new_unittest("test_water_level_is_at_minimum_level", &
-                               test_water_level_is_at_minimum_level), &
-                  new_unittest("test_water_level_is_below_minimum_level", &
-                               test_water_level_is_below_minimum_level), &
+                  new_unittest("test_level_above_start", &
+                               test_level_above_start), &
+                  new_unittest("test_level_below_stop", &
+                               test_level_below_stop), &
+                  new_unittest("test_level_between_start_and_stop_and_pump_running", &
+                               test_level_between_start_and_stop_and_pump_running), &
+                  new_unittest("test_level_between_start_and_stop_and_pump_running", &
+                               test_level_between_start_and_stop_and_pump_running), &
                   new_unittest("test_check_pump_specification_or_error", &
                                test_check_pump_specification_or_error) &
                   ]
    end subroutine collect_tests
 
-   subroutine test_discharge_of_a_pump_that_is_turned_off(error)
-      type(error_type), allocatable, intent(out) :: error
-
-      call check(error, &
-                 next_pump_state(pump_specification_t(0.0_dp, 2.0_dp, 1.0_dp), pump_state_t(.false., 0.0_dp), 0.0_dp), &
-                 pump_state_t(.false., 0.0_dp))
-   end subroutine test_discharge_of_a_pump_that_is_turned_off
-
-   subroutine test_discharge_of_a_pump_that_is_turned_on(error)
+   subroutine test_level_above_start(error)
       type(error_type), allocatable, intent(out) :: error
 
       call check(error, &
                  next_pump_state(pump_specification_t(10.0_dp, 2.0_dp, 1.0_dp), pump_state_t(.true., 10.0_dp), 2.5_dp), &
                  pump_state_t(.true., 10.0_dp))
-   end subroutine test_discharge_of_a_pump_that_is_turned_on
+   end subroutine test_level_above_start
 
-   subroutine test_water_level_is_at_minimum_level(error)
+   subroutine test_level_below_stop(error)
       type(error_type), allocatable, intent(out) :: error
       call check(error, &
-                 next_pump_state(pump_specification_t(10.0_dp, 2.0_dp, 1.0_dp), pump_state_t(.false., 0.0_dp), 2.0_dp), &
-                 pump_state_t(.true., 10.0_dp))
-   end subroutine test_water_level_is_at_minimum_level
-
-   subroutine test_water_level_is_below_minimum_level(error)
-      type(error_type), allocatable, intent(out) :: error
-      call check(error, &
-                 next_pump_state(pump_specification_t(10.0_dp, 2.0_dp, 1.0_dp), pump_state_t(.true., 10.0_dp), 1.0_dp), &
+                 next_pump_state(pump_specification_t(10.0_dp, 2.0_dp, 1.0_dp), pump_state_t(.true., 10.0_dp), 0.5_dp), &
                  pump_state_t(.false., 0.0_dp))
-   end subroutine test_water_level_is_below_minimum_level
+   end subroutine test_level_below_stop
+
+   subroutine test_level_between_start_and_stop_and_pump_running(error)
+      type(error_type), allocatable, intent(out) :: error
+
+      call check(error, &
+                 next_pump_state(pump_specification_t(10.0_dp, 2.0_dp, 1.0_dp), pump_state_t(.true., 10.0_dp), 1.5_dp), &
+                 pump_state_t(.true., 10.0_dp))
+   end subroutine test_level_between_start_and_stop_and_pump_running
+
+   subroutine test_level_between_start_and_stop_and_pump_not_running(error)
+      type(error_type), allocatable, intent(out) :: error
+      call check(error, &
+                 next_pump_state(pump_specification_t(10.0_dp, 2.0_dp, 1.0_dp), pump_state_t(.false., 0.0_dp), 1.5_dp), &
+                 pump_state_t(.true., 10.0_dp))
+   end subroutine test_level_between_start_and_stop_and_pump_not_running
 
    subroutine test_check_pump_specification_or_error(error)
       type(error_type), allocatable, intent(out) :: error

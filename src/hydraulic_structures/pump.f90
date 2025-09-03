@@ -35,12 +35,16 @@ contains
 
       type(pump_state_t) :: next_state
 
-      if (actual_level < pump_specification%start_level) then
-         next_state%is_running = .false.
-         next_state%discharge = 0.0_dp
-      else
+      next_state = previous_state
+
+      if (actual_level > pump_specification%start_level) then
          next_state%is_running = .true.
          next_state%discharge = pump_specification%capacity
+      end if
+
+      if (actual_level < pump_specification%stop_level) then
+         next_state%is_running = .false.
+         next_state%discharge = 0.0_dp
       end if
    end function next_pump_state
 
