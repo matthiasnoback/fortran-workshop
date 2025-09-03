@@ -7,7 +7,8 @@ module hydraulic_structures_pump
    private
    public :: pump_specification_t
    public :: pump_specification_or_error_t
-   public :: calculate_pump_discharge
+   public :: next_pump_state
+   public :: pump_state_t
 
    type pump_specification_t
       real(kind=dp) :: capacity
@@ -19,19 +20,26 @@ module hydraulic_structures_pump
       type(error_t), allocatable :: error
    end type pump_specification_or_error_t
 
+   type :: pump_state_t
+      logical :: is_running
+      real(kind=dp) :: discharge
+   end type pump_state_t
+
 contains
 
-   pure function calculate_pump_discharge(pump_specification, actual_level) result(discharge)
+   pure function next_pump_state(pump_specification, actual_level) result(next_state)
       type(pump_specification_t), intent(in) :: pump_specification
       real(kind=dp), intent(in) :: actual_level
 
-      real(kind=dp) :: discharge
+      type(pump_state_t) :: next_state
 
       if (actual_level < pump_specification%start_level) then
-         discharge = 0.0_dp
+         next_state%is_running = .false.
+         next_state%discharge = 0.0_dp
       else
-         discharge = pump_specification%capacity
+         next_state%is_running = .true.
+         next_state%discharge = pump_specification%capacity
       end if
-   end function calculate_pump_discharge
+   end function next_pump_state
 
 end module hydraulic_structures_pump
