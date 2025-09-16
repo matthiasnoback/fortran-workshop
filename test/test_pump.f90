@@ -2,9 +2,12 @@ module test_pump
    use testdrive, only: new_unittest, unittest_type, error_type, test_failed, skip_test
    use test_custom_checks, only: check
    use hydraulic_structures_pump, only: pump_specification_t, &
-                                        pump_specification_or_error_t
+                                        pump_specification_or_error_t, &
+                                        next_pump_state, &
+                                        pump_state_t
    use common_error_handling, only: error_t
    use common_to_string, only: to_string
+   use common_precision, only: dp
 
    implicit none(type, external)
 
@@ -15,6 +18,7 @@ module test_pump
    interface check
       procedure :: check_pump_specification
       procedure :: check_pump_specification_or_error
+      procedure :: check_pump_state
    end interface check
 
 contains
@@ -23,10 +27,56 @@ contains
       type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
       testsuite = [ &
+                  new_unittest("test_level_above_start", &
+                               test_level_above_start), &
+                  new_unittest("test_level_below_stop", &
+                               test_level_below_stop), &
+                  new_unittest("test_level_between_start_and_stop_and_pump_running", &
+                               test_level_between_start_and_stop_and_pump_running), &
+                  new_unittest("test_level_between_start_and_stop_and_pump_running", &
+                               test_level_between_start_and_stop_and_pump_running), &
                   new_unittest("test_check_pump_specification_or_error", &
                                test_check_pump_specification_or_error) &
                   ]
    end subroutine collect_tests
+
+   subroutine test_level_above_start(error)
+      type(error_type), allocatable, intent(out) :: error
+
+      call check(error, &
+                 next_pump_state(pump_specification_t(10.0_dp, 2.0_dp, 1.0_dp), &
+                                 running_at_capacity(10.0_dp), &
+                                 2.5_dp), &
+                 running_at_capacity(10.0_dp))
+   end subroutine test_level_above_start
+
+   subroutine test_level_below_stop(error)
+      type(error_type), allocatable, intent(out) :: error
+      call check(error, &
+                 next_pump_state(pump_specification_t(10.0_dp, 2.0_dp, 1.0_dp), &
+                                 running_at_capacity(10.0_dp), &
+                                 0.5_dp), &
+                 switched_off())
+   end subroutine test_level_below_stop
+
+   subroutine test_level_between_start_and_stop_and_pump_running(error)
+      type(error_type), allocatable, intent(out) :: error
+
+      call check(error, &
+                 next_pump_state(pump_specification_t(10.0_dp, 2.0_dp, 1.0_dp), &
+                                 running_at_capacity(10.0_dp), &
+                                 1.5_dp), &
+                 running_at_capacity(10.0_dp))
+   end subroutine test_level_between_start_and_stop_and_pump_running
+
+   subroutine test_level_between_start_and_stop_and_pump_not_running(error)
+      type(error_type), allocatable, intent(out) :: error
+      call check(error, &
+                 next_pump_state(pump_specification_t(10.0_dp, 2.0_dp, 1.0_dp), &
+                                 switched_off(), &
+                                 1.5_dp), &
+                 running_at_capacity(10.0_dp))
+   end subroutine test_level_between_start_and_stop_and_pump_not_running
 
    subroutine test_check_pump_specification_or_error(error)
       type(error_type), allocatable, intent(out) :: error
@@ -53,14 +103,14 @@ contains
 
       case = 3
       ! Both cases contain a pump, and they are equal
-      actual(case)%pump = pump_specification_t()
-      expected(case)%pump = pump_specification_t()
+      actual(case)%pump = pump_specification_t(0.0_dp, 0.0_dp, 0.0_dp)
+      expected(case)%pump = pump_specification_t(0.0_dp, 0.0_dp, 0.0_dp)
       check_should_fail(case) = .false.
 
       case = 4
       ! One case contains an error, the other a pump
       actual(case)%error = error_t('An error')
-      expected(case)%pump = pump_specification_t()
+      expected(case)%pump = pump_specification_t(0.0_dp, 0.0_dp, 0.0_dp)
       check_should_fail(case) = .true.
 
       do case = 1, cases
@@ -124,4 +174,33 @@ contains
          return
       end if
    end subroutine check_pump_specification_or_error
+
+   subroutine check_pump_state(error, actual, expected)
+      type(error_type), allocatable, intent(out) :: error
+      type(pump_state_t), intent(in) :: actual
+      type(pump_state_t), intent(in) :: expected
+
+      call check(error, actual%discharge, expected%discharge)
+      if (allocated(error)) then
+         return
+      end if
+
+      call check(error, actual%is_running, expected%is_running)
+      if (allocated(error)) then
+         return ! optional, if it's the last call to `check`
+      end if
+   end subroutine check_pump_state
+
+   pure function switched_off() result(state)
+      type(pump_state_t), allocatable :: state
+
+      state = pump_state_t(.false., 0.0_dp)
+   end function switched_off
+
+   pure function running_at_capacity(capacity) result(state)
+      real(kind=dp), intent(in) :: capacity
+      type(pump_state_t), allocatable :: state
+
+      state = pump_state_t(.true., capacity)
+   end function running_at_capacity
 end module test_pump
