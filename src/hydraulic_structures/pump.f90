@@ -9,11 +9,19 @@ module hydraulic_structures_pump
    public :: pump_specification_or_error_t
    public :: next_pump_state
    public :: pump_state_t
+   public :: pump_with_capacity
 
    type pump_specification_t
       real(kind=dp) :: capacity
-      real(kind=dp) :: start_level
-      real(kind=dp) :: stop_level
+      logical :: is_controlled_on_suction_side
+      real(kind=dp) :: suction_side_start_level
+      real(kind=dp) :: suction_side_stop_level
+      logical :: is_controlled_on_delivery_side
+      real(kind=dp) :: delivery_side_start_level
+      real(kind=dp) :: delivery_side_stop_level
+   contains
+      procedure :: control_suction_side => pump_specification_control_suction_side
+      procedure :: control_delivery_side => pump_specification_control_delivery_side
    end type pump_specification_t
 
    type :: pump_specification_or_error_t
@@ -35,9 +43,9 @@ contains
 
       type(pump_state_t) :: next_state
 
-      if (actual_level > pump_specification%start_level) then
+      if (actual_level > pump_specification%suction_side_start_level) then
          next_state%is_running = .true.
-      else if (actual_level < pump_specification%stop_level) then
+      else if (actual_level < pump_specification%suction_side_stop_level) then
          next_state%is_running = .false.
       else
          next_state%is_running = previous_state%is_running
@@ -49,5 +57,30 @@ contains
          next_state%discharge = 0.0_dp
       end if
    end function next_pump_state
+
+   pure function pump_with_capacity(capacity) result(specification)
+      real(kind=dp), intent(in) :: capacity
+
+      type(pump_specification_t) :: specification
+      specification%capacity = capacity
+   end function pump_with_capacity
+
+   subroutine pump_specification_control_suction_side(self, start_level, stop_level)
+      class(pump_specification_t), intent(inout) :: self
+      real(kind=dp), intent(in) :: start_level
+      real(kind=dp), intent(in) :: stop_level
+
+      self%suction_side_start_level = start_level
+      self%suction_side_stop_level = stop_level
+   end subroutine pump_specification_control_suction_side
+
+   subroutine pump_specification_control_delivery_side(self, start_level, stop_level)
+      class(pump_specification_t), intent(inout) :: self
+      real(kind=dp), intent(in) :: start_level
+      real(kind=dp), intent(in) :: stop_level
+
+      self%delivery_side_start_level = start_level
+      self%delivery_side_stop_level = stop_level
+   end subroutine pump_specification_control_delivery_side
 
 end module hydraulic_structures_pump

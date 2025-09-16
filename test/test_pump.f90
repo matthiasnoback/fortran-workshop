@@ -4,7 +4,8 @@ module test_pump
    use hydraulic_structures_pump, only: pump_specification_t, &
                                         pump_specification_or_error_t, &
                                         next_pump_state, &
-                                        pump_state_t
+                                        pump_state_t, &
+                                        pump_with_capacity
    use common_error_handling, only: error_t
    use common_to_string, only: to_string
    use common_precision, only: dp
@@ -27,52 +28,70 @@ contains
       type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
       testsuite = [ &
-                  new_unittest("test_level_above_start", &
-                               test_level_above_start), &
-                  new_unittest("test_level_below_stop", &
-                               test_level_below_stop), &
-                  new_unittest("test_level_between_start_and_stop_and_pump_running", &
-                               test_level_between_start_and_stop_and_pump_running), &
-                  new_unittest("test_level_between_start_and_stop_and_pump_running", &
-                               test_level_between_start_and_stop_and_pump_running), &
+                  new_unittest("test_suction_side_level_above_start", &
+                               test_suction_side_level_above_start), &
+                  new_unittest("test_suction_side_level_below_stop", &
+                               test_suction_side_level_below_stop), &
+                  new_unittest("test_suction_side_level_between_start_and_stop_and_pump_running", &
+                               test_suction_side_level_between_start_and_stop_and_pump_running), &
+                  new_unittest("test_suction_side_level_between_start_and_stop_and_pump_running", &
+                               test_suction_side_level_between_start_and_stop_and_pump_running), &
                   new_unittest("test_check_pump_specification_or_error", &
                                test_check_pump_specification_or_error) &
                   ]
    end subroutine collect_tests
 
-   subroutine test_level_above_start(error)
+   subroutine test_suction_side_level_above_start(error)
       type(error_type), allocatable, intent(out) :: error
 
+      type(pump_specification_t), allocatable :: specification
+      specification = pump_with_capacity(10.0_dp)
+      call specification%control_suction_side(2.0_dp, 1.0_dp)
+
       call check(error, &
-                 next_pump_state(pump_specification_t(10.0_dp, 2.0_dp, 1.0_dp), &
+                 next_pump_state(specification, &
                                  running_at_capacity(10.0_dp), &
                                  2.5_dp), &
                  running_at_capacity(10.0_dp))
-   end subroutine test_level_above_start
+   end subroutine test_suction_side_level_above_start
 
-   subroutine test_level_below_stop(error)
+   subroutine test_suction_side_level_below_stop(error)
       type(error_type), allocatable, intent(out) :: error
+
+      type(pump_specification_t), allocatable :: specification
+      specification = pump_with_capacity(10.0_dp)
+      call specification%control_suction_side(2.0_dp, 1.0_dp)
+
       call check(error, &
-                 next_pump_state(pump_specification_t(10.0_dp, 2.0_dp, 1.0_dp), &
+                 next_pump_state(specification, &
                                  running_at_capacity(10.0_dp), &
                                  0.5_dp), &
                  switched_off())
-   end subroutine test_level_below_stop
+   end subroutine test_suction_side_level_below_stop
 
-   subroutine test_level_between_start_and_stop_and_pump_running(error)
+   subroutine test_suction_side_level_between_start_and_stop_and_pump_running(error)
       type(error_type), allocatable, intent(out) :: error
 
+      type(pump_specification_t), allocatable :: specification
+      specification = pump_with_capacity(10.0_dp)
+      call specification%control_suction_side(2.0_dp, 1.0_dp)
+
       call check(error, &
-                 next_pump_state(pump_specification_t(10.0_dp, 2.0_dp, 1.0_dp), &
+                 next_pump_state(specification, &
                                  running_at_capacity(10.0_dp), &
                                  1.5_dp), &
                  running_at_capacity(10.0_dp))
-   end subroutine test_level_between_start_and_stop_and_pump_running
+   end subroutine test_suction_side_level_between_start_and_stop_and_pump_running
 
    subroutine test_level_between_start_and_stop_and_pump_not_running(error)
       type(error_type), allocatable, intent(out) :: error
+
+      type(pump_specification_t), allocatable :: specification
+      specification = pump_with_capacity(10.0_dp)
+      call specification%control_suction_side(2.0_dp, 1.0_dp)
+
       call check(error, &
-                 next_pump_state(pump_specification_t(10.0_dp, 2.0_dp, 1.0_dp), &
+                 next_pump_state(specification, &
                                  switched_off(), &
                                  1.5_dp), &
                  running_at_capacity(10.0_dp))
@@ -103,14 +122,14 @@ contains
 
       case = 3
       ! Both cases contain a pump, and they are equal
-      actual(case)%pump = pump_specification_t(0.0_dp, 0.0_dp, 0.0_dp)
-      expected(case)%pump = pump_specification_t(0.0_dp, 0.0_dp, 0.0_dp)
+      actual(case)%pump = pump_with_capacity(10.0_dp)
+      expected(case)%pump = pump_with_capacity(10.0_dp)
       check_should_fail(case) = .false.
 
       case = 4
       ! One case contains an error, the other a pump
       actual(case)%error = error_t('An error')
-      expected(case)%pump = pump_specification_t(0.0_dp, 0.0_dp, 0.0_dp)
+      expected(case)%pump = pump_with_capacity(10.0_dp)
       check_should_fail(case) = .true.
 
       do case = 1, cases
