@@ -10,6 +10,7 @@ auto-executables = true
 auto-tests = true
 auto-examples = true
 module-naming = false
+external-modules = "ifport"
 
 [install]
 library = false
