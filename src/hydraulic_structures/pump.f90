@@ -13,12 +13,12 @@ module hydraulic_structures_pump
 
    type pump_specification_t
       real(kind=dp) :: capacity
-      logical :: is_controlled_on_suction_side
-      real(kind=dp) :: suction_side_start_level
-      real(kind=dp) :: suction_side_stop_level
-      logical :: is_controlled_on_delivery_side
-      real(kind=dp) :: delivery_side_start_level
-      real(kind=dp) :: delivery_side_stop_level
+      logical :: is_controlled_on_suction_side = .false.
+      real(kind=dp) :: suction_side_start_level = 0.0_dp
+      real(kind=dp) :: suction_side_stop_level = 0.0_dp
+      logical :: is_controlled_on_delivery_side = .false.
+      real(kind=dp) :: delivery_side_start_level = 0.0_dp
+      real(kind=dp) :: delivery_side_stop_level = 0.0_dp
    contains
       procedure :: control_suction_side => pump_specification_control_suction_side
       procedure :: control_delivery_side => pump_specification_control_delivery_side
@@ -70,6 +70,7 @@ contains
       real(kind=dp), intent(in) :: start_level
       real(kind=dp), intent(in) :: stop_level
 
+      self%is_controlled_on_suction_side = .true.
       self%suction_side_start_level = start_level
       self%suction_side_stop_level = stop_level
    end subroutine pump_specification_control_suction_side
@@ -79,6 +80,7 @@ contains
       real(kind=dp), intent(in) :: start_level
       real(kind=dp), intent(in) :: stop_level
 
+      self%is_controlled_on_delivery_side = .true.
       self%delivery_side_start_level = start_level
       self%delivery_side_stop_level = stop_level
    end subroutine pump_specification_control_delivery_side

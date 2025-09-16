@@ -16,6 +16,7 @@ program tester
    use test_vector, only: collect_vector_tests => collect_tests
    use test_benchmark, only: collect_benchmark_tests => collect_tests
    use test_pump, only: collect_pump_tests => collect_tests
+   use test_check_pump_specification, only: collect_check_pump_specification_tests => collect_tests
    use test_custom_checks, only: collect_custom_checks_tests => collect_tests
    use test_clock, only: collect_clock_tests => collect_tests
 
@@ -33,6 +34,7 @@ program tester
                 new_testsuite("custom_checks", collect_custom_checks_tests), &
                 new_testsuite("stopwatch", collect_stopwatch_tests), &
                 new_testsuite("pump", collect_pump_tests), &
+                new_testsuite("check_pump_specification", collect_check_pump_specification_tests), &
                 new_testsuite("config", collect_config_tests), &
                 new_testsuite("interpolation", collect_interpolation_tests), &
                 new_testsuite("error_handling", collect_error_handling_tests), &

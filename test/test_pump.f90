@@ -6,6 +6,7 @@ module test_pump
                                         next_pump_state, &
                                         pump_state_t, &
                                         pump_with_capacity
+   use test_check_pump_specification, only: check
    use common_error_handling, only: error_t
    use common_to_string, only: to_string
    use common_precision, only: dp
@@ -17,7 +18,6 @@ module test_pump
    public :: collect_tests
 
    interface check
-      procedure :: check_pump_specification
       procedure :: check_pump_specification_or_error
       procedure :: check_pump_state
    end interface check
@@ -154,19 +154,6 @@ contains
          end if
       end do
    end subroutine test_check_pump_specification_or_error
-
-   subroutine check_pump_specification(error, actual, expected)
-      type(error_type), allocatable, intent(out) :: error
-      type(pump_specification_t), intent(in) :: actual
-      type(pump_specification_t), intent(in) :: expected
-
-      ! TODO as `pump_specification_t` gains more data components, add more checks here:
-
-      ! call check(error, actual%capacity, expected%capacity)
-      ! if (allocated(error)) then
-      !    return
-      ! end if
-   end subroutine check_pump_specification
 
    subroutine check_pump_specification_or_error(error, actual, expected)
       type(error_type), allocatable, intent(out) :: error

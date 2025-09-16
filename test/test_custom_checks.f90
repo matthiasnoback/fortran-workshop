@@ -8,6 +8,8 @@ module test_custom_checks
 
    public :: check
    public :: collect_tests
+   public :: assert_check_passed
+   public :: assert_check_failed
 
    interface check
       module procedure :: check_string_array
@@ -184,4 +186,42 @@ contains
       end do
    end subroutine check_integer_array
 
+   subroutine assert_check_passed(error, error_from_check)
+      type(error_type), allocatable, intent(out) :: error
+      type(error_type), allocatable, intent(inout) :: error_from_check
+
+      call check(error, allocated(error_from_check), .false.)
+
+      call prevent_uncaught_error(error_from_check)
+   end subroutine assert_check_passed
+
+   subroutine assert_check_failed(error, error_from_check, message_should_contain)
+      type(error_type), allocatable, intent(out) :: error
+      type(error_type), allocatable, intent(inout) :: error_from_check
+      character(len=*), intent(in), optional :: message_should_contain
+      integer :: position_of_expected_message
+
+      call check(error, allocated(error_from_check), .true., 'Expected the check to fail')
+      call prevent_uncaught_error(error_from_check)
+
+      if (allocated(error)) then
+         return
+      end if
+
+      if (present(message_should_contain)) then
+         position_of_expected_message = index(error_from_check%message, message_should_contain)
+         call check(error, position_of_expected_message > 0, .true., &
+                    'Expected the error message to contain "'//message_should_contain// &
+                    '" but got "'//error_from_check%message//'"')
+      end if
+   end subroutine assert_check_failed
+
+   subroutine prevent_uncaught_error(error)
+      type(error_type), allocatable, intent(inout) :: error
+      if (allocated(error)) then
+         ! fake success, or the final procedure of error_type
+         ! will escalate the error as "uncaught"
+         error%stat = 0
+      end if
+   end subroutine prevent_uncaught_error
 end module test_custom_checks
