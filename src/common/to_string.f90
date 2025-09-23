@@ -13,7 +13,7 @@ module common_to_string
       module procedure &
          int_to_string, &
          int_array_to_string, &
-         real_to_string, &
+         real32_to_string, &
          real64_to_string, &
          real_array_to_string, &
          logical_to_string, &
@@ -98,14 +98,14 @@ contains
       end do
    end function int_array_to_string
 
-   pure function real_to_string(value) result(str)
+   pure function real32_to_string(value) result(str)
       real, intent(in) :: value
       character(len=32) :: temp
       character(len=:), allocatable :: str
 
-      write (temp, *) value
+      write (temp, '(F32.6)') value
       str = trim(adjustl(temp))
-   end function real_to_string
+   end function real32_to_string
 
    pure function real64_to_string(value) result(str)
       real(kind=real64), intent(in) :: value

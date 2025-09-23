@@ -2,6 +2,7 @@ module test_to_string
    use testdrive, only: new_unittest, unittest_type, error_type, test_failed
    use test_custom_checks, only: check
    use common_to_string, only: to_string, to_string_t
+   use iso_fortran_env, only: real32
 
    implicit none(type, external)
 
@@ -24,8 +25,8 @@ contains
       testsuite = [ &
                   new_unittest("test_int_to_string", test_int_to_string), &
                   new_unittest("test_int_array_to_string", test_int_array_to_string), &
-                  new_unittest("test_real_to_string", test_real_to_string), &
-                  new_unittest("test_real_array_to_string", test_real_array_to_string), &
+                  new_unittest("test_real32_to_string", test_real32_to_string), &
+                  new_unittest("test_real32_array_to_string", test_real32_array_to_string), &
                   new_unittest("test_logical_to_string", test_logical_to_string), &
                   new_unittest("test_logical_array_to_string", test_logical_array_to_string), &
                   new_unittest("test_derived_type_to_string", test_derived_type_to_string), &
@@ -46,18 +47,21 @@ contains
       call check(error, to_string([1, 2]), '1, 2')
    end subroutine test_int_array_to_string
 
-   subroutine test_real_to_string(error)
+   subroutine test_real32_to_string(error)
       type(error_type), allocatable, intent(out) :: error
 
-      call check(error, to_string(1.0), '1.000000')
-      call check(error, to_string(12345.6789), '12345.68')
-   end subroutine test_real_to_string
+      call check(error, to_string(1.0_real32), '1.000000')
+      if (allocated(error)) then
+         return
+      end if
+      call check(error, to_string(12.123421_real32), '12.123421')
+   end subroutine test_real32_to_string
 
-   subroutine test_real_array_to_string(error)
+   subroutine test_real32_array_to_string(error)
       type(error_type), allocatable, intent(out) :: error
 
       call check(error, to_string([1.0, 2.0]), '1.000000, 2.000000')
-   end subroutine test_real_array_to_string
+   end subroutine test_real32_array_to_string
 
    subroutine test_logical_to_string(error)
       type(error_type), allocatable, intent(out) :: error
@@ -84,7 +88,7 @@ contains
       character(len=100) :: str
       write (str, *) extends_to_string_t('foo', 'bar')
 
-      call check(error, trim(str), 'foo and bar')
+      call check(error, trim(adjustl(str)), 'foo and bar')
    end subroutine test_write_dt_to_string
 
    pure function to_string_implementation(self) result(res)
