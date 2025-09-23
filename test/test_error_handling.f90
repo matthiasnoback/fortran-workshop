@@ -34,11 +34,8 @@ contains
       type(error_type), allocatable, intent(out) :: error
 
       type(error_t), allocatable :: current
-      type(error_t), allocatable :: previous_error
 
-      previous_error = error_t('The previous error')
-
-      current = error_t('The current error', previous_error)
+      current = error_t('The current error', error_t('The previous error'))
 
       call check(error, current%to_string(), 'The current error The previous error')
    end subroutine test_error_with_previous_error_to_string
