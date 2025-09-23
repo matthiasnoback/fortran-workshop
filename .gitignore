@@ -29,3 +29,6 @@ massif.out.*
 
 # perf output
 perf.data
+
+# Code coverage
+/coverage/

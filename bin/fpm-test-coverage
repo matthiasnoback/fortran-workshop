@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+
+# *Usage*
+#
+# Run FPM tests with test coverage
+
+# Remove coverage data files generated during previous runs
+find . -name "*.gcda" -type f -delete
+
+run="docker compose run --rm fpm"
+# Run FPM tests, compiled with gfortran (ifx doesn't support code coverage yet):
+# - Produce artifacts (*.gcda, *.gcno) needed for generating code coverage info
+# - -Wno-external-argument-mismatch is added because there's a bug in gfortran 15.1 that prevents compilation
+#   See https://github.com/fortran-lang/test-drive/issues/49
+$run fpm test --compiler=gfortran --profile=debug \
+    --flag -fprofile-arcs --flag -ftest-coverage --link-flag -fprofile-arcs --link-flag -ftest-coverage \
+    --flag -Wno-external-argument-mismatch \
+    --flag -O0
+
+$run lcov --capture --directory . --output-file ./coverage/coverage.info
+$run genhtml --output-directory ./coverage/ ./coverage/coverage.info
+
+echo "Open coverage report ./coverage/index.html"
