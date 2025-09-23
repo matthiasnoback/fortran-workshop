@@ -14,7 +14,7 @@ program functional_performance
    integer, parameter :: recursivity = 10000
 
    ! Run each benchmark several times, to get smoother results per iteration
-   integer, parameter :: iterations = 1000
+   integer, parameter :: iterations = 10000000
 
    call run_all_benchmarks()
 
@@ -79,6 +79,10 @@ contains
       ! call benchmark_repeated_procedure_calls('int_list_t intent out arg', &
       !                                         iterations, run_int_list_filter_even_intent_out_argument)
 
+      ! call benchmark_repeated_procedure_calls('regular function call', &
+      !                                         iterations, using_regular_function_call)
+      ! call benchmark_repeated_procedure_calls('using procedure pointer', &
+      !                                         iterations, using_procedure_pointer)
       call print_benchmark_results()
 
       call clear_benchmarks()
@@ -271,4 +275,31 @@ contains
 
       res = integers(:res_index)
    end subroutine run_do_loop_is_even_less_memory
+
+   subroutine using_regular_function_call()
+      integer :: res
+      res = give_me_an_int()
+   end subroutine using_regular_function_call
+
+   subroutine using_procedure_pointer()
+      interface
+         function func_returns_int() result(int_res)
+            implicit none(type, external)
+            integer :: int_res
+         end function func_returns_int
+      end interface
+
+      integer :: res
+      procedure(func_returns_int), pointer :: give_me_an_int_func => null()
+      give_me_an_int_func => give_me_an_int
+      res = give_me_an_int()
+   end subroutine using_procedure_pointer
+
+   function give_me_an_int() result(an_int)
+      integer :: an_int
+      real :: random_real
+      call random_number(harvest=random_real)
+      an_int = floor(random_real*100.0)
+   end function give_me_an_int
+
 end program functional_performance
