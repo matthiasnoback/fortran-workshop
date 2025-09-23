@@ -1,11 +1,13 @@
 #!/usr/bin/env sh
 
+set -eu
+
 # *Usage*
 #
 # Run FPM tests with test coverage
 
 # Remove coverage data files generated during previous runs
-find . -name "*.gcda" -type f -delete
+find . -name "*.gcda" -type f -delete || true
 
 run="docker compose run --rm fpm"
 # Run FPM tests, compiled with gfortran (ifx doesn't support code coverage yet):
