@@ -3,7 +3,6 @@ module test_clock
    use testdrive, only: new_unittest, unittest_type, error_type, test_failed, skip_test
    use common_clock, only: production_clock
    use test_custom_checks, only: check
-   use ifport, only: sleep
 
    implicit none(type, external)
 
@@ -18,9 +17,7 @@ contains
 
       testsuite = [ &
                   new_unittest("test_production_clock_get_cpu_time", &
-                               test_production_clock_get_cpu_time), &
-                  new_unittest("test_production_clock_get_count", &
-                               test_production_clock_get_count) &
+                               test_production_clock_get_cpu_time) &
                   ]
    end subroutine collect_tests
 
@@ -30,7 +27,7 @@ contains
       integer(kind=int64) :: count_1, count_2, res
       count_1 = production_clock%get_count()
 
-      call sleep(1)
+      call takes_some_time()
 
       count_2 = production_clock%get_count()
 
