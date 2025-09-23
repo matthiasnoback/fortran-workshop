@@ -4,7 +4,7 @@ program functional_performance
    use benchmark_facade, only: benchmark_repeated_procedure_calls, &
                                print_benchmark_results, &
                                clear_benchmarks
-   use functional_lists, only: int_list_t, is_even, sum
+   use functional_lists, only: int_list_t, is_even, sum_func
 
    implicit none(type, external)
 
@@ -102,7 +102,7 @@ contains
    subroutine run_intrinsic_reduce_sum()
       integer :: result
       integer :: i
-      result = reduce([(i, i=1, recursivity)], sum)
+      result = reduce([(i, i=1, recursivity)], sum_func)
    end subroutine run_intrinsic_reduce_sum
 
    subroutine run_int_list_reduce_sum()
@@ -112,7 +112,7 @@ contains
 
       integers%values = [(i, i=1, recursivity)]
 
-      result = integers%reduce(sum, 0)
+      result = integers%reduce(sum_func, 0)
    end subroutine run_int_list_reduce_sum
 
    subroutine run_recursive_sum()

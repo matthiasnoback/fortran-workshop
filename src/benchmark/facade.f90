@@ -139,6 +139,8 @@ contains
       integer :: i
       integer :: longest_benchmark_name
       character, parameter :: tab = char(9)
+      type(benchmark_result_t) :: result
+      type(benchmark_ended_t), pointer :: benchmark
       benchmarks => get_benchmarks()
 
       if (size(benchmarks) == 0) then
@@ -157,20 +159,21 @@ contains
          'Benchmark', tab, 'Iterations', tab, 'CPU', tab, 'CPU/it', tab, 'Time', tab, 'Time/it'
 
       do i = 1, size(benchmarks)
-         associate (benchmark => benchmarks(i), result => benchmarks(i)%result())
-            print '(A'//to_string(longest_benchmark_name)//',A,I10,A,F6.5,A,F6.5,A,F6.5,A,F7.5)', &
-               benchmark%name, &
-               tab, &
-               benchmark%iterations, &
-               tab, &
-               result%cpu_time_diff, &
-               tab, &
-               result%cpu_time_diff_per_iteration, &
-               tab, &
-               result%wall_clock_time_diff, &
-               tab, &
-               result%wall_clock_time_diff_per_iteration
-         end associate
+         benchmark => benchmarks(i)
+         result = benchmarks(i)%result()
+
+         print '(A'//to_string(longest_benchmark_name)//',A,I10,A,F6.5,A,F6.5,A,F6.5,A,F7.5)', &
+            benchmark%name, &
+            tab, &
+            benchmark%iterations, &
+            tab, &
+            result%cpu_time_diff, &
+            tab, &
+            result%cpu_time_diff_per_iteration, &
+            tab, &
+            result%wall_clock_time_diff, &
+            tab, &
+            result%wall_clock_time_diff_per_iteration
       end do
    end subroutine print_benchmark_results
 

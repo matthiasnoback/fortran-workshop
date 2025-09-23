@@ -210,13 +210,13 @@ contains
    end function reduce_to_integer
 
    !> Can be used as a reduction function, summing a list of integers.
-   pure function sum(carry, value) result(new_carry)
+   pure function sum_func(carry, value) result(new_carry)
       integer, intent(in) :: carry
       integer, intent(in) :: value
       integer :: new_carry
 
       new_carry = carry + value
-   end function sum
+   end function sum_func
 
    pure function is_even(value) result(keep)
       integer, intent(in) :: value
