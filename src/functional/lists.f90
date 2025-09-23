@@ -14,7 +14,8 @@ module functional_lists
       procedure, private :: int_list_map_to_int
       procedure, private :: int_list_map_to_real
       procedure, private :: int_list_curried_map_to_real
-      generic :: map => int_list_map_to_int, int_list_map_to_real, int_list_curried_map_to_real
+      ! This will only work when using IFX, since it can disambiguate based on the return type whereas gfortran can't:
+      ! generic :: map => int_list_map_to_int, int_list_map_to_real, int_list_curried_map_to_real
       procedure, private :: reduce_to_integer
       generic :: reduce => reduce_to_integer
    end type int_list_t
