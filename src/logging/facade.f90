@@ -8,8 +8,6 @@ module logging_facade
 
    interface
       module function get_logger() result(logger)
-         import abstract_logger_t
-
          implicit none(type, external)
 
          class(abstract_logger_t), pointer :: logger
