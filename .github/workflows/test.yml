@@ -1,0 +1,36 @@
+name: Test
+
+on:
+    push:
+        paths-ignore:
+            - "**.md"
+    pull_request:
+        branches:
+            - main
+        paths-ignore:
+            - "**.md"
+
+jobs:
+    test:
+        name: ${{ matrix.os }}_${{ matrix.compiler }}_test
+        runs-on: ${{ matrix.os }}
+        strategy:
+            fail-fast: false
+            matrix:
+                os: [ubuntu-latest]
+                compiler: [ifx]
+        steps:
+            - name: Setup Fortran
+              uses: gha3mi/setup-fortran-conda@latest
+              with:
+                  compiler: ${{ matrix.compiler }}
+                  platform: ${{ matrix.os }}
+
+            - name: fpm test
+              run: fpm test --compiler ${{ matrix.compiler }} --profile debug
+
+            - name: cmake test
+              run: |
+                  cmake -S . -B build/debug -DCMAKE_BUILD_TYPE=Debug -DCMAKE_Fortran_COMPILER=${{ matrix.compiler }} -G Ninja
+                  cmake --build build/debug
+                  ctest --test-dir build/debug --output-on-failure
