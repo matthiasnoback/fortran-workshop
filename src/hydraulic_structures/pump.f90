@@ -38,17 +38,17 @@ module hydraulic_structures_pump
 
 contains
 
-   function load_pump_specification(config) result(res)
-      type(configuration_t), intent(in) :: config
+   function load_pump_specification(configuration) result(res)
+      type(configuration_t), intent(in) :: configuration
       type(pump_specification_or_error_t) :: res
 
-      type(config_value_or_error_t) :: capacity_value
-      type(real_or_error_t) :: capacity
+      type(config_value_or_error_t) :: capacity_config_value
+      type(real_or_error_t) :: capacity_value
 
-      capacity_value = config%get_config_value('capacity')
-      capacity = capacity_value%config_value%get_real()
+      capacity_config_value = configuration%get_config_value('capacity')
+      capacity_value = capacity_config_value%config_value%get_real()
 
-      res%pump = pump_with_capacity(capacity%value)
+      res%pump = pump_with_capacity(capacity_value%value)
    end function load_pump_specification
 
    pure function next_pump_state(pump_specification, previous_state, actual_level) result(next_state)
