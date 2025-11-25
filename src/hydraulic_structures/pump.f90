@@ -46,7 +46,16 @@ contains
       type(real_or_error_t) :: capacity_value
 
       capacity_config_value = configuration%get_config_value('capacity')
+      if (allocated(capacity_config_value%error)) then
+         res%error = error_t('"capacity" is required')
+         return
+      end if
+
       capacity_value = capacity_config_value%config_value%get_real()
+      if (allocated(capacity_value%error)) then
+         res%error = error_t('"capacity" should be a real')
+         return
+      end if
 
       res%pump = pump_with_capacity(capacity_value%value)
    end function load_pump_specification

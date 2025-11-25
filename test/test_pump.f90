@@ -32,6 +32,10 @@ contains
       testsuite = [ &
                   new_unittest("test_load_capacity", &
                                test_load_capacity), &
+                  new_unittest("test_capacity_is_required", &
+                               test_capacity_is_required), &
+                  new_unittest("test_capacity_should_be_real", &
+                               test_capacity_should_be_real), &
                   new_unittest("test_suction_side_level_above_start", &
                                test_suction_side_level_above_start), &
                   new_unittest("test_suction_side_level_below_stop", &
@@ -58,6 +62,32 @@ contains
       call check(error, actual, expected)
 
    end subroutine test_load_capacity
+
+   subroutine test_capacity_is_required(error)
+      type(error_type), allocatable, intent(out) :: error
+
+      type(pump_specification_or_error_t) :: actual
+      type(pump_specification_or_error_t) :: expected
+
+      expected%error = error_t('"capacity" is required')
+
+      actual = load_pump_specification(configuration_t([config_value_t('no capacity', '15.0')]))
+
+      call check(error, actual, expected)
+   end subroutine test_capacity_is_required
+
+   subroutine test_capacity_should_be_real(error)
+      type(error_type), allocatable, intent(out) :: error
+
+      type(pump_specification_or_error_t) :: actual
+      type(pump_specification_or_error_t) :: expected
+
+      expected%error = error_t('"capacity" should be a real')
+
+      actual = load_pump_specification(configuration_t([config_value_t('capacity', 'not a real')]))
+
+      call check(error, actual, expected)
+   end subroutine test_capacity_should_be_real
 
    subroutine test_suction_side_level_above_start(error)
       type(error_type), allocatable, intent(out) :: error
