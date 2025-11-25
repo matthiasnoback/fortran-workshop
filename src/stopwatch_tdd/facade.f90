@@ -8,17 +8,30 @@ module stopwatch_tdd_facade
    public :: stopwatch_start
    public :: stopwatch_stop
    public :: stopwatch_result
+   public :: set_clock_count
 
    integer(kind=int64) :: time_start
    integer(kind=int64) :: time_stop
+   integer(kind=int64), allocatable :: mock_clock_count
    real(kind=real64) :: cpu_time_start
    real(kind=real64) :: cpu_time_stop
 
 contains
 
+   subroutine set_clock_count(fixed_count)
+      integer(kind=int64), intent(in) :: fixed_count
+      mock_clock_count = fixed_count
+   end subroutine set_clock_count
+
    function get_clock_count() result(count)
       integer(kind=int64) :: count
-      call system_clock(count=count)
+
+      if (allocated(mock_clock_count)) then
+         count = mock_clock_count
+      else
+         call system_clock(count=count)
+         ! print *, count
+      end if
    end function get_clock_count
 
    subroutine stopwatch_start()

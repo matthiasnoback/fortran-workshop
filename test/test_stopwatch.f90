@@ -2,7 +2,8 @@ module test_stopwatch
    use testdrive, only: new_unittest, unittest_type, error_type, test_failed, skip_test
    use stopwatch_tdd_facade, only: stopwatch_start, &
                                    stopwatch_stop, &
-                                   stopwatch_result
+                                   stopwatch_result, &
+                                   set_clock_count
    use test_custom_checks, only: check
 
    implicit none(type, external)
@@ -29,12 +30,15 @@ contains
 
       integer :: i, j
 
+      call set_clock_count(1764081895648000)
       call stopwatch_start()
 
       do i = 1, 1000000
          j = i*i/(i + 1)
       end do
       ! Should we do something intense here?
+
+      call set_clock_count(1764081895649000)
 
       call stopwatch_stop()
 
