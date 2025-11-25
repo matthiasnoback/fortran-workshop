@@ -16,14 +16,19 @@ module stopwatch_tdd_facade
 
 contains
 
+   function get_clock_count() result(count)
+      integer(kind=int64) :: count
+      call system_clock(count=count)
+   end function get_clock_count
+
    subroutine stopwatch_start()
       call cpu_time(cpu_time_start)
-      call system_clock(count=time_start)
+      time_start = get_clock_count()
    end subroutine stopwatch_start
 
    subroutine stopwatch_stop()
       call cpu_time(cpu_time_stop)
-      call system_clock(count=time_stop)
+      time_stop = get_clock_count()
    end subroutine stopwatch_stop
 
    function stopwatch_result() result(res)

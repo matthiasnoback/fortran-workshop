@@ -29,9 +29,6 @@ contains
 
       integer :: i, j
 
-      call skip_test(error, 'Flaky, needs a fix')
-      return
-
       call stopwatch_start()
 
       do i = 1, 1000000
