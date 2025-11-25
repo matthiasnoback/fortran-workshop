@@ -5,8 +5,10 @@ module test_pump
                                         pump_specification_or_error_t, &
                                         next_pump_state, &
                                         pump_state_t, &
-                                        pump_with_capacity
+                                        pump_with_capacity, &
+                                        load_pump_specification
    use test_check_pump_specification, only: check
+   use config_loading, only: configuration_t, config_value_t
    use common_error_handling, only: error_t
    use common_to_string, only: to_string
    use common_precision, only: dp
@@ -28,6 +30,8 @@ contains
       type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
       testsuite = [ &
+                  new_unittest("test_load_capacity", &
+                               test_load_capacity), &
                   new_unittest("test_suction_side_level_above_start", &
                                test_suction_side_level_above_start), &
                   new_unittest("test_suction_side_level_below_stop", &
@@ -40,6 +44,20 @@ contains
                                test_check_pump_specification_or_error) &
                   ]
    end subroutine collect_tests
+
+   subroutine test_load_capacity(error)
+      type(error_type), allocatable, intent(out) :: error
+
+      type(pump_specification_or_error_t) :: actual
+      type(pump_specification_or_error_t) :: expected
+
+      expected%pump = pump_with_capacity(15.0_dp)
+
+      actual = load_pump_specification(configuration_t([config_value_t('capacity', '15.0')]))
+
+      call check(error, actual, expected)
+
+   end subroutine test_load_capacity
 
    subroutine test_suction_side_level_above_start(error)
       type(error_type), allocatable, intent(out) :: error
