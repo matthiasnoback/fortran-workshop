@@ -9,6 +9,10 @@ module stopwatch_tdd_facade
    public :: stopwatch_stop
    public :: stopwatch_result
    public :: set_clock_count
+   public :: make_actual_snapshots
+   public :: make_fixed_snapshots
+   public :: set_snapshot
+   public :: time_snapshot_t
 
    integer(kind=int64) :: time_start
    integer(kind=int64) :: time_stop
@@ -24,7 +28,28 @@ module stopwatch_tdd_facade
 
    type(time_snapshot_t), allocatable :: start_snapshot
    type(time_snapshot_t), allocatable :: stop_snapshot
+   type(time_snapshot_t), allocatable :: fixed_snapshot
+
+   interface
+      function take_snapshot_proc() result(snapshot)
+         import time_snapshot_t
+
+         implicit none(type, external)
+
+         type(time_snapshot_t) :: snapshot
+      end function take_snapshot_proc
+   end interface
+
+   procedure(take_snapshot_proc), pointer :: take_snapshot
 contains
+
+   subroutine make_actual_snapshots()
+      take_snapshot => take_actual_snapshot
+   end subroutine make_actual_snapshots
+
+   subroutine make_fixed_snapshots()
+      take_snapshot => take_fixed_snapshot
+   end subroutine make_fixed_snapshots
 
    subroutine set_clock_count(clock_count)
       integer(kind=int64), intent(in), optional :: clock_count
@@ -53,14 +78,25 @@ contains
       start_snapshot = take_snapshot()
    end subroutine stopwatch_start
 
-   function take_snapshot() result(snapshot)
+   function take_actual_snapshot() result(snapshot)
       type(time_snapshot_t) :: snapshot
 
       snapshot%clock_count = get_clock_count()
       call system_clock(count_rate=snapshot%clock_rate)
 
       call cpu_time(snapshot%cpu_time)
-   end function take_snapshot
+   end function take_actual_snapshot
+
+   function take_fixed_snapshot() result(snapshot)
+      type(time_snapshot_t) :: snapshot
+
+      snapshot = fixed_snapshot
+   end function take_fixed_snapshot
+
+   subroutine set_snapshot(snapshot)
+      type(time_snapshot_t), intent(in) :: snapshot
+      fixed_snapshot = snapshot
+   end subroutine set_snapshot
 
    subroutine stopwatch_stop()
       stop_snapshot = take_snapshot()

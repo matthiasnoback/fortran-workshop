@@ -1,10 +1,14 @@
 module test_stopwatch
-   use iso_fortran_env, only: int64
+   use iso_fortran_env, only: int64, real64
    use testdrive, only: new_unittest, unittest_type, error_type, test_failed, skip_test
    use stopwatch_tdd_facade, only: stopwatch_start, &
                                    stopwatch_stop, &
                                    stopwatch_result, &
-                                   set_clock_count
+                                   set_clock_count, &
+                                   make_actual_snapshots, &
+                                   set_snapshot, &
+                                   make_fixed_snapshots, &
+                                   time_snapshot_t
    use test_custom_checks, only: check
 
    implicit none(type, external)
@@ -29,23 +33,13 @@ contains
       character(len=:), allocatable, dimension(:) :: actual
       character(len=45), allocatable, dimension(:) :: expected
 
-      integer :: i
-      integer :: j
+      call make_fixed_snapshots()
 
-      ! call skip_test(error, 'TODO make deterministic')
-      ! return
-
-      call set_clock_count(1764160416868000_int64)
+      call set_snapshot(time_snapshot_t(1764160416868000_int64, 1000000, 1.0_real64))
 
       call stopwatch_start()
 
-      ! Do something intense here to make time pass
-
-      do i = 1, 1000000
-         j = i*i/(i + 1)
-      end do
-
-      call set_clock_count(1764160416870000_int64)
+      call set_snapshot(time_snapshot_t(1764160416870000_int64, 1000000, 1.0_real64))
 
       call stopwatch_stop()
 
@@ -54,8 +48,6 @@ contains
                   '         cpu time difference:        0.000000']
 
       call check(error, actual, expected)
-
-      call set_clock_count()
 
    end subroutine test_start_stop_and_print
 
