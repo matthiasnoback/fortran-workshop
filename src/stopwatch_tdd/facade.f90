@@ -16,6 +16,14 @@ module stopwatch_tdd_facade
    real(kind=real64) :: cpu_time_start
    real(kind=real64) :: cpu_time_stop
 
+   type :: time_snapshot_t
+      integer(kind=int64) :: clock_count
+      real(kind=int64) :: clock_rate
+      real(kind=real64) :: cpu_time
+   end type time_snapshot_t
+
+   type(time_snapshot_t), allocatable :: start_snapshot
+   type(time_snapshot_t), allocatable :: stop_snapshot
 contains
 
    subroutine set_clock_count(clock_count)
@@ -42,13 +50,20 @@ contains
    end function get_clock_count
 
    subroutine stopwatch_start()
-      call cpu_time(cpu_time_start)
-      time_start = get_clock_count()
+      start_snapshot = take_snapshot()
    end subroutine stopwatch_start
 
+   function take_snapshot() result(snapshot)
+      type(time_snapshot_t) :: snapshot
+
+      snapshot%clock_count = get_clock_count()
+      call system_clock(count_rate=snapshot%clock_rate)
+
+      call cpu_time(snapshot%cpu_time)
+   end function take_snapshot
+
    subroutine stopwatch_stop()
-      call cpu_time(cpu_time_stop)
-      time_stop = get_clock_count()
+      stop_snapshot = take_snapshot()
    end subroutine stopwatch_stop
 
    function stopwatch_result() result(timings)
@@ -60,10 +75,11 @@ contains
 
       call system_clock(count_rate=clock_rate)  ! # of clock ticks per second
 
-      wall_clock_time_difference = (time_stop - time_start)/clock_rate
+      wall_clock_time_difference = (stop_snapshot%clock_count - start_snapshot%clock_count)/ &
+                                   stop_snapshot%clock_rate
       write (timings(1), '(a30,f15.6)') 'wall clock time difference: ', wall_clock_time_difference
 
-      cpu_time_difference = cpu_time_stop - cpu_time_start
+      cpu_time_difference = stop_snapshot%cpu_time - start_snapshot%cpu_time
       write (timings(2), '(a30,f15.6)') 'cpu time difference: ', cpu_time_difference
    end function stopwatch_result
 end module stopwatch_tdd_facade
