@@ -4,7 +4,6 @@ module test_stopwatch
    use stopwatch_tdd_facade, only: stopwatch_start, &
                                    stopwatch_stop, &
                                    stopwatch_result, &
-                                   set_clock_count, &
                                    make_actual_snapshots, &
                                    set_snapshot, &
                                    make_fixed_snapshots, &
