@@ -7,7 +7,7 @@ module stopwatch_tdd_facade
 
    public :: stopwatch_start
    public :: stopwatch_stop
-   public :: stopwatch_print
+   public :: stopwatch_result
 
    integer(kind=int64) :: time_start
    integer(kind=int64) :: time_stop
@@ -26,18 +26,19 @@ contains
       call system_clock(count=time_stop)
    end subroutine stopwatch_stop
 
-   subroutine stopwatch_print()
+   function stopwatch_result() result(timings)
       real(kind=int64) :: clock_rate
       real(kind=real64) :: wall_clock_time_difference
       real(kind=real64) :: cpu_time_difference
       real(kind=real64) :: time_difference
+      character(len=45), dimension(2) :: timings
 
       call system_clock(count_rate=clock_rate)  ! # of clock ticks per second
 
       wall_clock_time_difference = (time_stop - time_start)/clock_rate
-      print '(a30,f15.6)', 'wall clock time difference: ', wall_clock_time_difference
+      write (timings(1), '(a30,f15.6)') 'wall clock time difference: ', wall_clock_time_difference
 
       cpu_time_difference = cpu_time_stop - cpu_time_start
-      print '(a30,f15.6)', 'cpu time difference: ', cpu_time_difference
-   end subroutine stopwatch_print
+      write (timings(2), '(a30,f15.6)') 'cpu time difference: ', cpu_time_difference
+   end function stopwatch_result
 end module stopwatch_tdd_facade
