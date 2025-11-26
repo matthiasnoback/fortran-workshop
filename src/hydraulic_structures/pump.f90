@@ -1,6 +1,7 @@
 module hydraulic_structures_pump
    use common_error_handling, only: error_t
    use common_precision, only: dp
+   use config_loading, only: configuration_t
 
    implicit none(type, external)
 
@@ -10,6 +11,7 @@ module hydraulic_structures_pump
    public :: next_pump_state
    public :: pump_state_t
    public :: pump_with_capacity
+   public :: load_pump_specification
 
    type pump_specification_t
       real(kind=dp) :: capacity
@@ -35,6 +37,21 @@ module hydraulic_structures_pump
    end type pump_state_t
 
 contains
+
+   function load_pump_specification(configuration) result(pump_specification_or_error)
+      type(configuration_t), intent(in) :: configuration
+      type(pump_specification_or_error_t) :: pump_specification_or_error
+
+      associate (config_value_or_error => configuration%get_config_value('capacity'))
+         ! if (allocated(config_value_or_error%error)) then
+         !    pump_specification_or_error%error = config_value_or_error%error
+         ! end if
+         associate (real_or_error => config_value_or_error%config_value%get_real())
+            pump_specification_or_error%pump = pump_with_capacity(real_or_error%value)
+         end associate
+      end associate
+
+   end function load_pump_specification
 
    pure function next_pump_state(pump_specification, previous_state, actual_level) result(next_state)
       type(pump_specification_t), intent(in) :: pump_specification
