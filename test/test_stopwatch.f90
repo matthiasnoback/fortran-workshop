@@ -25,9 +25,18 @@ contains
    subroutine test_start_stop_and_print(error)
       type(error_type), allocatable, intent(out) :: error
 
+      integer :: i
+      integer :: j
+
       call stopwatch_start()
 
-      ! Should we do something intense here?
+      ! Do something intense here to make time pass
+
+      call stopwatch_start()
+
+      do i = 1, 1000000
+         j = i*i/(i + 1)
+      end do
 
       call stopwatch_stop()
 
