@@ -32,6 +32,8 @@ contains
       testsuite = [ &
                   new_unittest("test_load_pump_configuration", &
                                test_load_pump_configuration), &
+                  new_unittest("test_load_pump_configuration_no_capacity", &
+                               test_load_pump_configuration_no_capacity), &
                   new_unittest("test_suction_side_level_above_start", &
                                test_suction_side_level_above_start), &
                   new_unittest("test_suction_side_level_below_stop", &
@@ -61,6 +63,25 @@ contains
       call check(error, pump_specification, expected)
 
    end subroutine test_load_pump_configuration
+
+   subroutine test_load_pump_configuration_no_capacity(error)
+      type(error_type), allocatable, intent(out) :: error
+
+      type(configuration_t) :: configuration
+      type(config_value_t), allocatable, dimension(:) :: values
+      type(pump_specification_or_error_t) :: pump_specification
+      type(pump_specification_or_error_t) :: expected
+
+      allocate (values(0))
+      expected%error = error_t('Pump capacity not specified')
+
+      configuration = configuration_t(values)
+
+      pump_specification = load_pump_specification(configuration)
+
+      call check(error, pump_specification, expected)
+
+   end subroutine test_load_pump_configuration_no_capacity
 
    subroutine test_suction_side_level_above_start(error)
       type(error_type), allocatable, intent(out) :: error

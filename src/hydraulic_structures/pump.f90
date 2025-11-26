@@ -43,9 +43,12 @@ contains
       type(pump_specification_or_error_t) :: pump_specification_or_error
 
       associate (config_value_or_error => configuration%get_config_value('capacity'))
-         ! if (allocated(config_value_or_error%error)) then
-         !    pump_specification_or_error%error = config_value_or_error%error
-         ! end if
+         if (allocated(config_value_or_error%error)) then
+            pump_specification_or_error%error = error_t('Pump capacity not specified', &
+                                                        config_value_or_error%error)
+            return
+         end if
+
          associate (real_or_error => config_value_or_error%config_value%get_real())
             pump_specification_or_error%pump = pump_with_capacity(real_or_error%value)
          end associate
