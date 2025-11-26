@@ -1,8 +1,10 @@
 module test_stopwatch
+   use iso_fortran_env, only: int64
    use testdrive, only: new_unittest, unittest_type, error_type, test_failed, skip_test
    use stopwatch_tdd_facade, only: stopwatch_start, &
                                    stopwatch_stop, &
-                                   stopwatch_result
+                                   stopwatch_result, &
+                                   set_clock_count
    use test_custom_checks, only: check
 
    implicit none(type, external)
@@ -30,8 +32,10 @@ contains
       integer :: i
       integer :: j
 
-      call skip_test(error, 'TODO make deterministic')
-      return
+      ! call skip_test(error, 'TODO make deterministic')
+      ! return
+
+      call set_clock_count(1764160416868000_int64)
 
       call stopwatch_start()
 
@@ -41,13 +45,17 @@ contains
          j = i*i/(i + 1)
       end do
 
+      call set_clock_count(1764160416870000_int64)
+
       call stopwatch_stop()
 
       actual = stopwatch_result()
-      expected = ['  wall clock time difference:        0.001000', &
+      expected = ['  wall clock time difference:        0.002000', &
                   '         cpu time difference:        0.000000']
 
       call check(error, actual, expected)
+
+      call set_clock_count()
 
    end subroutine test_start_stop_and_print
 
