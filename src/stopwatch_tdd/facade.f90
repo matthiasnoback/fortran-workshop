@@ -1,5 +1,6 @@
 module stopwatch_tdd_facade
    use iso_fortran_env, only: int64, real64
+   use common_clock, only: clock
 
    implicit none(type, external)
 
@@ -8,9 +9,6 @@ module stopwatch_tdd_facade
    public :: stopwatch_start
    public :: stopwatch_stop
    public :: stopwatch_result
-   public :: make_actual_snapshots
-   public :: make_fixed_snapshots
-   public :: set_snapshot
    public :: time_snapshot_t
 
    type :: time_snapshot_t
@@ -21,54 +19,14 @@ module stopwatch_tdd_facade
 
    type(time_snapshot_t), allocatable :: start_snapshot
    type(time_snapshot_t), allocatable :: stop_snapshot
-   type(time_snapshot_t), allocatable :: fixed_snapshot
 
-   interface
-      function take_snapshot_proc() result(snapshot)
-         import time_snapshot_t
-
-         implicit none(type, external)
-
-         type(time_snapshot_t) :: snapshot
-      end function take_snapshot_proc
-   end interface
-
-   procedure(take_snapshot_proc), pointer :: take_snapshot
 contains
-
-   subroutine make_actual_snapshots()
-      take_snapshot => take_actual_snapshot
-   end subroutine make_actual_snapshots
-
-   subroutine make_fixed_snapshots()
-      take_snapshot => take_fixed_snapshot
-   end subroutine make_fixed_snapshots
-
    subroutine stopwatch_start()
-      start_snapshot = take_snapshot()
+      start_snapshot = time_snapshot_t(clock%get_count(), clock%get_rate(), clock%get_cpu_time())
    end subroutine stopwatch_start
 
-   function take_actual_snapshot() result(snapshot)
-      type(time_snapshot_t) :: snapshot
-
-      call system_clock(count=snapshot%clock_count, count_rate=snapshot%clock_rate)
-
-      call cpu_time(snapshot%cpu_time)
-   end function take_actual_snapshot
-
-   function take_fixed_snapshot() result(snapshot)
-      type(time_snapshot_t) :: snapshot
-
-      snapshot = fixed_snapshot
-   end function take_fixed_snapshot
-
-   subroutine set_snapshot(snapshot)
-      type(time_snapshot_t), intent(in) :: snapshot
-      fixed_snapshot = snapshot
-   end subroutine set_snapshot
-
    subroutine stopwatch_stop()
-      stop_snapshot = take_snapshot()
+      stop_snapshot = time_snapshot_t(clock%get_count(), clock%get_rate(), clock%get_cpu_time())
    end subroutine stopwatch_stop
 
    function stopwatch_result() result(timings)

@@ -3,12 +3,9 @@ module test_stopwatch
    use testdrive, only: new_unittest, unittest_type, error_type, test_failed, skip_test
    use stopwatch_tdd_facade, only: stopwatch_start, &
                                    stopwatch_stop, &
-                                   stopwatch_result, &
-                                   make_actual_snapshots, &
-                                   set_snapshot, &
-                                   make_fixed_snapshots, &
-                                   time_snapshot_t
+                                   stopwatch_result
    use test_custom_checks, only: check
+   use common_clock, only: use_test_clock
 
    implicit none(type, external)
 
@@ -32,13 +29,11 @@ contains
       character(len=:), allocatable, dimension(:) :: actual
       character(len=45), allocatable, dimension(:) :: expected
 
-      call make_fixed_snapshots()
-
-      call set_snapshot(time_snapshot_t(1764160416868000_int64, 1000000, 1.0_real64))
+      call use_test_clock(1764160416868000_int64, 1000000_int64, 1.0_real64)
 
       call stopwatch_start()
 
-      call set_snapshot(time_snapshot_t(1764160416870000_int64, 1000000, 1.0_real64))
+      call use_test_clock(1764160416870000_int64, 1000000_int64, 1.0_real64)
 
       call stopwatch_stop()
 
