@@ -7,7 +7,7 @@ module test_rainfall_runoff
 
    private
 
-   public :: collect_hydrology_demo_tests
+   public :: collect_tests
 
 contains
 

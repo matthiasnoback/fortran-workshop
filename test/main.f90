@@ -19,7 +19,7 @@ program tester
    use test_check_pump_specification, only: collect_check_pump_specification_tests => collect_tests
    use test_custom_checks, only: collect_custom_checks_tests => collect_tests
    use test_clock, only: collect_clock_tests => collect_tests
-   use test_hydrology_rainfall_runoff, only: collect_hydrology_rainfall_runoff_tests => collect_tests
+   use test_rainfall_runoff, only: collect_hydrology_rainfall_runoff_tests => collect_tests
 
    implicit none(type, external)
 

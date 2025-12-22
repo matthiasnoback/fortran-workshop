@@ -4,6 +4,8 @@ module hydrology_rainfall_runoff
    implicit none(type, external)
 
    private
+   public :: run
+
 contains
 
    subroutine run()
