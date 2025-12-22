@@ -20,6 +20,7 @@ add_library(${library_name} STATIC
     ./geometry/polygon.f90
     ./geometry/polyline.f90
     ./hydraulic_structures/pump.f90
+    ./hydrology/rainfall_runoff.f90
     ./integration/damped_oscillator.f90
     ./integration/trapezoid.f90
     ./logging/abstract.f90

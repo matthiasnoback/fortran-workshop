@@ -43,6 +43,7 @@ set(
     "strings"
     "to_string"
     "vector"
+    "rainfall_runoff"
 )
 set(
     test-srcs

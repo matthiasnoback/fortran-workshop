@@ -17,6 +17,7 @@ cmake-build-*
 # Generated output
 *.svg
 *.log
+/output/*
 
 # VSCode Modern Fortran extension
 *.i90

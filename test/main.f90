@@ -19,6 +19,7 @@ program tester
    use test_check_pump_specification, only: collect_check_pump_specification_tests => collect_tests
    use test_custom_checks, only: collect_custom_checks_tests => collect_tests
    use test_clock, only: collect_clock_tests => collect_tests
+   use test_hydrology_rainfall_runoff, only: collect_hydrology_rainfall_runoff_tests => collect_tests
 
    implicit none(type, external)
 
@@ -41,6 +42,7 @@ program tester
                 new_testsuite("filter_map_reduce", collect_filter_map_reduce_tests), &
                 new_testsuite("geometry", collect_geometry_tests), &
                 new_testsuite("hello_world", collect_hello_world_tests), &
+                new_testsuite("rainfall_runoff", collect_hydrology_rainfall_runoff_tests), &
                 new_testsuite("integration", collect_vector_tests), &
                 new_testsuite("strings", collect_strings_tests), &
                 new_testsuite("random", collect_random_tests), &

@@ -6,6 +6,7 @@ set(PROGRAM_FILES
     ./performance_demo.f90
     ./timer_list_demo.f90
     ./timer_linked_list_demo.f90
+    ./rainfall_runoff_demo.f90
 )
 
 foreach(PROGRAM_FILE IN LISTS PROGRAM_FILES)
