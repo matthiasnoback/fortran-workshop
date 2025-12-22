@@ -4,6 +4,9 @@ module ray_optics_intersection_and_reflection
    implicit none(type, external)
 
    private
+   public :: ray_segment_intersection
+   public :: ray_circle_intersection
+   public :: apply_surface_material
 
 contains
 

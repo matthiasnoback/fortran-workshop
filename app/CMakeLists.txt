@@ -4,9 +4,10 @@ set(PROGRAM_FILES
     ./integration_demo.f90
     ./logging_demo.f90
     ./performance_demo.f90
+    ./rainfall_runoff_demo.f90
+    ./ray_optics_demo.f90
     ./timer_list_demo.f90
     ./timer_linked_list_demo.f90
-    ./rainfall_runoff_demo.f90
 )
 
 foreach(PROGRAM_FILE IN LISTS PROGRAM_FILES)
