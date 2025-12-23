@@ -8,6 +8,7 @@ module file_operations
    private
 
    public :: create_temp_file
+   public :: create_or_open_file
    public :: file_unit_or_error_t
    public :: write_lines_to_file
    public :: write_lines_to_temp_file
@@ -36,6 +37,24 @@ contains
 
       file_unit_or_error%file_unit = file_unit
    end function create_temp_file
+
+   function create_or_open_file(path) result(file_unit_or_error)
+      character(len=*), intent(in) :: path
+      type(file_unit_or_error_t) :: file_unit_or_error
+
+      integer :: file_unit
+      integer :: io_status
+      character(len=255) :: io_message
+
+      open (newunit=file_unit, file=path, action='readwrite', iostat=io_status, iomsg=io_message)
+      if (io_status /= 0) then
+         file_unit_or_error%error = error_t('Could not create or open file. iostat= '// &
+                                            to_string(io_status)//' iomsg= '//io_message)
+         return
+      end if
+
+      file_unit_or_error%file_unit = file_unit
+   end function create_or_open_file
 
    function write_lines_to_file(file_unit, lines) result(optional_error)
       integer, intent(in) :: file_unit

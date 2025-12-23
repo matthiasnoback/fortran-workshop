@@ -9,6 +9,7 @@ module test_strings
    private
 
    public :: collect_tests
+   public :: check
 
    interface check
       module procedure :: check_string_list
