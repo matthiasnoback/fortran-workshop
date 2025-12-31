@@ -9,6 +9,8 @@ module file_operations
 
    public :: create_temp_file
    public :: create_or_open_file
+   public :: open_existing_file_for_reading
+   public :: open_or_create_file_for_writing
    public :: file_unit_or_error_t
    public :: write_lines_to_file
    public :: write_lines_to_temp_file
@@ -55,6 +57,44 @@ contains
 
       file_unit_or_error%file_unit = file_unit
    end function create_or_open_file
+
+   function open_existing_file_for_reading(path) result(file_unit)
+      character(len=*), intent(in) :: path
+      type(file_unit_or_error_t) :: file_unit
+
+      integer :: temp_file_unit
+      integer :: io_status
+      character(len=255) :: io_message
+
+      open (newunit=temp_file_unit, status='old', file=trim(path), action='read', &
+            iostat=io_status, iomsg=io_message)
+      if (io_status /= 0) then
+         file_unit%error = error_t('Could not open file. iostat= '// &
+                                   to_string(io_status)//' iomsg= '//io_message)
+         return
+      end if
+
+      file_unit%file_unit = temp_file_unit
+   end function open_existing_file_for_reading
+
+   function open_or_create_file_for_writing(path) result(file_unit)
+      character(len=*), intent(in) :: path
+      type(file_unit_or_error_t) :: file_unit
+
+      integer :: temp_file_unit
+      integer :: io_status
+      character(len=255) :: io_message
+
+      open (newunit=temp_file_unit, status='replace', file=trim(path), action='write', &
+            iostat=io_status, iomsg=io_message)
+      if (io_status /= 0) then
+         file_unit%error = error_t('Could not open or create file for writing. iostat= '// &
+                                   to_string(io_status)//' iomsg= '//io_message)
+         return
+      end if
+
+      file_unit%file_unit = temp_file_unit
+   end function open_or_create_file_for_writing
 
    function write_lines_to_file(file_unit, lines) result(optional_error)
       integer, intent(in) :: file_unit

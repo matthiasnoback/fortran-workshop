@@ -32,6 +32,8 @@ set(
     "config"
     "custom_checks"
     "error_handling"
+    "file_reader"
+    "file_writer"
     "filter_map_reduce"
     "geometry"
     "hello_world"

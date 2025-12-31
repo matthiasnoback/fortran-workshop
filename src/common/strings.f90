@@ -9,6 +9,7 @@ module common_strings
    public :: string_length
    public :: string_list_or_error_t
    public :: empty_string_list
+   public :: string_or_error_t
 
    !> Wrapper for a variable-length character value
    type :: string_t
@@ -29,6 +30,11 @@ module common_strings
       type(string_list_t), allocatable :: lines
       type(error_t), allocatable :: error
    end type string_list_or_error_t
+
+   type :: string_or_error_t
+      type(string_t), allocatable :: string
+      type(error_t), allocatable :: error
+   end type string_or_error_t
 
 contains
 

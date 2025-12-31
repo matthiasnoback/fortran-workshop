@@ -6,6 +6,8 @@ program tester
    use test_stopwatch, only: collect_stopwatch_tests => collect_tests
    use test_interpolation, only: collect_interpolation_tests => collect_tests
    use test_error_handling, only: collect_error_handling_tests => collect_tests
+   use test_file_reader, only: collect_file_reader_tests => collect_tests
+   use test_file_writer, only: collect_file_writer_tests => collect_tests
    use test_filter_map_reduce, only: collect_filter_map_reduce_tests => collect_tests
    use test_geometry, only: collect_geometry_tests => collect_tests
    use test_hello_world, only: collect_hello_world_tests
@@ -39,6 +41,8 @@ program tester
                 new_testsuite("config", collect_config_tests), &
                 new_testsuite("interpolation", collect_interpolation_tests), &
                 new_testsuite("error_handling", collect_error_handling_tests), &
+                new_testsuite("file_reader", collect_file_reader_tests), &
+                new_testsuite("file_writer", collect_file_writer_tests), &
                 new_testsuite("filter_map_reduce", collect_filter_map_reduce_tests), &
                 new_testsuite("geometry", collect_geometry_tests), &
                 new_testsuite("hello_world", collect_hello_world_tests), &

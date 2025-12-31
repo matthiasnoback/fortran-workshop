@@ -15,12 +15,16 @@ add_library(${library_name} STATIC
     ./common/to_string.f90
     ./config/loading.f90
     ./file/operations.f90
+    ./file/reader.f90
+    ./file/writer.f90
     ./functional/lists.f90
     ./geometry/point.f90
     ./geometry/polygon.f90
     ./geometry/polyline.f90
     ./hydraulic_structures/pump.f90
     ./hydrology/rainfall_runoff.f90
+    ./hydrology/input.f90
+    ./hydrology/output.f90
     ./integration/damped_oscillator.f90
     ./integration/trapezoid.f90
     ./logging/abstract.f90
