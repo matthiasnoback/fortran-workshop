@@ -7,6 +7,7 @@ module ray_optics_intersection_and_reflection
    public :: ray_segment_intersection
    public :: ray_circle_intersection
    public :: apply_surface_material
+   public :: ray_t
 
    type :: ray_t
       real(dp) :: x0
@@ -36,23 +37,12 @@ contains
       n = sqrt(ax*ax + ay*ay)
    end function norm
 
-   pure function ray_segment_intersection_2(ray, x1, y1, x2, y2, tmin, tmax, eps) result(t)
-      type(ray_t), intent(in) :: ray
-      real(dp), intent(in) :: x1, y1, x2, y2
-      real(dp), intent(in) :: tmin, tmax, eps
-      real(dp) :: t
-
-      t = ray_segment_intersection(ray%x0, ray%y0, ray%dx, ray%dy, &
-                                   x1, y1, x2, y2, tmin, tmax, eps)
-   end function ray_segment_intersection_2
-
    ! Ray vs. line segment intersection
    ! Ray: P(t) = (x0, y0) + t*(dx, dy), t in [tmin, tmax]
    ! Segment: A(x1, y1) -> B(x2, y2)
    ! Returns hit parameter t; returns -1 if no hit.
-   pure function ray_segment_intersection( &
-      x0, y0, dx, dy, x1, y1, x2, y2, tmin, tmax, eps) result(t)
-      real(dp), intent(in) :: x0, y0, dx, dy
+   pure function ray_segment_intersection(ray, x1, y1, x2, y2, tmin, tmax, eps) result(t)
+      type(ray_t), intent(in) :: ray
       real(dp), intent(in) :: x1, y1, x2, y2
       real(dp), intent(in) :: tmin, tmax, eps
       real(dp) :: t
@@ -60,15 +50,15 @@ contains
 
       rx = x2 - x1
       ry = y2 - y1
-      apx = x1 - x0
-      apy = y1 - y0
-      denom = cross(dx, dy, rx, ry)
+      apx = x1 - ray%x0
+      apy = y1 - ray%y0
+      denom = cross(ray%dx, ray%dy, rx, ry)
       if (abs(denom) < eps) then
          t = -1.0_dp
          return
       end if
       t_candidate = cross(apx, apy, rx, ry)/denom
-      u = cross(apx, apy, dx, dy)/denom
+      u = cross(apx, apy, ray%dx, ray%dy)/denom
       if (t_candidate >= tmin .and. t_candidate <= tmax .and. u >= 0.0_dp .and. u <= 1.0_dp) then
          t = t_candidate
       else
