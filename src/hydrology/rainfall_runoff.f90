@@ -106,9 +106,15 @@ contains
       end do
 
       close (uin); close (uout)
-      write (*, *) 'Done. Output -> ', trim(outFile)
 
+      call write_output('Done. Output -> '//trim(outFile))
    end subroutine run
+
+   subroutine write_output(string)
+      character(len=*), intent(in) :: string
+
+      write (*, *) string
+   end subroutine write_output
 
    subroutine parse_args(inf, outf)
       character(len=256), intent(out) :: inf, outf
