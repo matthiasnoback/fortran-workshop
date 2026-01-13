@@ -1,7 +1,7 @@
 module test_rainfall_runoff
    use iso_fortran_env, only: int64, real64
    use testdrive, only: new_unittest, unittest_type, error_type, test_failed, skip_test, check
-   use hydrology_rainfall_runoff, only: run
+   use hydrology_rainfall_runoff, only: run, inFile, outFile
    use file_operations, only: create_or_open_file, &
                               file_unit_or_error_t, &
                               write_lines_to_file, &
@@ -68,6 +68,9 @@ contains
                                ])
 
       ! TODO now run the rainfall_runoff simulation, passing 'input.csv' and 'output.csv' as arguments
+      inFile = 'input.csv'
+      outFile = 'output.csv'
+      call run()
 
       call check_output(error, 'output.csv', expected)
 
@@ -117,11 +120,7 @@ contains
          return
       end if
 
-      ! TODO once the application runs, remove the call to skip_test()
-      call skip_test(error, 'TODO complete the rainfall runoff characterization test')
-
-      ! TODO also uncomment this check to compare actual versus expected output.csv contents:
-      ! call check(error, actual%lines, expected)
+      call check(error, actual%lines, expected)
    end subroutine check_output
 
 end module test_rainfall_runoff
