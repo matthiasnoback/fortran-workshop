@@ -5,7 +5,7 @@ program rainfall_runoff_demo
 
    implicit none(type, external)
 
-   character(len=256), intent(out) :: inFile, outFile
+   character(len=256) :: inFile, outFile
 
    call parse_args(inFile, outFile)
 
