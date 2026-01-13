@@ -4,7 +4,8 @@ program ray_optics_demo
    use ray_optics_intersection_and_reflection, only: ray_segment_intersection, &
                                                      ray_circle_intersection, &
                                                      apply_surface_material, &
-                                                     ray_t
+                                                     ray_t, &
+                                                     make_ray
 
    implicit none(type, external)
 

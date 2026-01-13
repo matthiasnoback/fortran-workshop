@@ -8,8 +8,10 @@ module ray_optics_intersection_and_reflection
    public :: ray_circle_intersection
    public :: apply_surface_material
    public :: ray_t
+   public :: make_ray
 
    type :: ray_t
+      ! private
       real(dp) :: x0
       real(dp) :: y0
       real(dp) :: dx
@@ -17,6 +19,17 @@ module ray_optics_intersection_and_reflection
    end type ray_t
 
 contains
+
+   pure function make_ray(x0, y0, dx, dy) result(ray)
+      real(dp), intent(in) :: x0
+      real(dp), intent(in) :: y0
+      real(dp), intent(in) :: dx
+      real(dp), intent(in) :: dy
+
+      type(ray_t) :: ray
+
+      ray = ray_t(x0, y0, dx, dy)
+   end function make_ray
 
    pure function dot(ax, ay, bx, by) result(d)
       real(dp), intent(in) :: ax, ay, bx, by
