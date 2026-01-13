@@ -15,6 +15,7 @@ module file_operations
    public :: write_lines_to_file
    public :: write_lines_to_temp_file
    public :: read_all_lines
+   public :: delete_file_if_exists
 
    type :: file_unit_or_error_t
       integer, allocatable :: file_unit
@@ -30,10 +31,11 @@ contains
       integer :: io_status
       character(len=255) :: io_message
 
-      open (newunit=file_unit, status='scratch', action='readwrite', iostat=io_status, iomsg=io_message)
+      open (newunit=file_unit, status='scratch', action='readwrite', &
+            iostat=io_status, iomsg=io_message)
       if (io_status /= 0) then
-         file_unit_or_error%error = error_t('Could not create temp file. iostat= '// &
-                                            to_string(io_status)//' iomsg= '//io_message)
+         file_unit_or_error%error = file_error('Could not create temp file.', &
+                                               io_status, io_message, '[temp file]')
          return
       end if
 
@@ -50,8 +52,10 @@ contains
 
       open (newunit=file_unit, file=path, action='readwrite', iostat=io_status, iomsg=io_message)
       if (io_status /= 0) then
-         file_unit_or_error%error = error_t('Could not create or open file. iostat= '// &
-                                            to_string(io_status)//' iomsg= '//io_message)
+         file_unit_or_error%error = file_error('Could not create or open file.', &
+                                               io_status, &
+                                               io_message, &
+                                               path)
          return
       end if
 
@@ -69,8 +73,10 @@ contains
       open (newunit=temp_file_unit, status='old', file=trim(path), action='read', &
             iostat=io_status, iomsg=io_message)
       if (io_status /= 0) then
-         file_unit%error = error_t('Could not open file. iostat= '// &
-                                   to_string(io_status)//' iomsg= '//io_message)
+         file_unit%error = file_error('Could not open file.', &
+                                      io_status, &
+                                      io_message, &
+                                      path)
          return
       end if
 
@@ -88,8 +94,10 @@ contains
       open (newunit=temp_file_unit, status='replace', file=trim(path), action='write', &
             iostat=io_status, iomsg=io_message)
       if (io_status /= 0) then
-         file_unit%error = error_t('Could not open or create file for writing. iostat= '// &
-                                   to_string(io_status)//' iomsg= '//io_message)
+         file_unit%error = file_error('Could not open or create file for writing.', &
+                                      io_status, &
+                                      io_message, &
+                                      path)
          return
       end if
 
@@ -110,7 +118,10 @@ contains
             lines%strings(line_number)%value
          if (io_status /= 0) then
             optional_error = some_error_t( &
-                             error_t('Failed to write some lines to file: '//io_message) &
+                             file_error('Failed to write some lines to file', &
+                                        io_status, &
+                                        io_message, &
+                                        to_string(file_unit)) &
                              )
             return
          end if
@@ -152,7 +163,10 @@ contains
       do
          read (file_unit, '(A)', iostat=io_status, iomsg=io_message, end=100) line
          if (io_status /= 0) then
-            string_list_or_error%error = error_t(io_message)
+            string_list_or_error%error = file_error('Could not read line from file.', &
+                                                    io_status, &
+                                                    io_message, &
+                                                    to_string(file_unit))
             return
          end if
          call lines%add(trim(line))
@@ -160,5 +174,51 @@ contains
 
 100   call move_alloc(lines, string_list_or_error%lines)
    end function read_all_lines
+
+   function delete_file_if_exists(path) result(res)
+      character(len=*), intent(in) :: path
+
+      class(optional_error_t), allocatable :: res
+
+      integer :: new_unit
+      logical :: exists
+      integer :: io_status
+      character(len=255) :: io_message
+
+      res = no_error_t()
+
+      inquire (file=path, exist=exists)
+      if (.not. exists) then
+         return
+      end if
+
+      open (newunit=new_unit, file=path, status='old', iostat=io_status, iomsg=io_message)
+      if (io_status /= 0) then
+         res = some_error_t(file_error('Could not open file for deletion.', &
+                                       io_status, io_message, path))
+         return
+      end if
+
+      close (new_unit, status='delete', iostat=io_status)
+      if (io_status /= 0) then
+         res = some_error_t(file_error('Could not close and delete file.', &
+                                       io_status, '', path))
+         return
+      end if
+   end function delete_file_if_exists
+
+   function file_error(message, io_status, io_message, path) result(error)
+      character(len=*), intent(in) :: message
+      integer, intent(in) :: io_status
+      character(len=*), intent(in) :: io_message
+      character(len=*), intent(in) :: path
+
+      type(error_t), allocatable :: error
+
+      error = error_t(message// &
+                      ' iostat='//to_string(io_status)// &
+                      ' iomsg='//trim(io_message)// &
+                      ' path='//path)
+   end function file_error
 
 end module file_operations

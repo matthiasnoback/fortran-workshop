@@ -5,10 +5,13 @@ module test_rainfall_runoff
    use file_operations, only: create_or_open_file, &
                               file_unit_or_error_t, &
                               write_lines_to_file, &
-                              read_all_lines
+                              read_all_lines, &
+                              delete_file_if_exists, &
+                              open_existing_file_for_reading
    use common_strings, only: string_list_t, string_t, string_list_or_error_t
-   use common_error_handling, only: optional_error_t, some_error_t
+   use common_error_handling, only: optional_error_t, some_error_t, no_error_t
    use test_strings, only: check
+   use test_error_handling, only: check_no_error
 
    implicit none(type, external)
 
@@ -32,6 +35,11 @@ contains
 
       type(string_list_t), allocatable :: input
       type(string_list_t), allocatable :: expected
+
+      class(optional_error_t), allocatable :: file_deleted
+
+      file_deleted = delete_file_if_exists('output.csv')
+      call check_no_error(error, file_deleted)
 
       ! Previously used input
       input = string_list_t([ &
@@ -83,11 +91,10 @@ contains
                                           lines)
       close (input_file%file_unit)
 
-      select type (lines_written)
-      type is (some_error_t)
-         call test_failed(error, 'Expected no error, got '//lines_written%error%to_string())
+      call check_no_error(error, lines_written)
+      if (allocated(error)) then
          return
-      end select
+      end if
    end subroutine write_input_csv
 
    subroutine check_output(error, path, expected)
@@ -98,7 +105,7 @@ contains
       type(file_unit_or_error_t) :: output_file
       type(string_list_or_error_t) :: actual
 
-      output_file = create_or_open_file(path)
+      output_file = open_existing_file_for_reading(path)
       if (allocated(output_file%error)) then
          call test_failed(error, 'Expected no error, got '//output_file%error%to_string())
          return

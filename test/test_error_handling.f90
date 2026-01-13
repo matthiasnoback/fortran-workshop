@@ -1,6 +1,6 @@
 module test_error_handling
    use testdrive, only: new_unittest, unittest_type, error_type, test_failed
-   use common_error_handling, only: error_t
+   use common_error_handling, only: error_t, optional_error_t, some_error_t
    use test_custom_checks, only: check
 
    implicit none(type, external)
@@ -8,6 +8,8 @@ module test_error_handling
    private
 
    public :: collect_tests
+   public :: check_no_error
+
 contains
 
    subroutine collect_tests(testsuite)
@@ -39,5 +41,16 @@ contains
 
       call check(error, current%to_string(), 'The current error The previous error')
    end subroutine test_error_with_previous_error_to_string
+
+   subroutine check_no_error(error, optional_error)
+      type(error_type), allocatable, intent(out) :: error
+      class(optional_error_t), intent(in) :: optional_error
+
+      select type (optional_error)
+      type is (some_error_t)
+         call test_failed(error, 'Expected no error, got some error: '// &
+                          optional_error%error%to_string())
+      end select
+   end subroutine check_no_error
 
 end module test_error_handling
