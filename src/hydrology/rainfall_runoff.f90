@@ -21,6 +21,8 @@
 !===============================================================
 module hydrology_rainfall_runoff
    use iso_fortran_env, only: real64
+   use file_writer, only: create_file_writer, writer_t, file_writer_or_error_t
+   use common_error_handling, only: optional_error_t
 
    implicit none(type, external)
 
@@ -60,7 +62,7 @@ module hydrology_rainfall_runoff
    ! S: soil water storage (mm). Start at 60% of capacity as a neutral initial condition.
    real(real64) :: S = 0.6_real64*Smax
 
-   integer :: uin, uout, ios ! unit numbers + I/O status
+   integer :: uin, ios ! unit numbers + I/O status
    character(len=512) :: line ! line buffer and date string
    character(len=:), allocatable :: date
 
@@ -73,12 +75,21 @@ contains
    subroutine run(inFile, outFile)
       character(len=*), intent(in) :: inFile, outFile
 
+      type(file_writer_or_error_t) :: writer_or_error
+      class(writer_t), allocatable :: writer
+      class(optional_error_t), allocatable :: write_result
+      character(len=1024) :: temp_out
+
       open (newunit=uin, file=trim(inFile), status='old', action='read', iostat=ios)
       if (ios /= 0) stop 'Cannot open input CSV.'
-      open (newunit=uout, file=trim(outFile), status='replace', action='write', iostat=ios)
-      if (ios /= 0) stop 'Cannot open output CSV.'
 
-      write (uout, '(A)') 'date,P,T,PET,AET,Q,S'
+      writer_or_error = create_file_writer(outFile)
+      if (allocated(writer_or_error%error)) then
+         error stop writer_or_error%error%to_string()
+      end if
+      writer = writer_or_error%file_writer
+
+      write_result = writer%write_line('date,P,T,PET,AET,Q,S')
 
       read (uin, '(A)', iostat=ios) line
 
@@ -112,11 +123,13 @@ contains
          S = min(max(S, 0.0_real64), Smax)
 
          ! --- 5) Write outputs for this step ---
-         write (uout, '(A,",",F0.3,",",F0.3,",",F0.3,",",F0.3,",",F0.3,",",F0.3)') &
+         write (temp_out, '(A,",",F0.3,",",F0.3,",",F0.3,",",F0.3,",",F0.3,",",F0.3)') &
             trim(date), P, T, PET, AET, Q, S
+         write_result = writer%write_line(trim(temp_out))
       end do
 
-      close (uin); close (uout)
+      close (uin)
+      call writer%done()
 
       call write_output('Done. Output -> '//trim(outFile))
    end subroutine run
