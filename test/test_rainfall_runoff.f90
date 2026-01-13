@@ -1,7 +1,7 @@
 module test_rainfall_runoff
    use iso_fortran_env, only: int64, real64
    use testdrive, only: new_unittest, unittest_type, error_type, test_failed, skip_test, check
-   use hydrology_rainfall_runoff, only: run
+   use hydrology_rainfall_runoff, only: run, write_output
    use file_operations, only: create_or_open_file, &
                               file_unit_or_error_t, &
                               write_lines_to_file, &
@@ -67,11 +67,18 @@ contains
                                string_t('06-10-2025,10.000,-10.000,.000,.000,10.000,150.000') &
                                ])
 
+      write_output => write_no_output
       call run('input.csv', 'output.csv')
 
       call check_output(error, 'output.csv', expected)
 
    end subroutine test_characterization_test
+
+   subroutine write_no_output(string)
+      character(len=*), intent(in) :: string
+
+      ! Do nothing
+   end subroutine write_no_output
 
    subroutine write_input_csv(error, path, lines)
       type(error_type), allocatable, intent(out) :: error

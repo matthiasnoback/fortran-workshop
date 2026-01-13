@@ -27,6 +27,17 @@ module hydrology_rainfall_runoff
    private
    public :: run
    public :: parse_args
+   public :: write_output
+
+   interface
+      subroutine write_output_interface(string)
+         implicit none(type, external)
+
+         character(len=*), intent(in) :: string
+      end subroutine write_output_interface
+   end interface
+
+   procedure(write_output_interface), pointer :: write_output => write_output_stdout
 
    ! --------------------------
    ! Fixed model parameters
@@ -110,11 +121,11 @@ contains
       call write_output('Done. Output -> '//trim(outFile))
    end subroutine run
 
-   subroutine write_output(string)
+   subroutine write_output_stdout(string)
       character(len=*), intent(in) :: string
 
       write (*, *) string
-   end subroutine write_output
+   end subroutine write_output_stdout
 
    subroutine parse_args(inf, outf)
       character(len=256), intent(out) :: inf, outf
