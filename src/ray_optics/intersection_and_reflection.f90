@@ -8,6 +8,13 @@ module ray_optics_intersection_and_reflection
    public :: ray_circle_intersection
    public :: apply_surface_material
 
+   type :: ray_t
+      real(dp) :: x0
+      real(dp) :: y0
+      real(dp) :: dx
+      real(dp) :: dy
+   end type ray_t
+
 contains
 
    pure function dot(ax, ay, bx, by) result(d)
@@ -28,6 +35,16 @@ contains
       real(dp) :: n
       n = sqrt(ax*ax + ay*ay)
    end function norm
+
+   pure function ray_segment_intersection_2(ray, x1, y1, x2, y2, tmin, tmax, eps) result(t)
+      type(ray_t), intent(in) :: ray
+      real(dp), intent(in) :: x1, y1, x2, y2
+      real(dp), intent(in) :: tmin, tmax, eps
+      real(dp) :: t
+
+      t = ray_segment_intersection(ray%x0, ray%y0, ray%dx, ray%dy, &
+                                   x1, y1, x2, y2, tmin, tmax, eps)
+   end function ray_segment_intersection_2
 
    ! Ray vs. line segment intersection
    ! Ray: P(t) = (x0, y0) + t*(dx, dy), t in [tmin, tmax]
