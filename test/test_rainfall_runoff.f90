@@ -67,10 +67,13 @@ contains
                                string_t('06-10-2025,10.000,-10.000,.000,.000,10.000,150.000') &
                                ])
 
-      ! TODO now run the rainfall_runoff simulation, passing 'input.csv' and 'output.csv' as arguments
+      ! TODO now run the rainfall_runoff simulation
+
+      ! TODO remove the call to skip_test to compare the output
+      call skip_test(error, 'TODO complete the rainfall runoff characterization test')
+      return
 
       call check_output(error, 'output.csv', expected)
-
    end subroutine test_characterization_test
 
    subroutine write_input_csv(error, path, lines)
@@ -117,11 +120,7 @@ contains
          return
       end if
 
-      ! TODO once the application runs, remove the call to skip_test()
-      call skip_test(error, 'TODO complete the rainfall runoff characterization test')
-
-      ! TODO also uncomment this check to compare actual versus expected output.csv contents:
-      ! call check(error, actual%lines, expected)
+      call check(error, actual%lines, expected)
    end subroutine check_output
 
 end module test_rainfall_runoff
