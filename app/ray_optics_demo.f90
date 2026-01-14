@@ -1,7 +1,7 @@
 
 program ray_optics_demo
    use common_precision, only: dp
-   use ray_optics_intersection_and_reflection, only: ray_t_segment_intersection, &
+   use ray_optics_intersection_and_reflection, only: ray_segment_intersection, &
                                                      ray_circle_intersection, &
                                                      apply_surface_material, &
                                                      ray_t
@@ -28,7 +28,7 @@ program ray_optics_demo
    ! Circle (an obstacle)
    cx = 3.0_dp; cy = 0.6_dp; r = 1.0_dp
 
-   tseg = ray_t_segment_intersection(ray_t(x0, y0, dx, dy), xs, ys, xe, ye, tmin, tmax, eps)
+   tseg = ray_segment_intersection(ray_t(x0, y0, dx, dy), xs, ys, xe, ye, tmin, tmax, eps)
    tcirc = ray_circle_intersection(x0, y0, dx, dy, cx, cy, r, tmin, tmax, eps)
 
    print *, 't(hit segment) = ', tseg
