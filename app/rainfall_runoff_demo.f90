@@ -4,8 +4,11 @@ program rainfall_runoff_demo
 
    implicit none(type, external)
 
+   character(len=256) :: inFile, outFile
+
    call parse_args(inFile, outFile)
-   call run()
+
+   call run(inFile, outFile)
 
 contains
    subroutine parse_args(inf, outf)

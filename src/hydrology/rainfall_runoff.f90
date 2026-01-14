@@ -26,8 +26,6 @@ module hydrology_rainfall_runoff
 
    private
    public :: run
-   public :: inFile
-   public :: outFile
 
    ! --------------------------
    ! Fixed model parameters
@@ -50,7 +48,6 @@ module hydrology_rainfall_runoff
    ! S: soil water storage (mm). Start at 60% of capacity as a neutral initial condition.
    real(real64) :: S = 0.6_real64*Smax
 
-   character(len=256) :: inFile, outFile ! file paths
    integer :: uin, uout, ios ! unit numbers + I/O status
    character(len=512) :: line ! line buffer and date string
    character(len=:), allocatable :: date
@@ -61,7 +58,8 @@ module hydrology_rainfall_runoff
 
 contains
 
-   subroutine run()
+   subroutine run(inFile, outFile)
+      character(len=*), intent(in) :: inFile, outFile ! file paths
       open (newunit=uin, file=trim(inFile), status='old', action='read', iostat=ios)
       if (ios /= 0) stop 'Cannot open input CSV.'
       open (newunit=uout, file=trim(outFile), status='replace', action='write', iostat=ios)
