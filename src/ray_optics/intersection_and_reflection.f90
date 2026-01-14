@@ -1,5 +1,6 @@
 module ray_optics_intersection_and_reflection
    use common_precision, only: dp
+   use ray_optics_vector_2d, only: point_2d_t, vector_2d_t
 
    implicit none(type, external)
 
@@ -12,10 +13,8 @@ module ray_optics_intersection_and_reflection
 
    type :: ray_t
       private
-      real(dp) :: x0 !< origin x
-      real(dp) :: y0 !< origin y
-      real(dp) :: dx !< direction x
-      real(dp) :: dy !< direction y
+      type(point_2d_t) :: origin
+      type(vector_2d_t) :: direction
    end type ray_t
 
 contains
@@ -25,7 +24,7 @@ contains
 
       type(ray_t) :: ray
 
-      ray = ray_t(x0, y0, dx, dy)
+      ray = ray_t(point_2d_t(x0, y0), vector_2d_t(dx, dy))
    end function make_ray
 
    pure function dot(ax, ay, bx, by) result(d)
@@ -61,10 +60,10 @@ contains
       real(dp) :: rx, ry, apx, apy, denom, t_candidate, u
       real(dp) :: x0, y0, dx, dy
 
-      x0 = ray%x0
-      y0 = ray%y0
-      dx = ray%dx
-      dy = ray%dy
+      x0 = ray%origin%x
+      y0 = ray%origin%y
+      dx = ray%direction%dx
+      dy = ray%direction%dy
 
       rx = x2 - x1
       ry = y2 - y1
