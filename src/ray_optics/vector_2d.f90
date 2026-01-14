@@ -16,6 +16,8 @@ module ray_optics_vector_2d
    type :: vector_2d_t
       real(dp) :: dx
       real(dp) :: dy
+   contains
+      procedure :: cross
    end type vector_2d_t
 contains
 
@@ -28,7 +30,7 @@ contains
 
    pure function cross(a, b) result(c)
       ! 2D "scalar cross product": a x b = ax*by - ay*bx
-      type(vector_2d_t), intent(in) :: a
+      class(vector_2d_t), intent(in) :: a
       type(vector_2d_t), intent(in) :: b
       real(dp) :: c
       c = a%dx*b%dy - a%dy*b%dx

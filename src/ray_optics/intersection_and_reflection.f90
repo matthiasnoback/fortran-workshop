@@ -50,13 +50,15 @@ contains
       ry = y2 - y1
       apx = x1 - x0
       apy = y1 - y0
-      denom = cross(ray%direction, vector_2d_t(rx, ry))
+      denom = ray%direction%cross(vector_2d_t(rx, ry))
       if (abs(denom) < eps) then
          t = -1.0_dp
          return
       end if
-      t_candidate = cross(vector_2d_t(apx, apy), vector_2d_t(rx, ry))/denom
-      u = cross(vector_2d_t(apx, apy), ray%direction)/denom
+      associate (a => vector_2d_t(apx, apy))
+         t_candidate = a%cross(vector_2d_t(rx, ry))/denom
+         u = a%cross(ray%direction)/denom
+      end associate
       if (t_candidate >= tmin .and. t_candidate <= tmax .and. u >= 0.0_dp .and. u <= 1.0_dp) then
          t = t_candidate
       else
