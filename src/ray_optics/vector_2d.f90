@@ -6,6 +6,7 @@ module ray_optics_vector_2d
    private
    public :: point_2d_t
    public :: vector_2d_t
+   public :: dot, cross, norm
 
    type :: point_2d_t
       real(dp) :: x
@@ -17,5 +18,26 @@ module ray_optics_vector_2d
       real(dp) :: dy
    end type vector_2d_t
 contains
+
+   pure function dot(a, b) result(d)
+      type(vector_2d_t), intent(in) :: a
+      type(vector_2d_t), intent(in) :: b
+      real(dp) :: d
+      d = a%dx*b%dx + a%dy*b%dy
+   end function dot
+
+   pure function cross(a, b) result(c)
+      ! 2D "scalar cross product": a x b = ax*by - ay*bx
+      type(vector_2d_t), intent(in) :: a
+      type(vector_2d_t), intent(in) :: b
+      real(dp) :: c
+      c = a%dx*b%dy - a%dy*b%dx
+   end function cross
+
+   pure function norm(a) result(n)
+      type(vector_2d_t), intent(in) :: a
+      real(dp) :: n
+      n = sqrt(dot(a, a))
+   end function norm
 
 end module ray_optics_vector_2d

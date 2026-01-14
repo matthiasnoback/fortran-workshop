@@ -1,6 +1,6 @@
 module ray_optics_intersection_and_reflection
    use common_precision, only: dp
-   use ray_optics_vector_2d, only: point_2d_t, vector_2d_t
+   use ray_optics_vector_2d, only: point_2d_t, vector_2d_t, dot, cross, norm
 
    implicit none(type, external)
 
@@ -27,25 +27,6 @@ contains
       ray = ray_t(point_2d_t(x0, y0), vector_2d_t(dx, dy))
    end function make_ray
 
-   pure function dot(ax, ay, bx, by) result(d)
-      real(dp), intent(in) :: ax, ay, bx, by
-      real(dp) :: d
-      d = ax*bx + ay*by
-   end function dot
-
-   pure function cross(ax, ay, bx, by) result(c)
-      ! 2D "scalar cross product": a x b = ax*by - ay*bx
-      real(dp), intent(in) :: ax, ay, bx, by
-      real(dp) :: c
-      c = ax*by - ay*bx
-   end function cross
-
-   pure function norm(ax, ay) result(n)
-      real(dp), intent(in) :: ax, ay
-      real(dp) :: n
-      n = sqrt(ax*ax + ay*ay)
-   end function norm
-
    ! Ray vs. line segment intersection
    ! Ray: P(t) = (x0, y0) + t*(dx, dy), t in [tmin, tmax]
    ! Segment: A(x1, y1) -> B(x2, y2)
@@ -69,13 +50,13 @@ contains
       ry = y2 - y1
       apx = x1 - x0
       apy = y1 - y0
-      denom = cross(dx, dy, rx, ry)
+      denom = cross(ray%direction, vector_2d_t(rx, ry))
       if (abs(denom) < eps) then
          t = -1.0_dp
          return
       end if
-      t_candidate = cross(apx, apy, rx, ry)/denom
-      u = cross(apx, apy, dx, dy)/denom
+      t_candidate = cross(vector_2d_t(apx, apy), vector_2d_t(rx, ry))/denom
+      u = cross(vector_2d_t(apx, apy), ray%direction)/denom
       if (t_candidate >= tmin .and. t_candidate <= tmax .and. u >= 0.0_dp .and. u <= 1.0_dp) then
          t = t_candidate
       else
@@ -95,9 +76,9 @@ contains
 
       ocx = x0 - cx
       ocy = y0 - cy
-      a = dot(dx, dy, dx, dy)
-      b = 2.0_dp*dot(ocx, ocy, dx, dy)
-      c = dot(ocx, ocy, ocx, ocy) - r*r
+      a = dot(vector_2d_t(dx, dy), vector_2d_t(dx, dy))
+      b = 2.0_dp*dot(vector_2d_t(ocx, ocy), vector_2d_t(dx, dy))
+      c = dot(vector_2d_t(ocx, ocy), vector_2d_t(ocx, ocy)) - r*r
       disc = b*b - 4.0_dp*a*c
 
       if (disc < 0.0_dp) then
@@ -131,7 +112,7 @@ contains
       ry = y2 - y1
       nx = -ry
       ny = rx
-      nlen = norm(nx, ny)
+      nlen = norm(vector_2d_t(nx, ny))
       if (nlen > 1.0e-12_dp) then
          nx = nx/nlen
          ny = ny/nlen
@@ -142,7 +123,7 @@ contains
          return
       end if
 
-      ndot = dot(dx, dy, nx, ny)
+      ndot = dot(vector_2d_t(dx, dy), vector_2d_t(nx, ny))
       outdx = dx - 2.0_dp*ndot*nx
       outdy = dy - 2.0_dp*ndot*ny
    end subroutine reflect_on_segment
