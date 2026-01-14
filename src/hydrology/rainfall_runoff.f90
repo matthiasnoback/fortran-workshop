@@ -67,7 +67,7 @@ contains
 
    subroutine run(inFile, outFile, write_output)
       character(len=*), intent(in) :: inFile, outFile ! file paths
-      procedure(write_output_interface), pointer, intent(in) :: write_output
+      procedure(write_output_interface) :: write_output
 
       open (newunit=uin, file=trim(inFile), status='old', action='read', iostat=ios)
       if (ios /= 0) stop 'Cannot open input CSV.'
