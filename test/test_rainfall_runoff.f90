@@ -67,10 +67,15 @@ contains
                                string_t('06-10-2025,10.000,-10.000,.000,.000,10.000,150.000') &
                                ])
 
-      call run( 'input.csv', 'output.csv')
+      call run('input.csv', 'output.csv', mute_output)
 
       call check_output(error, 'output.csv', expected)
    end subroutine test_characterization_test
+
+   subroutine mute_output(line)
+      character(len=*), intent(in) :: line
+      ! Do nothing
+   end subroutine mute_output
 
    subroutine write_input_csv(error, path, lines)
       type(error_type), allocatable, intent(out) :: error

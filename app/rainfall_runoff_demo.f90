@@ -8,9 +8,15 @@ program rainfall_runoff_demo
 
    call parse_args(inFile, outFile)
 
-   call run(inFile, outFile)
+   call run(inFile, outFile, write_output_stdout)
 
 contains
+
+   subroutine write_output_stdout(line)
+      character(len=*), intent(in) :: line
+      write (*, *) line
+   end subroutine write_output_stdout
+
    subroutine parse_args(inf, outf)
       character(len=256), intent(out) :: inf, outf
       integer :: narg

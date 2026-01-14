@@ -56,10 +56,19 @@ module hydrology_rainfall_runoff
    real(real64) :: PET, AET ! potential and actual evapotranspiration (mm/day)
    real(real64) :: I, Q ! infiltration (mm/day), quick runoff (mm/day)
 
+   interface
+      subroutine write_output_interface(line)
+         implicit none(type, external)
+         character(len=*), intent(in) :: line
+      end subroutine write_output_interface
+   end interface
+
 contains
 
-   subroutine run(inFile, outFile)
+   subroutine run(inFile, outFile, write_output)
       character(len=*), intent(in) :: inFile, outFile ! file paths
+      procedure(write_output_interface), pointer, intent(in) :: write_output
+
       open (newunit=uin, file=trim(inFile), status='old', action='read', iostat=ios)
       if (ios /= 0) stop 'Cannot open input CSV.'
       open (newunit=uout, file=trim(outFile), status='replace', action='write', iostat=ios)
@@ -104,8 +113,8 @@ contains
       end do
 
       close (uin); close (uout)
-      write (*, *) 'Done. Output -> ', trim(outFile)
 
+      call write_output('Done. Output -> '//trim(outFile))
    end subroutine run
 
    subroutine parse_row(line, date, P, T)
