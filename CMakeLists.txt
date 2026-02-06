@@ -46,6 +46,7 @@ set(
     "to_string"
     "vector"
     "rainfall_runoff"
+    "ray_optics"
 )
 set(
     test-srcs

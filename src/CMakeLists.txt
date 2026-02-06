@@ -36,6 +36,7 @@ add_library(${library_name} STATIC
     ./logging/stdout.f90
     ./logging/timestamp.f90
     ./ray_optics/intersection_and_reflection.f90
+    ./ray_optics/library.f90
     ./ray_optics/vector_2d.f90
     ./stopwatch/facade_implementation.f90
     ./stopwatch/facade.f90
