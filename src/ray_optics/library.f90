@@ -1,3 +1,5 @@
+! TODO install as a package (with Conan?)
+! Note: consider this file to be read-only!
 module ray_optics_library
    use common_precision, only: dp
 
@@ -27,7 +29,7 @@ module ray_optics_library
 
 contains
 
-   subroutine ray_line_segment_intersection(ray, line_segment, intersects, intersection)
+   pure subroutine ray_line_segment_intersection(ray, line_segment, intersects, intersection)
       type(ray_t), intent(in) :: ray
       type(line_segment_t), intent(in) :: line_segment
       logical, intent(out) :: intersects
