@@ -1,7 +1,8 @@
 module test_geometry
+   use common_precision, only: dp
    use testdrive, only: new_unittest, unittest_type, error_type, test_failed
    use test_custom_checks, only: check
-   use geometry_point, only: point_t, point_or_error_t
+   use geometry_point, only: point_t, create_point, point_or_error_t
    use common_strings, only: string_t
    use common_error_handling, only: error_t
    use geometry_polyline, only: polyline_t
@@ -24,6 +25,8 @@ contains
       testsuite = [ &
                   new_unittest("test_point_distance_to_point", &
                                test_point_distance_to_point), &
+                  new_unittest("test_translate_point", &
+                               test_translate_point), &
                   new_unittest("test_parse_valid_point", &
                                test_parse_valid_point), &
                   new_unittest("test_parse_invalid_point", &
@@ -39,14 +42,14 @@ contains
       type(error_type), allocatable, intent(out) :: error
 
       type(point_t), allocatable :: point1, point2
-      real :: distance
+      real(kind=dp) :: distance
 
-      point1 = point_t(3.0, 4.0)
-      point2 = point_t(0.0, 0.0)
+      point1 = create_point(3.0_dp, 4.0_dp)
+      point2 = create_point(0.0_dp, 0.0_dp)
 
       distance = point1%distance_to(point2)
 
-      call check(error, distance, 5.0)
+      call check(error, distance, 5.0_dp)
    end subroutine test_point_distance_to_point
 
    subroutine test_parse_valid_point(error)
@@ -57,9 +60,9 @@ contains
 
       ! TODO implement parse_point and replace the following line with
       ! actual = parse_point(string_t('1.0 2.0'))
-      actual%point = point_t(1.0, 2.0)
+      actual%point = create_point(1.0_dp, 2.0_dp)
 
-      expected%point = point_t(1.0, 2.0)
+      expected%point = create_point(1.0_dp, 2.0_dp)
 
       call check(error, actual, expected)
    end subroutine test_parse_valid_point
@@ -84,13 +87,13 @@ contains
 
       polyline = polyline_t( &
                  [ &
-                 point_t(0.0, 0.0), &
-                 point_t(3.0, 4.0), &
-                 point_t(6.0, 8.0) &
+                 create_point(0.0_dp, 0.0_dp), &
+                 create_point(3.0_dp, 4.0_dp), &
+                 create_point(6.0_dp, 8.0_dp) &
                  ] &
                  )
 
-      call check(error, polyline%length(), 10.0)
+      call check(error, polyline%length(), 10.0_dp)
    end subroutine test_polyline_length
 
    subroutine test_polygon_perimeter(error)
@@ -100,13 +103,13 @@ contains
 
       polygon = polygon_t(polyline_t( &
                           [ &
-                          point_t(0.0, 0.0), &
-                          point_t(3.0, 4.0), &
-                          point_t(0.0, 0.0) &
+                          create_point(0.0_dp, 0.0_dp), &
+                          create_point(3.0_dp, 4.0_dp), &
+                          create_point(0.0_dp, 0.0_dp) &
                           ] &
                           ))
 
-      call check(error, polygon%perimeter(), 10.0)
+      call check(error, polygon%perimeter(), 10.0_dp)
    end subroutine test_polygon_perimeter
 
    subroutine check_point_or_error(error, actual, expected)
@@ -116,4 +119,31 @@ contains
 
       ! TODO implement a custom check that verifies `actual` is equal to `expected`
    end subroutine check_point_or_error
+
+   subroutine test_translate_point(error)
+      type(error_type), allocatable, intent(out) :: error
+
+      type(point_t), allocatable :: original
+      type(point_t), allocatable :: translated
+
+      original = create_point(10.0_dp, 5.0_dp)
+
+      ! TODO make this work:
+      ! translated = translate(original, 2.0_dp, -2.0_dp)
+
+      ! TODO then remove this line:
+      translated = create_point(12.0_dp, 3.0_dp)
+
+      call check(error, translated%x, 12.0_dp)
+      if (allocated(error)) then
+         return
+      end if
+
+      ! TODO call procedure get_y() instead:
+      call check(error, translated%y, 3.0_dp)
+      if (allocated(error)) then
+         return
+      end if
+   end subroutine test_translate_point
+
 end module test_geometry
