@@ -1,31 +1,12 @@
 module hydrology_rainfall_runoff
    use iso_fortran_env, only: real64
+   use hydrology_observer, only: observer_reference_t
+   use hydrology_mediator, only: simulation_state_manager_t
 
    implicit none(type, external)
 
    private
    public :: run
-
-   type, abstract :: observer_t
-   contains
-      !> To be invoked at the end of each timestep
-      procedure(observe_end_of_timestep_proc), deferred :: end_of_timestep
-   end type observer_t
-
-   abstract interface
-      subroutine observe_end_of_timestep_proc(self)
-         import observer_t
-         implicit none(type, external)
-         class(observer_t), intent(inout) :: self
-      end subroutine observe_end_of_timestep_proc
-   end interface
-
-   !> Wrapper for holding an `observer_t` instance
-   !> We need it because we can't make arrays of `class(observer_t)` instances,
-   !> but we can make arrays of `type(observer_reference_t)`.
-   type :: observer_reference_t
-      class(observer_t), allocatable :: observer
-   end type observer_reference_t
 
    ! --------------------------
    ! Fixed model parameters
@@ -61,10 +42,15 @@ contains
 
    subroutine run()
 
-      ! TODO fill with references to concrete observers:
+      ! TODO in Observer assignment: fill with references to concrete observers:
       !   - terminal_output_observer_t
       !   - output_writing_observer_t
       type(observer_reference_t), dimension(:), allocatable :: observers
+
+      ! TODO in Mediator assignment: pass state_manager to calculate_next_simulation_state
+      ! It should set the soil water storage. Before going into the loop we also have to
+      ! set the initial value for soil water storage.
+      type(simulation_state_manager_t), target :: state_manager
 
       call parse_args(inFile, outFile)
 
@@ -83,28 +69,7 @@ contains
 
          call parse_row(line, date, P, T)
 
-         ! --- 1) Potential ET (PET) ---
-         ! Simple temperature-based demand: PET = max(0, k_PET * (T + T_offset))
-         PET = max(0.0_real64, k_PET*(T + T_offset))
-
-         ! --- 2) Actual ET (AET) ---
-         ! Limited by soil water: AET <= a_ET * S, and also cannot exceed PET
-         AET = min(PET, a_ET*S)
-
-         ! --- 3) Infiltration and quick runoff ---
-         ! Infiltration is capped by available storage space; the excess becomes runoff.
-         ! I = min(P, Smax - S) but not negative if S is already at/above capacity
-         I = min(P, max(0.0_real64, Smax - S))
-
-         ! Quick runoff is any precipitation that could not infiltrate
-         Q = max(0.0_real64, P - I)
-
-         ! --- 4) Update soil storage ---
-         ! New S = old S + inflow (I) - outflow (AET)
-         S = S + I - AET
-
-         ! Enforce physical bounds: 0 <= S <= Smax
-         S = min(max(S, 0.0_real64), Smax)
+         call calculate_next_simulation_state()
 
          ! --- 5) Write outputs for this step ---
          write (uout, '(A,",",F0.3,",",F0.3,",",F0.3,",",F0.3,",",F0.3,",",F0.3)') &
@@ -116,6 +81,36 @@ contains
       close (uin); close (uout)
       write (*, *) 'Done. Output -> ', trim(outFile)
    end subroutine run
+
+   subroutine calculate_next_simulation_state()
+      ! TODO in Mediator assignment:
+      ! - Copy the current soil water storage to a local variable
+      ! - Make the calculations
+      ! - Pass the new value to the state manager
+
+      ! --- 1) Potential ET (PET) ---
+      ! Simple temperature-based demand: PET = max(0, k_PET * (T + T_offset))
+      PET = max(0.0_real64, k_PET*(T + T_offset))
+
+      ! --- 2) Actual ET (AET) ---
+      ! Limited by soil water: AET <= a_ET * S, and also cannot exceed PET
+      AET = min(PET, a_ET*S)
+
+      ! --- 3) Infiltration and quick runoff ---
+      ! Infiltration is capped by available storage space; the excess becomes runoff.
+      ! I = min(P, Smax - S) but not negative if S is already at/above capacity
+      I = min(P, max(0.0_real64, Smax - S))
+
+      ! Quick runoff is any precipitation that could not infiltrate
+      Q = max(0.0_real64, P - I)
+
+      ! --- 4) Update soil storage ---
+      ! New S = old S + inflow (I) - outflow (AET)
+      S = S + I - AET
+
+      ! Enforce physical bounds: 0 <= S <= Smax
+      S = min(max(S, 0.0_real64), Smax)
+   end subroutine calculate_next_simulation_state
 
    subroutine parse_args(inf, outf)
       character(len=256), intent(out) :: inf, outf

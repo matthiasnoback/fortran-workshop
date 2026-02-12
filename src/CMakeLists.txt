@@ -24,6 +24,8 @@ add_library(${library_name} STATIC
     ./hydraulic_structures/pump.f90
     ./hydrology/rainfall_runoff.f90
     ./hydrology/input.f90
+    ./hydrology/mediator.f90
+    ./hydrology/observer.f90
     ./hydrology/output.f90
     ./integration/damped_oscillator.f90
     ./integration/trapezoid.f90
