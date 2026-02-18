@@ -17,6 +17,7 @@ include(CTest)
 set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
 # Disable the tests of test-drive itself
 set(TEST_DRIVE_BUILD_TESTING OFF CACHE BOOL "Enable testing for the test-drive project")
+set(TEST_DRIVE_GIT_TAG "v0.5.0")
 
 include(cmake/find-test-drive)
 if(NOT TARGET "test-drive::test-drive")

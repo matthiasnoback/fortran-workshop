@@ -62,7 +62,7 @@ contains
 
       call check(check_error, actual, expected)
 
-      call assert_check_failed(error, check_error, 'Floating point value mismatch')
+      call assert_check_failed(error, check_error, 'Floating point value missmatch')
    end subroutine test_different_capacity
 
    subroutine check_pump_specification(error, actual, expected)
