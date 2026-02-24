@@ -53,7 +53,7 @@ contains
       t_candidate = cross(apx, apy, rx, ry)/denom
       u = cross(apx, apy, dx, dy)/denom
       if (t_candidate >= tmin .and. t_candidate <= tmax .and. u >= 0.0_dp .and. u <= 1.0_dp) then
-         t = t_candidate
+         t = t_candidate*sqrt(dx*dx + dy*dy)
       else
          t = -1.0_dp
       end if

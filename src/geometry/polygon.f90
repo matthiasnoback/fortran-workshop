@@ -1,4 +1,5 @@
 module geometry_polygon
+   use common_precision, only: dp
    use geometry_polyline, only: polyline_t
 
    implicit none(type, external)
@@ -18,7 +19,7 @@ module geometry_polygon
 contains
    pure function polygon_perimeter(self) result(res)
       class(polygon_t), intent(in) :: self
-      real :: res
+      real(kind=dp) :: res
 
       ! The perimeter is the same as the length of the polyline
       res = self%polyline%length()

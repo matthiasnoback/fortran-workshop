@@ -24,6 +24,8 @@ add_library(${library_name} STATIC
     ./hydraulic_structures/pump.f90
     ./hydrology/rainfall_runoff.f90
     ./hydrology/input.f90
+    ./hydrology/mediator.f90
+    ./hydrology/observer.f90
     ./hydrology/output.f90
     ./integration/damped_oscillator.f90
     ./integration/trapezoid.f90
@@ -36,6 +38,7 @@ add_library(${library_name} STATIC
     ./logging/stdout.f90
     ./logging/timestamp.f90
     ./ray_optics/intersection_and_reflection.f90
+    ./ray_optics/library.f90
     ./ray_optics/vector_2d.f90
     ./stopwatch/facade_implementation.f90
     ./stopwatch/facade.f90

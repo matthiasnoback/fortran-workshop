@@ -1,4 +1,5 @@
 module geometry_polyline
+   use common_precision, only: dp
    use common_error_handling, only: error_t
    use geometry_point, only: point_t
 
@@ -24,7 +25,7 @@ contains
 
    pure function polyline_length(self) result(res)
       class(polyline_t), intent(in) :: self
-      real :: res
+      real(kind=dp) :: res
       integer :: i
 
       res = 0.0
