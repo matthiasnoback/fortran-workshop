@@ -1,5 +1,9 @@
 module ray_optics_intersection_and_reflection
    use common_precision, only: dp
+   use ray_optics_library, only: ray_line_segment_intersection, &
+                                 ray_t, &
+                                 point_t, &
+                                 line_segment_t
 
    implicit none(type, external)
 
@@ -74,22 +78,22 @@ contains
       real(dp) :: t
       real(dp) :: rx, ry, apx, apy, denom, t_candidate, u
 
-      rx = x2 - x1
-      ry = y2 - y1
-      apx = x1 - x0
-      apy = y1 - y0
-      denom = cross(dx, dy, rx, ry)
-      if (abs(denom) < eps) then
+      type(ray_t), allocatable :: ray
+      type(line_segment_t), allocatable :: line_segment
+      logical :: intersects
+      type(point_t), allocatable :: intersection
+
+      ray = ray_t(point_t(x0, y0), dx, dy)
+      line_segment = line_segment_t(point_t(x1, y1), point_t(x2, y2))
+
+      call ray_line_segment_intersection(ray, line_segment, intersects, intersection)
+
+      if (.not. intersects) then
          t = -1.0_dp
          return
       end if
-      t_candidate = cross(apx, apy, rx, ry)/denom
-      u = cross(apx, apy, dx, dy)/denom
-      if (t_candidate >= tmin .and. t_candidate <= tmax .and. u >= 0.0_dp .and. u <= 1.0_dp) then
-         t = t_candidate*sqrt(dx*dx + dy*dy)
-      else
-         t = -1.0_dp
-      end if
+
+      t = sqrt((intersection%x - x0)**2 + (intersection%y - y0))
    end function ray_segment_intersection
 
    ! Ray vs. circle intersection
