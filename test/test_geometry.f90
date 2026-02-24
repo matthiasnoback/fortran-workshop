@@ -5,7 +5,7 @@ module test_geometry
    use geometry_point, only: point_t, create_point, point_or_error_t
    use common_strings, only: string_t
    use common_error_handling, only: error_t
-   use geometry_polyline, only: polyline_t
+   use geometry_polyline, only: polyline_t, create_polyline
    use geometry_polygon, only: polygon_t
 
    implicit none(type, external)
@@ -41,7 +41,7 @@ contains
    subroutine test_point_distance_to_point(error)
       type(error_type), allocatable, intent(out) :: error
 
-      type(point_t), allocatable :: point1, point2
+      class(point_t), allocatable :: point1, point2
       real(kind=dp) :: distance
 
       point1 = create_point(3.0_dp, 4.0_dp)
@@ -85,13 +85,9 @@ contains
 
       type(polyline_t), allocatable :: polyline
 
-      polyline = polyline_t( &
-                 [ &
-                 create_point(0.0_dp, 0.0_dp), &
-                 create_point(3.0_dp, 4.0_dp), &
-                 create_point(6.0_dp, 8.0_dp) &
-                 ] &
-                 )
+      polyline = create_polyline([[0.0_dp, 0.0_dp], &
+                                  [3.0_dp, 4.0_dp], &
+                                  [6.0_dp, 8.0_dp]])
 
       call check(error, polyline%length(), 10.0_dp)
    end subroutine test_polyline_length
@@ -101,13 +97,9 @@ contains
 
       type(polygon_t), allocatable :: polygon
 
-      polygon = polygon_t(polyline_t( &
-                          [ &
-                          create_point(0.0_dp, 0.0_dp), &
-                          create_point(3.0_dp, 4.0_dp), &
-                          create_point(0.0_dp, 0.0_dp) &
-                          ] &
-                          ))
+      polygon = polygon_t(create_polyline([[0.0_dp, 0.0_dp], &
+                                           [3.0_dp, 4.0_dp], &
+                                           [0.0_dp, 0.0_dp]]))
 
       call check(error, polygon%perimeter(), 10.0_dp)
    end subroutine test_polygon_perimeter
@@ -123,8 +115,8 @@ contains
    subroutine test_translate_point(error)
       type(error_type), allocatable, intent(out) :: error
 
-      type(point_t), allocatable :: original
-      type(point_t), allocatable :: translated
+      class(point_t), allocatable :: original
+      class(point_t), allocatable :: translated
 
       original = create_point(10.0_dp, 5.0_dp)
 
@@ -134,13 +126,13 @@ contains
       ! TODO then remove this line:
       translated = create_point(12.0_dp, 3.0_dp)
 
-      call check(error, translated%x, 12.0_dp)
+      call check(error, translated%get_x(), 12.0_dp)
       if (allocated(error)) then
          return
       end if
 
       ! TODO call procedure get_y() instead:
-      call check(error, translated%y, 3.0_dp)
+      call check(error, translated%get_y(), 3.0_dp)
       if (allocated(error)) then
          return
       end if
