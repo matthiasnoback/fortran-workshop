@@ -1,7 +1,7 @@
 module geometry_polyline
    use common_precision, only: dp
    use common_error_handling, only: error_t
-   use geometry_point, only: point_t
+   use geometry_point, only: point_t, abstract_point_t
 
    implicit none(type, external)
 
@@ -10,7 +10,7 @@ module geometry_polyline
 
    !> A polyline is a series of connected points
    type :: polyline_t
-      type(point_t), dimension(:), allocatable :: points
+      class(abstract_point_t), dimension(:), allocatable :: points
    contains
       !> Calculate the length of the polyline
       procedure :: length => polyline_length
