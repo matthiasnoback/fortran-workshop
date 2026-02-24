@@ -30,9 +30,9 @@ contains
    end function norm
 
    ! Ray vs. line segment intersection
-   ! Ray: P(t) = (x0, y0) + t*(dx, dy), t in [tmin, tmax]
+   ! Ray: origin (x0, y0), direction (dx, dy)
    ! Segment: A(x1, y1) -> B(x2, y2)
-   ! Returns hit parameter t; returns -1 if no hit.
+   ! Returns ray length from origin to intersection point; returns -1 if no hit.
    pure function ray_segment_intersection( &
       x0, y0, dx, dy, x1, y1, x2, y2, tmin, tmax, eps) result(t)
       real(dp), intent(in) :: x0, y0, dx, dy
