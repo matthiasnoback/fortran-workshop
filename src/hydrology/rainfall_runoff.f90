@@ -27,8 +27,6 @@ module hydrology_rainfall_runoff
    ! --------------------------
    ! Model state (initialization)
    ! --------------------------
-   ! S: soil water storage (mm). Start at 60% of capacity as a neutral initial condition.
-   real(real64) :: S = 0.6_real64*Smax
 
    character(len=256) :: inFile, outFile ! file paths
    integer :: uin, uout, ios ! unit numbers + I/O status
@@ -63,7 +61,7 @@ contains
       ! TODO in Mediator assignment: pass state_manager to calculate_next_simulation_state
       ! It should set the soil water storage. Before going into the loop we also have to
       ! set the initial value for soil water storage.
-      type(simulation_state_manager_t), target :: state_manager
+      type(simulation_state_manager_t) :: state_manager
 
       integer :: observer_index
 
@@ -80,17 +78,20 @@ contains
 
       read (uin, '(A)', iostat=ios) line
 
+      ! Start at 60% of capacity as a neutral initial condition.
+      call state_manager%set_soil_water_storage(0.6_real64*Smax)
+
       do
          read (uin, '(A)', iostat=ios) line
          if (ios /= 0) exit
 
          call parse_row(line, date, P, T)
 
-         call calculate_next_simulation_state()
+         call calculate_next_simulation_state(state_manager)
 
          ! --- 5) Write outputs for this step ---
          write (uout, '(A,",",F0.3,",",F0.3,",",F0.3,",",F0.3,",",F0.3,",",F0.3)') &
-            trim(date), P, T, PET, AET, Q, S
+            trim(date), P, T, PET, AET, Q, state_manager%get_soil_water_storage()
 
          do observer_index = 1, size(observers)
             call observers(observer_index)%observer%end_of_timestep()
@@ -102,7 +103,13 @@ contains
       write (*, *) 'Done. Output -> ', trim(outFile)
    end subroutine run
 
-   subroutine calculate_next_simulation_state()
+   subroutine calculate_next_simulation_state(state_manager)
+      type(simulation_state_manager_t), intent(inout) :: state_manager
+
+      real(real64) :: S_local
+
+      S_local = state_manager%get_soil_water_storage()
+
       ! TODO in Mediator assignment:
       ! - Copy the current soil water storage to a local variable
       ! - Make the calculations
@@ -114,22 +121,24 @@ contains
 
       ! --- 2) Actual ET (AET) ---
       ! Limited by soil water: AET <= a_ET * S, and also cannot exceed PET
-      AET = min(PET, a_ET*S)
+      AET = min(PET, a_ET*S_local)
 
       ! --- 3) Infiltration and quick runoff ---
       ! Infiltration is capped by available storage space; the excess becomes runoff.
       ! I = min(P, Smax - S) but not negative if S is already at/above capacity
-      I = min(P, max(0.0_real64, Smax - S))
+      I = min(P, max(0.0_real64, Smax - S_local))
 
       ! Quick runoff is any precipitation that could not infiltrate
       Q = max(0.0_real64, P - I)
 
       ! --- 4) Update soil storage ---
       ! New S = old S + inflow (I) - outflow (AET)
-      S = S + I - AET
+      S_local = S_local + I - AET
 
       ! Enforce physical bounds: 0 <= S <= Smax
-      S = min(max(S, 0.0_real64), Smax)
+      S_local = min(max(S_local, 0.0_real64), Smax)
+
+      call state_manager%set_soil_water_storage(S_local)
    end subroutine calculate_next_simulation_state
 
    subroutine parse_args(inf, outf)
