@@ -1,6 +1,7 @@
 module hydrology_rainfall_runoff
    use iso_fortran_env, only: real64
-   use hydrology_observer, only: observer_reference_t
+   use hydrology_observer, only: observer_reference_t, &
+                                 observer_t
    use hydrology_mediator, only: simulation_state_manager_t
 
    implicit none(type, external)
@@ -38,7 +39,19 @@ module hydrology_rainfall_runoff
    real(real64) :: PET, AET ! potential and actual evapotranspiration (mm/day)
    real(real64) :: I, Q ! infiltration (mm/day), quick runoff (mm/day)
 
+   type, extends(observer_t) :: terminal_output_observer_t
+   contains
+      procedure :: end_of_timestep => terminal_output_observer_end_of_timestep
+   end type terminal_output_observer_t
+
 contains
+
+   subroutine terminal_output_observer_end_of_timestep(self)
+      class(terminal_output_observer_t), intent(inout) :: self
+
+      print *, 'Completed calculations for date ', trim(date)
+
+   end subroutine terminal_output_observer_end_of_timestep
 
    subroutine run()
 
@@ -51,6 +64,10 @@ contains
       ! It should set the soil water storage. Before going into the loop we also have to
       ! set the initial value for soil water storage.
       type(simulation_state_manager_t), target :: state_manager
+
+      integer :: observer_index
+
+      observers = [observer_reference_t(terminal_output_observer_t())]
 
       call parse_args(inFile, outFile)
 
@@ -75,7 +92,10 @@ contains
          write (uout, '(A,",",F0.3,",",F0.3,",",F0.3,",",F0.3,",",F0.3,",",F0.3)') &
             trim(date), P, T, PET, AET, Q, S
 
-         print *, 'Completed calculations for date ', trim(date)
+         do observer_index = 1, size(observers)
+            call observers(observer_index)%observer%end_of_timestep()
+         end do
+         ! for each observer: end_of_timestep()
       end do
 
       close (uin); close (uout)
