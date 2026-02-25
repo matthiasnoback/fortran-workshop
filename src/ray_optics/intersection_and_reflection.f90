@@ -1,5 +1,9 @@
 module ray_optics_intersection_and_reflection
    use common_precision, only: dp
+   use ray_optics_library, only: ray_line_segment_intersection, &
+                                 ray_t, &
+                                 line_segment_t, &
+                                 point_t
 
    implicit none(type, external)
 
@@ -9,16 +13,35 @@ module ray_optics_intersection_and_reflection
    public :: apply_surface_material
 
    type, abstract :: material_t
+   contains
+      procedure(ray_direction_after_hit_interface), deferred :: ray_direction_after_hit
    end type material_t
 
    type, extends(material_t) :: mirror_t
+   contains
+      procedure :: ray_direction_after_hit => mirror_ray_direction_after_hit
    end type mirror_t
 
    type, extends(material_t) :: absorber_t
+   contains
+      procedure :: ray_direction_after_hit => absorber_ray_direction_after_hit
    end type absorber_t
 
    type, extends(material_t) :: transmitter_t
+   contains
+      procedure :: ray_direction_after_hit => transmitter_ray_direction_after_hit
    end type transmitter_t
+
+   abstract interface
+      subroutine ray_direction_after_hit_interface(self, dx, dy, x1, y1, x2, y2, outdx, outdy)
+         import :: dp, material_t
+         implicit none(type, external)
+         class(material_t), intent(in) :: self
+         real(dp), intent(in)  :: dx, dy
+         real(dp), intent(in)  :: x1, y1, x2, y2
+         real(dp), intent(out) :: outdx, outdy
+      end subroutine ray_direction_after_hit_interface
+   end interface
 
 contains
 
@@ -53,19 +76,18 @@ contains
       real(dp) :: t
       real(dp) :: rx, ry, apx, apy, denom, t_candidate, u
 
-      rx = x2 - x1
-      ry = y2 - y1
-      apx = x1 - x0
-      apy = y1 - y0
-      denom = cross(dx, dy, rx, ry)
-      if (abs(denom) < eps) then
-         t = -1.0_dp
-         return
-      end if
-      t_candidate = cross(apx, apy, rx, ry)/denom
-      u = cross(apx, apy, dx, dy)/denom
-      if (t_candidate >= tmin .and. t_candidate <= tmax .and. u >= 0.0_dp .and. u <= 1.0_dp) then
-         t = t_candidate*sqrt(dx*dx + dy*dy)
+      logical :: intersects
+      type(point_t), allocatable :: intersection
+
+      call ray_line_segment_intersection( &
+         ray_t(point_t(x0, y0), dx, dy), &
+         line_segment_t(point_t(x1, y1), point_t(x2, y2)), &
+         intersects, &
+         intersection &
+         )
+
+      if (intersects) then
+         t = sqrt((intersection%x - x0)**2 + (intersection%y - y0)**2)
       else
          t = -1.0_dp
       end if
@@ -144,17 +166,7 @@ contains
       class(material_t), allocatable :: the_material
       the_material = create_material(material)
 
-      select type (the_material)
-      type is (mirror_t)
-         call reflect_on_segment(x1, y1, x2, y2, dx, dy, outdx, outdy)
-      type is (absorber_t)
-         outdx = 0.0_dp
-         outdy = 0.0_dp
-      type is (transmitter_t)
-      class default
-         outdx = dx
-         outdy = dy
-      end select
+      call the_material%ray_direction_after_hit(dx, dy, x1, y1, x2, y2, outdx, outdy)
    end subroutine apply_surface_material
 
    pure function create_material(name) result(material)
@@ -167,9 +179,38 @@ contains
       case ('A')
          material = absorber_t()
       case ('T')
+         material = transmitter_t()
       case default
          material = transmitter_t()
       end select
    end function create_material
 
+   subroutine mirror_ray_direction_after_hit(self, dx, dy, x1, y1, x2, y2, outdx, outdy)
+      class(mirror_t), intent(in) :: self
+      real(dp), intent(in)  :: dx, dy
+      real(dp), intent(in)  :: x1, y1, x2, y2
+      real(dp), intent(out) :: outdx, outdy
+
+      call reflect_on_segment(x1, y1, x2, y2, dx, dy, outdx, outdy)
+   end subroutine mirror_ray_direction_after_hit
+
+   subroutine absorber_ray_direction_after_hit(self, dx, dy, x1, y1, x2, y2, outdx, outdy)
+      class(absorber_t), intent(in) :: self
+      real(dp), intent(in)  :: dx, dy
+      real(dp), intent(in)  :: x1, y1, x2, y2
+      real(dp), intent(out) :: outdx, outdy
+
+      outdx = 0.0_dp
+      outdy = 0.0_dp
+   end subroutine absorber_ray_direction_after_hit
+
+   subroutine transmitter_ray_direction_after_hit(self, dx, dy, x1, y1, x2, y2, outdx, outdy)
+      class(transmitter_t), intent(in) :: self
+      real(dp), intent(in)  :: dx, dy
+      real(dp), intent(in)  :: x1, y1, x2, y2
+      real(dp), intent(out) :: outdx, outdy
+
+      outdx = dx
+      outdy = dy
+   end subroutine transmitter_ray_direction_after_hit
 end module ray_optics_intersection_and_reflection
