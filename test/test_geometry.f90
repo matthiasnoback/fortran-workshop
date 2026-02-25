@@ -2,7 +2,7 @@ module test_geometry
    use common_precision, only: dp
    use testdrive, only: new_unittest, unittest_type, error_type, test_failed
    use test_custom_checks, only: check
-   use geometry_point, only: point_t, create_point, point_or_error_t
+   use geometry_point, only: point_t, create_point, point_or_error_t, translate
    use common_strings, only: string_t
    use common_error_handling, only: error_t
    use geometry_polyline, only: polyline_t, create_polyline
@@ -120,11 +120,7 @@ contains
 
       original = create_point(10.0_dp, 5.0_dp)
 
-      ! TODO make this work:
-      ! translated = translate(original, 2.0_dp, -2.0_dp)
-
-      ! TODO then remove this line:
-      translated = create_point(12.0_dp, 3.0_dp)
+      translated = translate(original, 2.0_dp, -2.0_dp)
 
       call check(error, translated%get_x(), 12.0_dp)
       if (allocated(error)) then
