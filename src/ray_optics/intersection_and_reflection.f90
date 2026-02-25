@@ -8,6 +8,18 @@ module ray_optics_intersection_and_reflection
    public :: ray_circle_intersection
    public :: apply_surface_material
 
+   type, abstract :: material_t
+   end type material_t
+
+   type, extends(material_t) :: mirror_t
+   end type mirror_t
+
+   type, extends(material_t) :: absorber_t
+   end type absorber_t
+
+   type, extends(material_t) :: transmitter_t
+   end type transmitter_t
+
 contains
 
    pure function dot(ax, ay, bx, by) result(d)
@@ -128,20 +140,36 @@ contains
       real(dp), intent(in)  :: dx, dy
       real(dp), intent(in)  :: x1, y1, x2, y2
       real(dp), intent(out) :: outdx, outdy
-      select case (material)
-      case ('M') ! perfect mirror (reflect)
+
+      class(material_t), allocatable :: the_material
+      the_material = create_material(material)
+
+      select type (the_material)
+      type is (mirror_t)
          call reflect_on_segment(x1, y1, x2, y2, dx, dy, outdx, outdy)
-      case ('A') ! absorber (stop)
+      type is (absorber_t)
          outdx = 0.0_dp
          outdy = 0.0_dp
-      case ('T') ! transmitter (keep direction)
-         outdx = dx
-         outdy = dy
-      case default
-         ! Unknown: pass-through
+      type is (transmitter_t)
+      class default
          outdx = dx
          outdy = dy
       end select
    end subroutine apply_surface_material
+
+   pure function create_material(name) result(material)
+      character(len=*), intent(in) :: name
+      class(material_t), allocatable :: material
+
+      select case (name)
+      case ('M')
+         material = mirror_t()
+      case ('A')
+         material = absorber_t()
+      case ('T')
+      case default
+         material = transmitter_t()
+      end select
+   end function create_material
 
 end module ray_optics_intersection_and_reflection
