@@ -1,6 +1,6 @@
 module hydrology_rainfall_runoff
    use iso_fortran_env, only: real64
-   use hydrology_observer, only: observer_reference_t
+   use hydrology_observer, only: observer_reference_t, observer_t
    use hydrology_mediator, only: simulation_state_manager_t
 
    implicit none(type, external)
@@ -30,7 +30,7 @@ module hydrology_rainfall_runoff
    real(real64) :: S = 0.6_real64*Smax
 
    character(len=256) :: inFile, outFile ! file paths
-   integer :: uin, uout, ios ! unit numbers + I/O status
+   integer :: uin, ios ! unit numbers + I/O status
    character(len=512) :: line ! line buffer and date string
    character(len=:), allocatable :: date
 
@@ -38,7 +38,43 @@ module hydrology_rainfall_runoff
    real(real64) :: PET, AET ! potential and actual evapotranspiration (mm/day)
    real(real64) :: I, Q ! infiltration (mm/day), quick runoff (mm/day)
 
+   type, extends(observer_t) :: observer_to_file_t
+      private
+      integer :: uout
+   contains
+      procedure :: end_of_timestep => end_of_timestep_to_file
+      procedure :: end_of_simulation => end_of_simulation_to_file
+   end type observer_to_file_t
+
 contains
+
+   function create_observer_to_file(outFile) result(observer)
+      character(len=256), intent(in) :: outFile
+      type(observer_to_file_t) :: observer
+
+      integer :: ios
+
+      open (newunit=observer%uout, file=trim(outFile), status='replace', action='write', iostat=ios)
+      if (ios /= 0) then
+         stop 'Cannot open output CSV.'
+      end if
+
+      write (observer%uout, '(A)') 'date,P,T,PET,AET,Q,S'
+   end function create_observer_to_file
+
+   subroutine end_of_timestep_to_file(self)
+      class(observer_to_file_t), intent(inout) :: self
+
+      ! Write outputs for this step ---
+      write (self%uout, '(A,",",F0.3,",",F0.3,",",F0.3,",",F0.3,",",F0.3,",",F0.3)') &
+         trim(date), P, T, PET, AET, Q, S
+   end subroutine end_of_timestep_to_file
+
+   subroutine end_of_simulation_to_file(self)
+      class(observer_to_file_t), intent(inout) :: self
+
+      close (self%uout)
+   end subroutine end_of_simulation_to_file
 
    subroutine run()
 
@@ -52,14 +88,14 @@ contains
       ! set the initial value for soil water storage.
       type(simulation_state_manager_t), target :: state_manager
 
+      integer :: o
+
       call parse_args(inFile, outFile)
+
+      observers = [observer_reference_t(create_observer_to_file(outFile))]
 
       open (newunit=uin, file=trim(inFile), status='old', action='read', iostat=ios)
       if (ios /= 0) stop 'Cannot open input CSV.'
-      open (newunit=uout, file=trim(outFile), status='replace', action='write', iostat=ios)
-      if (ios /= 0) stop 'Cannot open output CSV.'
-
-      write (uout, '(A)') 'date,P,T,PET,AET,Q,S'
 
       read (uin, '(A)', iostat=ios) line
 
@@ -71,14 +107,17 @@ contains
 
          call calculate_next_simulation_state()
 
-         ! --- 5) Write outputs for this step ---
-         write (uout, '(A,",",F0.3,",",F0.3,",",F0.3,",",F0.3,",",F0.3,",",F0.3)') &
-            trim(date), P, T, PET, AET, Q, S
+         do o = 1, size(observers)
+            call observers(o)%observer%end_of_timestep()
+         end do
 
          print *, 'Completed calculations for date ', trim(date)
       end do
 
-      close (uin); close (uout)
+      close (uin)
+      do o = 1, size(observers)
+         call observers(o)%observer%end_of_simulation()
+      end do
       write (*, *) 'Done. Output -> ', trim(outFile)
    end subroutine run
 

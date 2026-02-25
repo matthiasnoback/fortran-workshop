@@ -10,6 +10,7 @@ module hydrology_observer
    contains
       !> To be invoked at the end of each timestep
       procedure(observe_end_of_timestep_proc), deferred :: end_of_timestep
+      procedure(observe_end_of_simulation_proc), deferred :: end_of_simulation
    end type observer_t
 
    abstract interface
@@ -18,6 +19,12 @@ module hydrology_observer
          implicit none(type, external)
          class(observer_t), intent(inout) :: self
       end subroutine observe_end_of_timestep_proc
+
+      subroutine observe_end_of_simulation_proc(self)
+         import observer_t
+         implicit none(type, external)
+         class(observer_t), intent(inout) :: self
+      end subroutine observe_end_of_simulation_proc
    end interface
 
    !> Wrapper for holding an `observer_t` instance
@@ -26,5 +33,4 @@ module hydrology_observer
    type :: observer_reference_t
       class(observer_t), allocatable :: observer
    end type observer_reference_t
-
 end module hydrology_observer
