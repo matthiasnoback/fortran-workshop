@@ -1,4 +1,5 @@
 module hydrology_observer
+   use hydrology_simulation_state, only: simulation_state_t, forcings_t
 
    implicit none(type, external)
 
@@ -14,10 +15,12 @@ module hydrology_observer
    end type observer_t
 
    abstract interface
-      subroutine observe_end_of_timestep_proc(self)
-         import observer_t
+      subroutine observe_end_of_timestep_proc(self, forcings, simulation_state)
+         import observer_t, simulation_state_t, forcings_t
          implicit none(type, external)
          class(observer_t), intent(inout) :: self
+         class(forcings_t), intent(in) :: forcings
+         class(simulation_state_t), intent(in) :: simulation_state
       end subroutine observe_end_of_timestep_proc
 
       subroutine observe_end_of_simulation_proc(self)

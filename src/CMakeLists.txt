@@ -27,6 +27,7 @@ add_library(${library_name} STATIC
     ./hydrology/mediator.f90
     ./hydrology/observer.f90
     ./hydrology/output.f90
+    ./hydrology/simulation_state.f90
     ./integration/damped_oscillator.f90
     ./integration/trapezoid.f90
     ./logging/abstract.f90
