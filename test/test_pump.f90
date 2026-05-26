@@ -33,6 +33,8 @@ contains
                                test_pump_water_level_is_above_start_level), &
                   new_unittest("test_pump_water_level_is_below_stop_level", &
                                test_pump_water_level_is_below_stop_level), &
+                  new_unittest("test_pump_running_with_level_between_start_and_stop", &
+                               test_pump_running_with_level_between_start_and_stop), &
                   new_unittest("test_check_pump_specification_or_error", &
                                test_check_pump_specification_or_error) &
                   ]
@@ -43,6 +45,7 @@ contains
 
       call check(error, calculate_pump_discharge( &
                  pump_specification_t(0.0_real64, 4.0_real64, 2.0_real64), &
+                 pump_state_t(.false., 0.0_real64), &
                  0.0_real64), &
                  pump_state_t(.false., 0.0_real64))
    end subroutine test_pump_default_discharge
@@ -51,6 +54,7 @@ contains
       type(error_type), allocatable, intent(out) :: error
       call check(error, calculate_pump_discharge( &
                  pump_specification_t(10.0_real64, 4.0_real64, 2.0_real64), &
+                 pump_state_t(.false., 0.0_real64), &
                  5.0_real64), &
                  pump_state_t(.true., 10.0_real64))
    end subroutine test_pump_water_level_is_above_start_level
@@ -59,9 +63,19 @@ contains
       type(error_type), allocatable, intent(out) :: error
       call check(error, calculate_pump_discharge( &
                  pump_specification_t(10.0_real64, 4.0_real64, 2.0_real64), &
+                 pump_state_t(.false., 0.0_real64), &
                  1.0_real64), &
                  pump_state_t(.false., 0.0_real64))
    end subroutine test_pump_water_level_is_below_stop_level
+
+   subroutine test_pump_running_with_level_between_start_and_stop(error)
+      type(error_type), allocatable, intent(out) :: error
+      call check(error, calculate_pump_discharge( &
+                 pump_specification_t(10.0_real64, 4.0_real64, 2.0_real64), &
+                 pump_state_t(.true., 10.0_real64), &
+                 3.0_real64), &
+                 pump_state_t(.true., 10.0_real64))
+   end subroutine test_pump_running_with_level_between_start_and_stop
 
    subroutine test_check_pump_specification_or_error(error)
       type(error_type), allocatable, intent(out) :: error

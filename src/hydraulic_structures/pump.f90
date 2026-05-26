@@ -29,8 +29,10 @@ module hydraulic_structures_pump
 contains
 
    pure function calculate_pump_discharge(specification, &
+                                          previous_state, &
                                           actual_level) result(next_state)
       type(pump_specification_t), intent(in) :: specification
+      type(pump_state_t), intent(in) :: previous_state
       real(kind=real64), intent(in) :: actual_level
 
       type(pump_state_t) :: next_state
@@ -41,10 +43,12 @@ contains
          return
       end if
 
-      ! if (actual_level < stop_level) then
-      !    discharge = 0.0_real64
-      !    return
-      ! end if
+      if (actual_level > specification%stop_level &
+          .and. previous_state%is_running) then
+         next_state%is_running = .true.
+         next_state%discharge = specification%capacity
+         return
+      end if
 
       next_state%is_running = .false.
       next_state%discharge = 0.0_real64
