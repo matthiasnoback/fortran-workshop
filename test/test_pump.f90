@@ -6,7 +6,7 @@ module test_pump
                                         calculate_pump_discharge
    use common_error_handling, only: error_t
    use common_to_string, only: to_string
-   use common_precision, only: dp
+   use iso_fortran_env, only: real64
 
    implicit none(type, external)
 
@@ -25,40 +25,38 @@ contains
       type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
       testsuite = [ &
-                  new_unittest("test_discharge_of_a_pump_that_is_turned_off", &
-                               test_discharge_of_a_pump_that_is_turned_off), &
-                  new_unittest("test_discharge_of_a_pump_that_is_turned_on", &
-                               test_discharge_of_a_pump_that_is_turned_on), &
-                  new_unittest("test_water_level_is_at_minimum_level", &
-                               test_water_level_is_at_minimum_level), &
-                  new_unittest("test_water_level_is_below_minimum_level", &
-                               test_water_level_is_below_minimum_level), &
+                  new_unittest("test_pump_default_discharge", &
+                               test_pump_default_discharge), &
+                  new_unittest("test_pump_water_level_is_above_start_level", &
+                               test_pump_water_level_is_above_start_level), &
+                  new_unittest("test_pump_water_level_is_below_stop_level", &
+                               test_pump_water_level_is_below_stop_level), &
                   new_unittest("test_check_pump_specification_or_error", &
                                test_check_pump_specification_or_error) &
                   ]
    end subroutine collect_tests
 
-   subroutine test_discharge_of_a_pump_that_is_turned_off(error)
+   subroutine test_pump_default_discharge(error)
       type(error_type), allocatable, intent(out) :: error
 
-      call check(error, calculate_pump_discharge(0.0_dp, 0.0_dp, 0.0_dp), 0.0_dp)
-   end subroutine test_discharge_of_a_pump_that_is_turned_off
+      call check(error, calculate_pump_discharge( &
+                 pump_specification_t(0.0_real64, 4.0_real64, 2.0_real64), &
+                 0.0_real64), 0.0_real64)
+   end subroutine test_pump_default_discharge
 
-   subroutine test_discharge_of_a_pump_that_is_turned_on(error)
+   subroutine test_pump_water_level_is_above_start_level(error)
       type(error_type), allocatable, intent(out) :: error
+      call check(error, calculate_pump_discharge( &
+                 pump_specification_t(10.0_real64, 4.0_real64, 2.0_real64), &
+                 5.0_real64), 10.0_real64)
+   end subroutine test_pump_water_level_is_above_start_level
 
-      call check(error, calculate_pump_discharge(10.0_dp, 0.0_dp, 0.0_dp), 10.0_dp)
-   end subroutine test_discharge_of_a_pump_that_is_turned_on
-
-   subroutine test_water_level_is_at_minimum_level(error)
+   subroutine test_pump_water_level_is_below_stop_level(error)
       type(error_type), allocatable, intent(out) :: error
-      call check(error, calculate_pump_discharge(10.0_dp, 2.0_dp, 2.0_dp), 10.0_dp)
-   end subroutine test_water_level_is_at_minimum_level
-
-   subroutine test_water_level_is_below_minimum_level(error)
-      type(error_type), allocatable, intent(out) :: error
-      call check(error, calculate_pump_discharge(10.0_dp, 2.0_dp, 1.0_dp), 0.0_dp)
-   end subroutine test_water_level_is_below_minimum_level
+      call check(error, calculate_pump_discharge( &
+                 pump_specification_t(10.0_real64, 4.0_real64, 2.0_real64), &
+                 1.0_real64), 0.0_real64)
+   end subroutine test_pump_water_level_is_below_stop_level
 
    subroutine test_check_pump_specification_or_error(error)
       type(error_type), allocatable, intent(out) :: error
@@ -85,14 +83,14 @@ contains
 
       case = 3
       ! Both cases contain a pump, and they are equal
-      actual(case)%pump = pump_specification_t()
-      expected(case)%pump = pump_specification_t()
+      actual(case)%pump = pump_specification_t(0.0_real64, 4.0_real64, 2.0_real64)
+      expected(case)%pump = pump_specification_t(0.0_real64, 4.0_real64, 2.0_real64)
       check_should_fail(case) = .false.
 
       case = 4
       ! One case contains an error, the other a pump
       actual(case)%error = error_t('An error')
-      expected(case)%pump = pump_specification_t()
+      expected(case)%pump = pump_specification_t(0.0_real64, 4.0_real64, 2.0_real64)
       check_should_fail(case) = .true.
 
       do case = 1, cases

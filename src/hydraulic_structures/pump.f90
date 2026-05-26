@@ -1,6 +1,6 @@
 module hydraulic_structures_pump
    use common_error_handling, only: error_t
-   use common_precision, only: dp
+   use iso_fortran_env, only: real64
 
    implicit none(type, external)
 
@@ -9,7 +9,15 @@ module hydraulic_structures_pump
    public :: pump_specification_or_error_t
    public :: calculate_pump_discharge
 
+   type :: pump_state_t
+      logical :: is_running
+      real(kind=real64) :: discharge
+   end type pump_state_t
+
    type pump_specification_t
+      real(kind=real64) :: capacity
+      real(kind=real64) :: start_level
+      real(kind=real64) :: stop_level
    end type pump_specification_t
 
    type :: pump_specification_or_error_t
@@ -19,18 +27,24 @@ module hydraulic_structures_pump
 
 contains
 
-   pure function calculate_pump_discharge(capacity, start_level, actual_level) result(discharge)
-      real(kind=dp), intent(in) :: capacity
-      real(kind=dp), intent(in) :: start_level
-      real(kind=dp), intent(in) :: actual_level
+   pure function calculate_pump_discharge(specification, &
+                                          actual_level) result(discharge)
+      type(pump_specification_t), intent(in) :: specification
+      real(kind=real64), intent(in) :: actual_level
 
-      real(kind=dp) :: discharge
+      real(kind=real64) :: discharge
 
-      if (actual_level < start_level) then
-         discharge = 0.0_dp
-      else
-         discharge = capacity
+      if (actual_level > specification%start_level) then
+         discharge = specification%capacity
+         return
       end if
+
+      ! if (actual_level < stop_level) then
+      !    discharge = 0.0_real64
+      !    return
+      ! end if
+
+      discharge = 0.0_real64
    end function calculate_pump_discharge
 
 end module hydraulic_structures_pump
