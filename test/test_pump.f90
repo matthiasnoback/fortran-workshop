@@ -3,7 +3,8 @@ module test_pump
    use test_custom_checks, only: check
    use hydraulic_structures_pump, only: pump_specification_t, &
                                         pump_specification_or_error_t, &
-                                        calculate_pump_discharge
+                                        calculate_pump_discharge, &
+                                        pump_state_t
    use common_error_handling, only: error_t
    use common_to_string, only: to_string
    use iso_fortran_env, only: real64
@@ -15,6 +16,7 @@ module test_pump
    public :: collect_tests
 
    interface check
+      module procedure :: check_pump_state
       procedure :: check_pump_specification
       procedure :: check_pump_specification_or_error
    end interface check
@@ -41,21 +43,24 @@ contains
 
       call check(error, calculate_pump_discharge( &
                  pump_specification_t(0.0_real64, 4.0_real64, 2.0_real64), &
-                 0.0_real64), 0.0_real64)
+                 0.0_real64), &
+                 pump_state_t(.false., 0.0_real64))
    end subroutine test_pump_default_discharge
 
    subroutine test_pump_water_level_is_above_start_level(error)
       type(error_type), allocatable, intent(out) :: error
       call check(error, calculate_pump_discharge( &
                  pump_specification_t(10.0_real64, 4.0_real64, 2.0_real64), &
-                 5.0_real64), 10.0_real64)
+                 5.0_real64), &
+                 pump_state_t(.true., 10.0_real64))
    end subroutine test_pump_water_level_is_above_start_level
 
    subroutine test_pump_water_level_is_below_stop_level(error)
       type(error_type), allocatable, intent(out) :: error
       call check(error, calculate_pump_discharge( &
                  pump_specification_t(10.0_real64, 4.0_real64, 2.0_real64), &
-                 1.0_real64), 0.0_real64)
+                 1.0_real64), &
+                 pump_state_t(.false., 0.0_real64))
    end subroutine test_pump_water_level_is_below_stop_level
 
    subroutine test_check_pump_specification_or_error(error)
@@ -115,6 +120,22 @@ contains
          end if
       end do
    end subroutine test_check_pump_specification_or_error
+
+   subroutine check_pump_state(error, actual, expected)
+      type(error_type), allocatable, intent(out) :: error
+      type(pump_state_t), intent(in) :: actual
+      type(pump_state_t), intent(in) :: expected
+
+      call check(error, actual%is_running, expected%is_running)
+      if (allocated(error)) then
+         return
+      end if
+
+      call check(error, actual%discharge, expected%discharge)
+      if (allocated(error)) then
+         return
+      end if
+   end subroutine check_pump_state
 
    subroutine check_pump_specification(error, actual, expected)
       type(error_type), allocatable, intent(out) :: error
