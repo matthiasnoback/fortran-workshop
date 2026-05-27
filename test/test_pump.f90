@@ -1,15 +1,17 @@
 module test_pump
    use testdrive, only: new_unittest, unittest_type, error_type, test_failed, skip_test
-   use test_custom_checks, only: check
+   use test_custom_checks, only: check, assert_check_passed, assert_check_failed
    use hydraulic_structures_pump, only: pump_specification_t, &
                                         pump_specification_or_error_t, &
                                         next_pump_state, &
                                         pump_state_t, &
-                                        pump_with_capacity
+                                        pump_with_capacity, &
+                                        load_pump_specification
    use test_check_pump_specification, only: check
    use common_error_handling, only: error_t
    use common_to_string, only: to_string
    use iso_fortran_env, only: real64
+   use config_loading, only: configuration_t, config_value_t
 
    implicit none(type, external)
 
@@ -28,68 +30,131 @@ contains
       type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
       testsuite = [ &
-                  new_unittest("test_check_pump_specification_or_error", &
-                               test_check_pump_specification_or_error) &
+                  new_unittest("test_load_specification", &
+                               test_load_specification), &
+                  new_unittest("test_capacity_is_missing", &
+                               test_capacity_is_missing), &
+                  new_unittest("test_capacity_is_not_a_real", &
+                               test_capacity_is_not_a_real), &
+                  new_unittest("test_check_same_error", &
+                               test_check_same_error), &
+                  new_unittest("test_check_different_error", &
+                               test_check_different_error), &
+                  new_unittest("test_check_same_capacity", &
+                               test_check_same_specification), &
+                  new_unittest("test_check_different_capacity", &
+                               test_check_different_specification) &
                   ]
    end subroutine collect_tests
 
-   subroutine test_check_pump_specification_or_error(error)
+   subroutine test_load_specification(error)
       type(error_type), allocatable, intent(out) :: error
 
-      type(pump_specification_or_error_t), dimension(:), allocatable :: actual, expected
-      logical, dimension(:), allocatable :: check_should_fail
+      type(pump_specification_or_error_t) :: actual
+      type(pump_specification_or_error_t) :: expected
 
-      integer, save :: cases = 4
-      integer :: case
+      expected%pump = pump_specification_t(10.0_real64, 4.0_real64, 2.0_real64)
 
-      allocate (actual(cases), expected(cases), check_should_fail(cases))
+      actual = load_pump_specification( &
+               configuration_t([ &
+                               config_value_t('capacity', '10.0'), &
+                               config_value_t('start_level', '4.0'), &
+                               config_value_t('stop_level', '2.0') &
+                               ]) &
+               )
 
-      case = 1
-      ! Both cases contain an error, with the same message
-      actual(case)%error = error_t('Same error')
-      expected(case)%error = error_t('Same error')
-      check_should_fail(case) = .false.
+      call check(error, actual, expected)
+   end subroutine test_load_specification
 
-      case = 2
-      ! Both cases contain an error, but they have different messages
-      actual(case)%error = error_t('Same error')
-      expected(case)%error = error_t('Different error')
-      check_should_fail(case) = .true.
+   subroutine test_capacity_is_missing(error)
+      type(error_type), allocatable, intent(out) :: error
 
-      case = 3
-      ! Both cases contain a pump, and they are equal
-      actual(case)%pump = pump_with_capacity(10.0_real64)
-      expected(case)%pump = pump_with_capacity(10.0_real64)
-      check_should_fail(case) = .false.
+      type(pump_specification_or_error_t) :: actual
+      type(pump_specification_or_error_t) :: expected
 
-      case = 4
-      ! One case contains an error, the other a pump
-      actual(case)%error = error_t('An error')
-      expected(case)%pump = pump_with_capacity(10.0_real64)
-      check_should_fail(case) = .true.
+      expected%error = error_t('"capacity" is required.')
 
-      do case = 1, cases
-         call check(error, actual(case), expected(case))
-         if (check_should_fail(case) .and. .not. allocated(error)) then
-            call test_failed(error, 'Case '//to_string(case)//' was expected to fail')
-            return
-         end if
+      actual = load_pump_specification( &
+               configuration_t([ &
+                               config_value_t('no_capacity', '10.0') &
+                               ]) &
+               )
 
-         if (.not. check_should_fail(case) .and. allocated(error)) then
-            error%message = 'Case '//to_string(case)//' was not expected to fail, but failed: ' &
-                            //error%message
-            return
-         end if
+      call check(error, actual, expected)
+   end subroutine test_capacity_is_missing
 
-         if (allocated(error)) then
-            ! fake success, or the final procedure of error_type will escalate the error as "uncaught"
-            error%stat = 0
+   subroutine test_capacity_is_not_a_real(error)
+      type(error_type), allocatable, intent(out) :: error
 
-            ! start next iteration with a clean slate
-            deallocate (error)
-         end if
-      end do
-   end subroutine test_check_pump_specification_or_error
+      type(pump_specification_or_error_t) :: actual
+      type(pump_specification_or_error_t) :: expected
+
+      expected%error = error_t('"capacity" should be a real.')
+
+      actual = load_pump_specification( &
+               configuration_t([ &
+                               config_value_t('capacity', 'not a real') &
+                               ]) &
+               )
+
+      call check(error, actual, expected)
+   end subroutine test_capacity_is_not_a_real
+
+   subroutine test_check_same_error(error)
+      type(error_type), allocatable, intent(out) :: error
+
+      type(pump_specification_or_error_t) :: actual
+      type(pump_specification_or_error_t) :: expected
+      type(error_type), allocatable :: error_from_check
+
+      actual%error = error_t('Same error')
+      expected%error = error_t('Same error')
+
+      call check(error_from_check, actual, expected)
+      call assert_check_passed(error, error_from_check)
+   end subroutine test_check_same_error
+
+   subroutine test_check_different_error(error)
+      type(error_type), allocatable, intent(out) :: error
+
+      type(pump_specification_or_error_t) :: actual
+      type(pump_specification_or_error_t) :: expected
+      type(error_type), allocatable :: error_from_check
+
+      actual%error = error_t('Same error')
+      expected%error = error_t('Different error')
+
+      call check(error_from_check, actual, expected)
+      call assert_check_failed(error, error_from_check)
+   end subroutine test_check_different_error
+
+   subroutine test_check_same_specification(error)
+      type(error_type), allocatable, intent(out) :: error
+
+      type(pump_specification_or_error_t) :: actual
+      type(pump_specification_or_error_t) :: expected
+      type(error_type), allocatable :: error_from_check
+
+      actual%pump = pump_with_capacity(10.0_real64)
+      expected%pump = pump_with_capacity(10.0_real64)
+
+      call check(error_from_check, actual, expected)
+      call assert_check_passed(error, error_from_check)
+   end subroutine test_check_same_specification
+
+   subroutine test_check_different_specification(error)
+      type(error_type), allocatable, intent(out) :: error
+
+      type(pump_specification_or_error_t) :: actual
+      type(pump_specification_or_error_t) :: expected
+      type(error_type), allocatable :: error_from_check
+
+      actual%pump = pump_with_capacity(10.0_real64)
+      expected%pump = pump_with_capacity(5.0_real64)
+
+      call check(error_from_check, actual, expected)
+      call assert_check_failed(error, error_from_check)
+   end subroutine test_check_different_specification
 
    subroutine check_pump_specification_or_error(error, actual, expected)
       type(error_type), allocatable, intent(out) :: error
@@ -97,7 +162,7 @@ contains
       type(pump_specification_or_error_t), intent(in) :: expected
 
       if (allocated(expected%error)) then
-         call check(error, allocated(actual%error), .true.)
+         call check(error, allocated(actual%error), .true., 'Expected an error')
          if (allocated(error)) then
             return
          end if
@@ -107,7 +172,7 @@ contains
       end if
 
       if (allocated(expected%pump)) then
-         call check(error, allocated(actual%pump), .true.)
+         call check(error, allocated(actual%pump), .true., 'Expected a pump specification')
          if (allocated(error)) then
             return
          end if

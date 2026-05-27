@@ -190,7 +190,7 @@ contains
       type(error_type), allocatable, intent(out) :: error
       type(error_type), allocatable, intent(inout) :: error_from_check
 
-      call check(error, allocated(error_from_check), .false.)
+      call check(error, allocated(error_from_check), .false., 'Expected the check to pass')
 
       call prevent_uncaught_error(error_from_check)
    end subroutine assert_check_passed
