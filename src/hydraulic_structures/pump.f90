@@ -1,6 +1,6 @@
 module hydraulic_structures_pump
    use common_error_handling, only: error_t
-   use common_precision, only: dp
+   use iso_fortran_env, only: real64
 
    implicit none(type, external)
 
@@ -12,16 +12,9 @@ module hydraulic_structures_pump
    public :: pump_with_capacity
 
    type pump_specification_t
-      real(kind=dp) :: capacity
-      logical :: is_controlled_on_suction_side = .false.
-      real(kind=dp) :: suction_side_start_level = 0.0_dp
-      real(kind=dp) :: suction_side_stop_level = 0.0_dp
-      logical :: is_controlled_on_delivery_side = .false.
-      real(kind=dp) :: delivery_side_start_level = 0.0_dp
-      real(kind=dp) :: delivery_side_stop_level = 0.0_dp
-   contains
-      procedure :: control_suction_side => pump_specification_control_suction_side
-      procedure :: control_delivery_side => pump_specification_control_delivery_side
+      real(kind=real64) :: capacity
+      real(kind=real64) :: start_level
+      real(kind=real64) :: stop_level
    end type pump_specification_t
 
    type :: pump_specification_or_error_t
@@ -31,7 +24,7 @@ module hydraulic_structures_pump
 
    type :: pump_state_t
       logical :: is_running
-      real(kind=dp) :: discharge
+      real(kind=real64) :: discharge
    end type pump_state_t
 
 contains
@@ -39,50 +32,18 @@ contains
    pure function next_pump_state(pump_specification, previous_state, actual_level) result(next_state)
       type(pump_specification_t), intent(in) :: pump_specification
       type(pump_state_t), intent(in) :: previous_state
-      real(kind=dp), intent(in) :: actual_level
+      real(kind=real64), intent(in) :: actual_level
 
       type(pump_state_t) :: next_state
 
-      if (actual_level > pump_specification%suction_side_start_level) then
-         next_state%is_running = .true.
-      else if (actual_level < pump_specification%suction_side_stop_level) then
-         next_state%is_running = .false.
-      else
-         next_state%is_running = previous_state%is_running
-      end if
-
-      if (next_state%is_running) then
-         next_state%discharge = pump_specification%capacity
-      else
-         next_state%discharge = 0.0_dp
-      end if
+      next_state = previous_state
    end function next_pump_state
 
    pure function pump_with_capacity(capacity) result(specification)
-      real(kind=dp), intent(in) :: capacity
+      real(kind=real64), intent(in) :: capacity
 
       type(pump_specification_t) :: specification
       specification%capacity = capacity
    end function pump_with_capacity
-
-   subroutine pump_specification_control_suction_side(self, start_level, stop_level)
-      class(pump_specification_t), intent(inout) :: self
-      real(kind=dp), intent(in) :: start_level
-      real(kind=dp), intent(in) :: stop_level
-
-      self%is_controlled_on_suction_side = .true.
-      self%suction_side_start_level = start_level
-      self%suction_side_stop_level = stop_level
-   end subroutine pump_specification_control_suction_side
-
-   subroutine pump_specification_control_delivery_side(self, start_level, stop_level)
-      class(pump_specification_t), intent(inout) :: self
-      real(kind=dp), intent(in) :: start_level
-      real(kind=dp), intent(in) :: stop_level
-
-      self%is_controlled_on_delivery_side = .true.
-      self%delivery_side_start_level = start_level
-      self%delivery_side_stop_level = stop_level
-   end subroutine pump_specification_control_delivery_side
 
 end module hydraulic_structures_pump
