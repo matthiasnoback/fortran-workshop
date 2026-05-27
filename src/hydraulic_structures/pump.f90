@@ -37,21 +37,19 @@ contains
 
       type(pump_state_t) :: next_state
 
+      next_state = previous_state
+
       if (actual_level > specification%start_level) then
          next_state%is_running = .true.
          next_state%discharge = specification%capacity
          return
       end if
 
-      if (actual_level > specification%stop_level &
-          .and. previous_state%is_running) then
-         next_state%is_running = .true.
-         next_state%discharge = specification%capacity
+      if (actual_level < specification%stop_level) then
+         next_state%is_running = .false.
+         next_state%discharge = 0.0_real64
          return
       end if
-
-      next_state%is_running = .false.
-      next_state%discharge = 0.0_real64
    end function calculate_pump_discharge
 
 end module hydraulic_structures_pump
