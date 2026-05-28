@@ -55,8 +55,6 @@ contains
 
       call check(error, actual, expected)
 
-      call set_clock_count()
-
    end subroutine test_start_stop_and_print
 
 end module test_stopwatch

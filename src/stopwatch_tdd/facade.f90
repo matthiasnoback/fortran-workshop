@@ -16,30 +16,38 @@ module stopwatch_tdd_facade
    real(kind=real64) :: cpu_time_start
    real(kind=real64) :: cpu_time_stop
 
+   abstract interface
+      function get_clock_count_proc() result(clock_count)
+         use iso_fortran_env, only: int64
+
+         implicit none(type, external)
+
+         integer(kind=int64) :: clock_count
+      end function get_clock_count_proc
+   end interface
+
+   procedure(get_clock_count_proc), pointer :: get_clock_count => get_clock_count_prod
+
 contains
 
    subroutine set_clock_count(clock_count)
-      integer(kind=int64), intent(in), optional :: clock_count
-
-      if (.not. present(clock_count)) then
-         if (allocated(fixed_clock_count)) then
-            deallocate (fixed_clock_count)
-         end if
-         return
-      end if
+      integer(kind=int64), intent(in) :: clock_count
 
       fixed_clock_count = clock_count
+      get_clock_count => get_clock_count_test
    end subroutine set_clock_count
 
-   function get_clock_count() result(clock_count)
+   function get_clock_count_prod() result(clock_count)
       integer(kind=int64) :: clock_count
 
-      if (allocated(fixed_clock_count)) then
-         clock_count = fixed_clock_count
-      else
-         call system_clock(count=clock_count)
-      end if
-   end function get_clock_count
+      call system_clock(count=clock_count)
+   end function get_clock_count_prod
+
+   function get_clock_count_test() result(clock_count)
+      integer(kind=int64) :: clock_count
+
+      clock_count = fixed_clock_count
+   end function get_clock_count_test
 
    subroutine stopwatch_start()
       call cpu_time(cpu_time_start)
