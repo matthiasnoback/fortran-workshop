@@ -8,4 +8,4 @@
 #
 #    bin/fpm run hello_world
 
-docker compose run --rm fpm fpm --compiler=ifx "$@"
+docker compose run --rm fpm fpm "$@"
